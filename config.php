@@ -1,4 +1,6 @@
 <?php
+define('BASE_PATH', __DIR__);
+
 $servername = "localhost";
 $username = "root";
 $password = "";

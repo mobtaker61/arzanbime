@@ -1,9 +1,9 @@
 <?php
-require_once '../config.php';
-require_once '../models/Content.php';
+require_once BASE_PATH . '/config.php';
+require_once BASE_PATH . '/models/Content.php';
 
 $contentModel = new Content($conn);
 $contents = $contentModel->getAllContents();
 
-include '../views/home.php';
+include BASE_PATH . '/views/home.php';
 ?>
