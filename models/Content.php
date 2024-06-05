@@ -13,12 +13,25 @@ class Content {
     }
 
     public function getLatestHelpContents($limit) {
-        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE type='guide' ORDER BY created_at DESC LIMIT ?";
+        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE type='help' ORDER BY created_at DESC LIMIT ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $limit);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        
+        $stmt->bind_result($id, $title, $body, $type, $image, $created_at);
+        $results = [];
+        while ($stmt->fetch()) {
+            $results[] = [
+                'id' => $id,
+                'title' => $title,
+                'body' => $body,
+                'type' => $type,
+                'image' => $image,
+                'created_at' => $created_at,
+            ];
+        }
+        $stmt->close();
+        return $results;
     }
 
     public function getContentById($id) {
@@ -26,8 +39,19 @@ class Content {
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+
+        $stmt->bind_result($id, $title, $body, $type, $image, $created_at);
+        $stmt->fetch();
+        $result = [
+            'id' => $id,
+            'title' => $title,
+            'body' => $body,
+            'type' => $type,
+            'image' => $image,
+            'created_at' => $created_at,
+        ];
+        $stmt->close();
+        return $result;
     }
 }
 ?>
