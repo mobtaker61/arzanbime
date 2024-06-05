@@ -1,11 +1,8 @@
-# Node.js
-node_modules/
-npm-debug.log
+# Ignore the config.php file
+config.php
 
-# Python
-__pycache__/
-*.pyc
-
-# Laravel
+# Other files and directories to ignore
 /vendor
+/node_modules
 .env
+.DS_Store
