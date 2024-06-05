@@ -1,6 +1,7 @@
 <?php
 define('BASE_PATH', __DIR__);
 
+// Database configuration
 $servername = "localhost";
 $username = "root";
 $password = "";
