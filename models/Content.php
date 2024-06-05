@@ -13,7 +13,7 @@ class Content {
     }
 
     public function getLatestHelpContents($limit) {
-        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE type='help' ORDER BY created_at DESC LIMIT ?";
+        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE type='guide' ORDER BY created_at DESC LIMIT ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $limit);
         $stmt->execute();
