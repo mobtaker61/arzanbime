@@ -1,19 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>Home</h1>
-    <h2>Notices & Help Articles</h2>
-    <ul>
-        <?php foreach ($contents as $content): ?>
-            <li>
-                <a href="content.php?id=<?php echo $content['id']; ?>">
-                    <?php echo htmlspecialchars($content['title']); ?>
-                </a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</body>
-</html>
+<?php
+$title = 'Home';
+$metaDescription = 'Welcome to My Blog Site where you can find the latest notices and help articles.';
+$metaKeywords = 'home, blog, notices, help articles';
+$view = 'home_content.php';
+include BASE_PATH . '/views/layout.php';
+?>

@@ -1,19 +1,28 @@
 <?php
 class Content {
     private $conn;
-    
+
     public function __construct($conn) {
         $this->conn = $conn;
     }
 
     public function getAllContents() {
-        $sql = "SELECT * FROM contents ORDER BY created_at DESC";
+        $sql = "SELECT id, title, body, type, image, created_at FROM contents";
         $result = $this->conn->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getLatestHelpContents($limit) {
+        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE type='guide' ORDER BY created_at DESC LIMIT ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function getContentById($id) {
-        $sql = "SELECT * FROM contents WHERE id = ?";
+        $sql = "SELECT id, title, body, type, image, created_at FROM contents WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
