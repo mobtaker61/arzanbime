@@ -1,82 +1,72 @@
 <?php
 class User extends Model {
-    public function register($username, $email, $password) {
-        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $this->db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param('sss', $username, $email, $passwordHash);
-        return $stmt->execute();
-    }
-
-    public function login($username, $password) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param('s', $username);
+    public function getAllUsers() {
+        $stmt = $this->db->prepare("SELECT * FROM user");
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
-
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            return true;
-        }
-        return false;
-    }
-
-    public function isLoggedIn() {
-        return isset($_SESSION['user_id']);
-    }
-
-    public function logout() {
-        session_destroy();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
     }
 
     public function getUserById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM user WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return !empty($result) ? $result[0] : null;
     }
 
-    public function updateUser($id, $username, $email, $password = null) {
-        if ($password) {
-            $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $this->db->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?");
-            $stmt->bind_param('sssi', $username, $email, $passwordHash, $id);
-        } else {
-            $stmt = $this->db->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-            $stmt->bind_param('ssi', $username, $email, $id);
-        }
-        return $stmt->execute();
-    }
-
-    public function generatePasswordResetToken($email) {
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param('s', $email);
+    public function getUserByUsername($username) {
+        $stmt = $this->db->prepare("SELECT * FROM user WHERE username = ?");
+        $stmt->bind_param('s', $username);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
-
-        if ($user) {
-            $token = bin2hex(random_bytes(16));
-            $stmt = $this->db->prepare("UPDATE users SET reset_token = ? WHERE id = ?");
-            $stmt->bind_param('si', $token, $user['id']);
-            $stmt->execute();
-            return $token;
-        }
-        return false;
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return !empty($result) ? $result[0] : null;
     }
 
-    public function resetPassword($token, $newPassword) {
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE reset_token = ?");
-        $stmt->bind_param('s', $token);
-        $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+    public function createUser($data) {
+        $stmt = $this->db->prepare("INSERT INTO user (username, password, email, role) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param('ssss', $data['username'], $data['password'], $data['email'], $data['role']);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
 
-        if ($user) {
-            $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
-            $stmt = $this->db->prepare("UPDATE users SET password = ?, reset_token = NULL WHERE id = ?");
-            $stmt->bind_param('si', $passwordHash, $user['id']);
-            return $stmt->execute();
+    public function updateUser($id, $data) {
+        $stmt = $this->db->prepare("UPDATE user SET username = ?, password = ?, email = ?, role = ? WHERE id = ?");
+        $stmt->bind_param('ssssi', $data['username'], $data['password'], $data['email'], $data['role'], $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function deleteUser($id) {
+        $stmt = $this->db->prepare("DELETE FROM user WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    private function fetchAssoc($stmt) {
+        $stmt->store_result();
+        $variables = [];
+        $data = [];
+        $meta = $stmt->result_metadata();
+        while ($field = $meta->fetch_field()) {
+            $variables[] = &$data[$field->name];
         }
-        return false;
+        call_user_func_array([$stmt, 'bind_result'], $variables);
+        $results = [];
+        while ($stmt->fetch()) {
+            $row = [];
+            foreach ($data as $key => $val) {
+                $row[$key] = $val;
+            }
+            $results[] = $row;
+        }
+        return $results;
     }
 }
