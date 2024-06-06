@@ -1,5 +1,6 @@
 # Ignore the config.php file
 config/config.php
+public/uploads
 
 # Other files and directories to ignore
 /vendor
