@@ -17,6 +17,26 @@ class Post extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
+    public function getPostsByPostType($postType, $page, $limit) {
+        $offset = ($page - 1) * $limit;
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? LIMIT ? OFFSET ?");
+        $stmt->bind_param('iii', $postType, $limit, $offset);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
+
+    public function countPostsByPostType($postType) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM post WHERE post_type = ?");
+        $stmt->bind_param('i', $postType);
+        $stmt->execute();
+        $stmt->bind_result($total);
+        $stmt->fetch();
+        $stmt->close();
+        return $total;
+    }
+
     public function createPost($data) {
         $stmt = $this->db->prepare("INSERT INTO post (post_type, title, caption, full_body, image, is_active) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param('issssi', $data['post_type'], $data['title'], $data['caption'], $data['full_body'], $data['image'], $data['is_active']);

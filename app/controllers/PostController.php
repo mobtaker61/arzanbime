@@ -68,6 +68,23 @@ class PostController extends Controller {
         header('Location: /admin/posts');
     }
 
+    public function getByPostType($postType) {
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+
+        $postModel = new Post();
+        $posts = $postModel->getPostsByPostType($postType, $page, $limit);
+        $totalPosts = $postModel->countPostsByPostType($postType);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'posts' => $posts,
+            'totalPosts' => $totalPosts,
+            'page' => $page,
+            'limit' => $limit
+        ]);
+    }
+
     private function uploadImage($file) {
         $targetDir = "public/uploads/";
         $targetFile = $targetDir . basename($file["name"]);

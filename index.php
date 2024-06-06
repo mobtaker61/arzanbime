@@ -16,6 +16,7 @@ require 'app/controllers/AdminController.php';
 require 'app/controllers/AuthController.php';
 require 'app/controllers/UserController.php';
 require 'app/controllers/PostController.php'; // Include PostControllers
+require 'app/controllers/CompanyController.php'; // Include CompanyControllers
 
 require 'app/models/Post.php';
 require 'app/models/User.php';

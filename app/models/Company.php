@@ -17,6 +17,56 @@ class Company extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
+    public function createCompany($data) {
+        $stmt = $this->db->prepare("INSERT INTO company (logo, name, intro, shareholders, contract_file, tariffs_images, color, sort, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $tariffs_images = json_encode($data['tariffs_images']);
+        echo $tariffs_images;
+        $stmt->bind_param(
+            'ssssssssi',
+            $data['logo'],
+            $data['name'],
+            $data['intro'],
+            $data['shareholders'],
+            $data['contract_file'],
+            $tariffs_images,
+            $data['color'],
+            $data['sort'],
+            $data['is_active']
+        );
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function updateCompany($id, $data) {
+        $stmt = $this->db->prepare("UPDATE company SET logo = ?, name = ?, intro = ?, shareholders = ?, contract_file = ?, tariffs_images = ?, color = ?, sort = ?, is_active = ? WHERE id = ?");
+        $tariffs_images = json_encode($data['tariffs_images']);
+        $stmt->bind_param(
+            'ssssssssii',
+            $data['logo'],
+            $data['name'],
+            $data['intro'],
+            $data['shareholders'],
+            $data['contract_file'],
+            $tariffs_images,
+            $data['color'],
+            $data['sort'],
+            $data['is_active'],
+            $id
+        );
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function deleteCompany($id) {
+        $stmt = $this->db->prepare("DELETE FROM company WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
     private function fetchAssoc($stmt) {
         $stmt->store_result();
         $variables = [];

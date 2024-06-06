@@ -9,33 +9,14 @@
         <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-speedometer"></i>
-                        <p>
-                            محتوا
-                            <i class="nav-arrow bi bi-chevron-right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="/admin/posts" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>راهنما</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/admin/posts" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>اطلاعیه</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/admin/posts" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>پرسش</p>
-                            </a>
-                        </li>
-                    </ul>
+                    <li class="nav-item">
+                        <a href="/admin/posts" class="nav-link">
+                            <i class="nav-icon bi"></i>
+                            <p>محتوا</p>
+                        </a>
+                    </li>
+
+
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
