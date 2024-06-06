@@ -1,6 +1,8 @@
-<footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-        <b>Version</b> 3.1.0
-    </div>
-    <strong>Admin Panel © 2024</strong>
+<footer class="app-footer">
+    <div class="float-end d-none d-sm-inline">Anything you want</div>
+    <strong>
+        Copyright &copy; 2014-2024&nbsp;
+        <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
+    </strong>
+    All rights reserved.
 </footer>

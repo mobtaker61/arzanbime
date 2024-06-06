@@ -1,17 +1,84 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="/admin" class="brand-link">
-        <span class="brand-text font-weight-light">Admin Panel</span>
-    </a>
-    <div class="sidebar">
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+        <a href="/" class="brand-link">
+            <img src="/public/adminlte/assets/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image opacity-75 shadow">
+            <span class="brand-text fw-light">ارزان بیمه</span>
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="/admin" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>
+                            محتوا
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/posts" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>راهنما</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/posts" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>اطلاعیه</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/posts" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>پرسش</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <p>
+                            خدمات
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/companies" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>شرکتها</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/packages" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>پکیج</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/tariffs" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>تعرفه</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-header">سندها</li>
+                <li class="nav-item">
+                    <a href="/admin/docs/introduction" class="nav-link">
+                        <i class="nav-icon bi bi-download"></i>
+                        <p>نصب</p>
                     </a>
                 </li>
-                <!-- Add more menu items here -->
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link">
+                        <i class="nav-icon bi"></i>
+                        <p>خروج</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
