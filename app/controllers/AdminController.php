@@ -8,6 +8,6 @@ class AdminController extends Controller {
     public function index() {
         $postModel = new Post();
         $posts = $postModel->getAllPosts();
-        $this->view('admin/dashboard', ['posts' => $posts]);
+        $this->view('admin/dashboard', ['posts' => $posts], 'admin');
     }
 }

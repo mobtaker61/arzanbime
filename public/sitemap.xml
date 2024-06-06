@@ -1,0 +1,28 @@
+<?php
+header("Content-Type: application/xml; charset=utf-8");
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.yourwebsite.com/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://www.yourwebsite.com/login</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <!-- Add more URLs here -->
+    <?php
+    $postModel = new Post();
+    $posts = $postModel->getAllPosts();
+    foreach ($posts as $post) {
+        echo '<url>';
+        echo '<loc>https://www.yourwebsite.com/post/' . $post['id'] . '</loc>';
+        echo '<changefreq>weekly</changefreq>';
+        echo '<priority>0.9</priority>';
+        echo '</url>';
+    }
+    ?>
+</urlset>

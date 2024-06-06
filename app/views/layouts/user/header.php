@@ -9,19 +9,7 @@
                 <a class="nav-link" href="/">خانه</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/profile">پروفایل</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="/admin">ادمین</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">خروج</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/login">ورود</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/register">ثبت نام</a>
             </li>
         </ul>
     </div>

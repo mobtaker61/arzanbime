@@ -1,3 +1,9 @@
+<?php 
+$title = "ورود - وبلاگ";
+$description = "صفحه ورود به وبلاگ.";
+$keywords = "ورود, وبلاگ";
+
+?>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <h2>ورود</h2>

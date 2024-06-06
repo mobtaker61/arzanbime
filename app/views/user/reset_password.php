@@ -1,4 +1,3 @@
-<?php $view = "../app/views/layouts/master.php"; ?>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <h2>Reset Password</h2>

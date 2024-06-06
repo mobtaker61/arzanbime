@@ -15,8 +15,19 @@ require 'app/controllers/HomeController.php';
 require 'app/controllers/AdminController.php';
 require 'app/controllers/AuthController.php';
 require 'app/controllers/UserController.php';
+require 'app/controllers/PostController.php'; // Include PostController
+
 require 'app/models/Post.php';
 require 'app/models/User.php';
+require 'app/models/PostType.php';
+require 'app/models/Province.php';
+require 'app/models/Office.php';
+require 'app/models/Company.php';
+require 'app/models/Package.php';
+require 'app/models/Tariff.php';
+require 'app/models/Newsletter.php';
+require 'app/models/Quotation.php';
+require 'app/models/Configuration.php';
 
 $router = new Router();
 
