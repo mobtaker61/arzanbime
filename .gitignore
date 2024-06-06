@@ -2,6 +2,9 @@
 config/config.php
 public/uploads
 
+
+error_log
+.htaccess
 # Other files and directories to ignore
 /vendor
 /node_modules
