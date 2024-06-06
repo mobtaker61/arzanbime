@@ -11,13 +11,17 @@ class User extends Model {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
 
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            return true;
+        if (!empty($result)) {
+            $user = $result[0];
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                return true;
+            }
         }
         return false;
     }
@@ -34,9 +38,11 @@ class User extends Model {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
 
-        if ($user) {
+        if (!empty($result)) {
+            $user = $result[0];
             $token = bin2hex(random_bytes(16));
             $stmt = $this->db->prepare("UPDATE users SET reset_token = ? WHERE id = ?");
             $stmt->bind_param('si', $token, $user['id']);
@@ -50,9 +56,11 @@ class User extends Model {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE reset_token = ?");
         $stmt->bind_param('s', $token);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
 
-        if ($user) {
+        if (!empty($result)) {
+            $user = $result[0];
             $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
             $stmt = $this->db->prepare("UPDATE users SET password = ?, reset_token = NULL WHERE id = ?");
             $stmt->bind_param('si', $passwordHash, $user['id']);
@@ -62,7 +70,7 @@ class User extends Model {
     }
 
     public function getAllUsers() {
-        $stmt = $this->db->prepare("SELECT * FROM user");
+        $stmt = $this->db->prepare("SELECT * FROM users");
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
@@ -70,7 +78,7 @@ class User extends Model {
     }
 
     public function getUserById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM user WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -79,7 +87,7 @@ class User extends Model {
     }
 
     public function getUserByUsername($username) {
-        $stmt = $this->db->prepare("SELECT * FROM user WHERE username = ?");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -88,7 +96,7 @@ class User extends Model {
     }
 
     public function createUser($data) {
-        $stmt = $this->db->prepare("INSERT INTO user (username, password, email, role) VALUES (?, ?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
         $stmt->bind_param('ssss', $data['username'], $data['password'], $data['email'], $data['role']);
         $result = $stmt->execute();
         $stmt->close();
@@ -96,7 +104,7 @@ class User extends Model {
     }
 
     public function updateUser($id, $data) {
-        $stmt = $this->db->prepare("UPDATE user SET username = ?, password = ?, email = ?, role = ? WHERE id = ?");
+        $stmt = $this->db->prepare("UPDATE users SET username = ?, password = ?, email = ?, role = ? WHERE id = ?");
         $stmt->bind_param('ssssi', $data['username'], $data['password'], $data['email'], $data['role'], $id);
         $result = $stmt->execute();
         $stmt->close();
@@ -104,7 +112,7 @@ class User extends Model {
     }
 
     public function deleteUser($id) {
-        $stmt = $this->db->prepare("DELETE FROM user WHERE id = ?");
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $result = $stmt->execute();
         $stmt->close();
