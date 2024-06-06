@@ -45,7 +45,7 @@
 </div>
 
 <!-- Include Dropzone.js CSS and JS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 
 <script>
@@ -116,6 +116,7 @@ function submitForm(formData) {
         body: formData
     }).then(response => response.json()).then(result => {
         if (result.success) {
+            alert('Company created successfully!');
             window.location.href = '/admin/companies';
         } else {
             alert(result.message);

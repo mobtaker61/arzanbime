@@ -1,29 +1,27 @@
 <div class="row">
     <div class="col-12">
         <h1>Companies</h1>
-        <a href="/admin/companies/create" class="btn btn-primary">Create New Company</a>
-        <table class="table mt-3">
+        <a href="/admin/companies/create" class="btn btn-primary mb-3">Create New Company</a>
+        <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Logo</th>
                     <th>Name</th>
                     <th>Intro</th>
-                    <th>Color</th>
-                    <th>Active</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($companies as $company): ?>
                     <tr>
-                        <td><img src="<?php echo $company['logo']; ?>" alt="<?php echo $company['name']; ?>" class="img-thumbnail" width="100"></td>
+                        <td><?php echo $company['id']; ?></td>
+                        <td><img src="<?php echo $company['logo']; ?>" class="img-thumbnail" style="max-width: 100px;"></td>
                         <td><?php echo $company['name']; ?></td>
                         <td><?php echo $company['intro']; ?></td>
-                        <td><span style="background-color: <?php echo $company['color']; ?>;">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
-                        <td><?php echo $company['is_active'] ? 'Yes' : 'No'; ?></td>
                         <td>
                             <a href="/admin/companies/edit/<?php echo $company['id']; ?>" class="btn btn-warning">Edit</a>
-                            <a href="/admin/companies/delete/<?php echo $company['id']; ?>" class="btn btn-danger">Delete</a>
+                            <button class="btn btn-danger delete-company" data-id="<?php echo $company['id']; ?>">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -31,3 +29,32 @@
         </table>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.delete-company').forEach(button => {
+        button.addEventListener('click', function() {
+            const companyId = this.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this company?')) {
+                fetch(`/admin/companies/delete/${companyId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    return response.json();
+                }).then(result => {
+                    if (result.success) {
+                        alert('Company deleted successfully.');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+});
+</script>

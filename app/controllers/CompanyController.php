@@ -34,13 +34,16 @@ class CompanyController extends Controller {
 
             if (isset($_POST['tariffs_images'])) {
                 $data['tariffs_images'] = json_decode($_POST['tariffs_images'], true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new Exception('Invalid JSON in tariffs_images');
+                }
             }
 
             $companyModel = new Company();
             $companyModel->createCompany($data);
-            echo json_encode(['success' => true, 'message' => 'Company created successfully.']);
+            $this->sendJsonResponse(['success' => true, 'message' => 'Company created successfully.']);
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->sendJsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -79,15 +82,18 @@ class CompanyController extends Controller {
 
             if (isset($_POST['tariffs_images'])) {
                 $data['tariffs_images'] = json_decode($_POST['tariffs_images'], true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new Exception('Invalid JSON in tariffs_images');
+                }
             } else {
                 $data['tariffs_images'] = json_decode($_POST['existing_tariffs_images'], true);
             }
 
             $companyModel = new Company();
             $companyModel->updateCompany($id, $data);
-            echo json_encode(['success' => true, 'message' => 'Company updated successfully.']);
+            $this->sendJsonResponse(['success' => true, 'message' => 'Company updated successfully.']);
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->sendJsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -95,9 +101,9 @@ class CompanyController extends Controller {
         try {
             $companyModel = new Company();
             $companyModel->deleteCompany($id);
-            echo json_encode(['success' => true, 'message' => 'Company deleted successfully.']);
+            $this->sendJsonResponse(['success' => true, 'message' => 'Company deleted successfully.']);
         } catch (Exception $e) {
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->sendJsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 
@@ -128,5 +134,11 @@ class CompanyController extends Controller {
         } else {
             throw new Exception("Sorry, there was an error uploading your file.");
         }
+    }
+
+    private function sendJsonResponse($response) {
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
     }
 }

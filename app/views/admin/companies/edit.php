@@ -124,6 +124,7 @@ function submitForm(formData) {
         body: formData
     }).then(response => response.json()).then(result => {
         if (result.success) {
+            alert('Company updated successfully!');
             window.location.href = '/admin/companies';
         } else {
             alert(result.message);

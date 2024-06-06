@@ -21,7 +21,7 @@ class Router {
                 return;
             }
         }
-        http_response_code(404);
-        echo "Page not found";
+        http_response_code(405); // Method Not Allowed
+        echo "Method Not Allowed";
     }
 }
