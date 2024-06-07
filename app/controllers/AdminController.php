@@ -7,7 +7,7 @@ class AdminController extends Controller {
 
     public function index() {
         $postModel = new Post();
-        $posts = $postModel->getAllPosts();
-        $this->view('admin/dashboard', ['posts' => $posts], 'admin');
+        $posts = $postModel->getAllPosts(5,1);
+        $this->view('admin/dashboard', ['posts' => $posts,'pagetitle'=>'داشبورد'], 'admin');
     }
 }

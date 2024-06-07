@@ -1,6 +1,5 @@
 <div class="row">
     <div class="col-12">
-        <h1>Create New Company</h1>
         <form id="company-form" action="/admin/companies/store" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="logo">Logo</label>
@@ -115,6 +114,7 @@ function submitForm(formData) {
         method: 'POST',
         body: formData
     }).then(response => response.json()).then(result => {
+        alert(result.success);
         if (result.success) {
             alert('Company created successfully!');
             window.location.href = '/admin/companies';

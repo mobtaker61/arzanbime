@@ -17,6 +17,8 @@ require 'app/controllers/AuthController.php';
 require 'app/controllers/UserController.php';
 require 'app/controllers/PostController.php'; // Include PostControllers
 require 'app/controllers/CompanyController.php'; // Include CompanyControllers
+require 'app/controllers/PackageController.php'; // Include PackageControllers
+require 'app/controllers/TariffController.php'; // Include TariffControllers
 
 require 'app/models/Post.php';
 require 'app/models/User.php';

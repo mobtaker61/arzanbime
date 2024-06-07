@@ -1,11 +1,21 @@
 <?php
 class Post extends Model {
-    public function getAllPosts() {
-        $stmt = $this->db->prepare("SELECT * FROM post WHERE is_active = 1");
+    public function getAllPosts($limit, $offset) {
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE is_active = 1 LIMIT ? OFFSET ?");
+        $stmt->bind_param('ii', $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return $result;
+    }
+
+    public function getPostCount() {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM post WHERE is_active = 1");
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count;
     }
 
     public function getPostById($id) {
@@ -15,6 +25,15 @@ class Post extends Model {
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return !empty($result) ? $result[0] : null;
+    }
+
+    public function getPostsByType($type, $limit, $offset) {
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? AND is_active = 1 LIMIT ? OFFSET ?");
+        $stmt->bind_param('iii', $type, $limit, $offset);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
     }
 
     public function getPostsByPostType($postType, $page, $limit) {
@@ -27,14 +46,14 @@ class Post extends Model {
         return $result;
     }
 
-    public function countPostsByPostType($postType) {
-        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM post WHERE post_type = ?");
-        $stmt->bind_param('i', $postType);
+    public function getPostCountByType($type) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM post WHERE post_type = ? AND is_active = 1");
+        $stmt->bind_param('i', $type);
         $stmt->execute();
-        $stmt->bind_result($total);
+        $stmt->bind_result($count);
         $stmt->fetch();
         $stmt->close();
-        return $total;
+        return $count;
     }
 
     public function createPost($data) {

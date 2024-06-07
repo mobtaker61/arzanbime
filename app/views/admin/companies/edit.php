@@ -1,6 +1,5 @@
 <div class="row">
     <div class="col-12">
-        <h1>Edit Company</h1>
         <form id="company-form" action="/admin/companies/update/<?php echo $company['id']; ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="logo">Logo</label>
@@ -123,8 +122,7 @@ function submitForm(formData) {
         method: 'POST',
         body: formData
     }).then(response => response.json()).then(result => {
-        if (result.success) {
-            alert('Company updated successfully!');
+        if (result.success) {            
             window.location.href = '/admin/companies';
         } else {
             alert(result.message);

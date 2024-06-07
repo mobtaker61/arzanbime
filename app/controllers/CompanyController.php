@@ -3,11 +3,11 @@ class CompanyController extends Controller {
     public function index() {
         $companyModel = new Company();
         $companies = $companyModel->getAllCompanies();
-        $this->view('admin/companies/index', ['companies' => $companies], 'admin');
+        $this->view('admin/companies/index', ['companies' => $companies,'pagetitle' => 'شرکتها'], 'admin');
     }
 
     public function create() {
-        $this->view('admin/companies/create', [], 'admin');
+        $this->view('admin/companies/create', ['pagetitle' => 'شرکت جدید'], 'admin');
     }
 
     public function store() {
@@ -34,6 +34,7 @@ class CompanyController extends Controller {
 
             if (isset($_POST['tariffs_images'])) {
                 $data['tariffs_images'] = json_decode($_POST['tariffs_images'], true);
+                
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     throw new Exception('Invalid JSON in tariffs_images');
                 }
@@ -51,7 +52,7 @@ class CompanyController extends Controller {
         $companyModel = new Company();
         $company = $companyModel->getCompanyById($id);
         $company['tariffs_images'] = json_decode($company['tariffs_images'], true); // Decode JSON to array
-        $this->view('admin/companies/edit', ['company' => $company], 'admin');
+        $this->view('admin/companies/edit', ['company' => $company,'pagetitle' => 'اصلاح شرکت'], 'admin');
     }
 
     public function update($id) {
@@ -119,14 +120,14 @@ class CompanyController extends Controller {
         }
 
         // Check file size
-        if ($file["size"] > 500000) {
+        if ($file["size"] > 5000000) {
             throw new Exception("Sorry, your file is too large.");
         }
 
         // Allow certain file formats
-        $allowedFormats = ['jpg', 'png', 'jpeg', 'gif', 'pdf'];
+        $allowedFormats = ['jpg', 'png', 'jpeg', 'gif', 'pdf','xlsx'];
         if (!in_array($fileType, $allowedFormats)) {
-            throw new Exception("Sorry, only JPG, JPEG, PNG, GIF, and PDF files are allowed.");
+            throw new Exception("Sorry, only JPG, JPEG, PNG, GIF, XLSX and PDF files are allowed.");
         }
 
         if (move_uploaded_file($file["tmp_name"], $targetFile)) {

@@ -1,6 +1,5 @@
 <div class="row">
     <div class="col-12">
-        <h1>Companies</h1>
         <a href="/admin/companies/create" class="btn btn-primary mb-3">Create New Company</a>
         <table class="table table-striped">
             <thead>
@@ -22,6 +21,7 @@
                         <td>
                             <a href="/admin/companies/edit/<?php echo $company['id']; ?>" class="btn btn-warning">Edit</a>
                             <button class="btn btn-danger delete-company" data-id="<?php echo $company['id']; ?>">Delete</button>
+                            <a href="/admin/packages/company/<?php echo $company['id']; ?>" class="btn btn-info">View Packages</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         'Content-Type': 'application/json'
                     }
                 }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
                     return response.json();
                 }).then(result => {
                     if (result.success) {

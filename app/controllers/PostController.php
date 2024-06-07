@@ -2,8 +2,24 @@
 class PostController extends Controller {
     public function index() {
         $postModel = new Post();
-        $posts = $postModel->getAllPosts();
-        $this->view('admin/posts/index', ['posts' => $posts], 'admin');
+        $postTypeModel = new PostType();
+
+        $postTypes = $postTypeModel->getAllPostTypes();
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+        $offset = ($page - 1) * $limit;
+        
+        $posts = $postModel->getAllPosts($limit, $offset);
+        $totalPosts = $postModel->getPostCount();
+
+        $this->view('admin/posts/index', [
+            'postTypes' => $postTypes,
+            'posts' => $posts,
+            'totalPosts' => $totalPosts,
+            'limit' => $limit,
+            'page' => $page,
+            'pagetitle' => 'محتواها'
+        ], 'admin');
     }
 
     public function create() {
@@ -68,21 +84,22 @@ class PostController extends Controller {
         header('Location: /admin/posts');
     }
 
-    public function getByPostType($postType) {
-        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
-
+    public function getByPostType($type) {
         $postModel = new Post();
-        $posts = $postModel->getPostsByPostType($postType, $page, $limit);
-        $totalPosts = $postModel->countPostsByPostType($postType);
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+        $offset = ($page - 1) * $limit;
+        
+        $posts = $postModel->getPostsByType($type, $limit, $offset);
+        $totalPosts = $postModel->getPostCountByType($type);
 
-        header('Content-Type: application/json');
-        echo json_encode([
+        $this->view('admin/posts/post_table', [
             'posts' => $posts,
             'totalPosts' => $totalPosts,
+            'limit' => $limit,
             'page' => $page,
-            'limit' => $limit
-        ]);
+            'type' => $type
+        ], false); // No layout for AJAX
     }
 
     private function uploadImage($file) {

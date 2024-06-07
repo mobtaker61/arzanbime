@@ -1,10 +1,110 @@
 <?php
 class Tariff extends Model {
+    public function gettariffs($companyId, $packageId, $limit, $offset, $sortField, $sortOrder) {
+        $sql = "SELECT t.*, p.tip as package_tip, c.name as company_name 
+                FROM tariff t
+                LEFT JOIN package p ON t.package_id = p.id
+                LEFT JOIN company c ON p.company_id = c.id 
+                WHERE 1=1";
+
+        if ($companyId) {
+            $sql .= " AND c.id = ?";
+        }
+
+        if ($packageId) {
+            $sql .= " AND p.id = ?";
+        }
+
+        $sql .= " ORDER BY $sortField $sortOrder LIMIT ? OFFSET ?";
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($companyId && $packageId) {
+            $stmt->bind_param('iiii', $companyId, $packageId, $limit, $offset);
+        } elseif ($companyId) {
+            $stmt->bind_param('iii', $companyId, $limit, $offset);
+        } elseif ($packageId) {
+            $stmt->bind_param('iii', $packageId, $limit, $offset);
+        } else {
+            $stmt->bind_param('ii', $limit, $offset);
+        }
+
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
+
+    public function getTariffCount($companyId, $packageId) {
+        $sql = "SELECT COUNT(*) as count 
+                FROM tariff t
+                LEFT JOIN package p ON t.package_id = p.id
+                LEFT JOIN company c ON p.company_id = c.id 
+                WHERE 1=1";
+
+        if ($companyId) {
+            $sql .= " AND c.id = ?";
+        }
+
+        if ($packageId) {
+            $sql .= " AND p.id = ?";
+        }
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($companyId && $packageId) {
+            $stmt->bind_param('ii', $companyId, $packageId);
+        } elseif ($companyId) {
+            $stmt->bind_param('i', $companyId);
+        } elseif ($packageId) {
+            $stmt->bind_param('i', $packageId);
+        }
+
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count;
+    }
+
+    public function createTariff($data) {
+        $stmt = $this->db->prepare("INSERT INTO tariff (package_id, age, first_year, second_year, two_year) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param('iiiii', $data['package_id'], $data['age'], $data['first_year'], $data['second_year'], $data['two_year']);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function getTariffById($id) {
+        $stmt = $this->db->prepare("SELECT * FROM tariff WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return !empty($result) ? $result[0] : null;
+    }
+
     public function getTariffsByPackage($packageId) {
         $stmt = $this->db->prepare("SELECT * FROM tariff WHERE package_id = ?");
         $stmt->bind_param('i', $packageId);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
+
+    public function updateTariff($id, $data) {
+        $stmt = $this->db->prepare("UPDATE tariff SET package_id = ?, age = ?, first_year = ?, second_year = ?, two_year = ? WHERE id = ?");
+        $stmt->bind_param('iiiiii', $data['package_id'], $data['age'], $data['first_year'], $data['second_year'], $data['two_year'], $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function deleteTariff($id) {
+        $stmt = $this->db->prepare("DELETE FROM tariff WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
