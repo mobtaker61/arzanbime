@@ -1,6 +1,6 @@
 <?php
 class Tariff extends Model {
-    public function gettariffs($companyId, $packageId, $limit, $offset, $sortField, $sortOrder) {
+    public function gettariffs($companyId, $packageId, $limit, $offset, $sortField = 'age', $sortOrder = 'ASC') {
         $sql = "SELECT t.*, p.tip as package_tip, c.name as company_name 
                 FROM tariff t
                 LEFT JOIN package p ON t.package_id = p.id
@@ -67,9 +67,9 @@ class Tariff extends Model {
         return $count;
     }
 
-    public function createTariff($data) {
+    public function createTariff($packageId, $age, $firstYear, $secondYear, $twoYear) {
         $stmt = $this->db->prepare("INSERT INTO tariff (package_id, age, first_year, second_year, two_year) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param('iiiii', $data['package_id'], $data['age'], $data['first_year'], $data['second_year'], $data['two_year']);
+        $stmt->bind_param('iiiii', $packageId, $age, $firstYear, $secondYear, $twoYear);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
@@ -84,14 +84,60 @@ class Tariff extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
-    public function getTariffsByPackage($packageId) {
-        $stmt = $this->db->prepare("SELECT * FROM tariff WHERE package_id = ?");
-        $stmt->bind_param('i', $packageId);
+    public function getTariffsByAge($age) {
+        $stmt = $this->db->prepare("SELECT * FROM tariff WHERE age = ?");
+        $stmt->bind_param('i', $age);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return $result;
     }
+
+    public function getTariffsByPackage($packageId) {
+        $stmt = $this->db->prepare("SELECT * FROM tariff WHERE package_id = ?");
+        $stmt->bind_param('i', $packageId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function getTariffsByPackageId($packageId, $limit, $offset, $sortField, $sortOrder) {
+        $sql = "SELECT t.*, p.tip as package_tip, c.name as company_name 
+                FROM tariff t
+                LEFT JOIN package p ON t.package_id = p.id
+                LEFT JOIN company c ON p.company_id = c.id 
+                WHERE t.package_id = ?
+                ORDER BY $sortField $sortOrder
+                LIMIT ? OFFSET ?";
+    
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('iii', $packageId, $limit, $offset);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
+    
+    public function getTariffCountByPackageId($packageId) {
+        $sql = "SELECT COUNT(*) as count 
+                FROM tariff t
+                LEFT JOIN package p ON t.package_id = p.id
+                LEFT JOIN company c ON p.company_id = c.id 
+                WHERE t.package_id = ?";
+    
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('i', $packageId);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count;
+    }       
 
     public function updateTariff($id, $data) {
         $stmt = $this->db->prepare("UPDATE tariff SET package_id = ?, age = ?, first_year = ?, second_year = ?, two_year = ? WHERE id = ?");
@@ -101,6 +147,22 @@ class Tariff extends Model {
         return $result;
     }
 
+    public function updateField($id, $first_year, $second_year, $two_year) {
+        $stmt = $this->db->prepare("UPDATE tariff SET first_year = ?, second_year = ?, two_year = ? WHERE id = ?");
+        $stmt->bind_param('iiii', $first_year, $second_year, $two_year, $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }      
+    
+    public function setTariffForAgeRange($packageId, $startAge, $endAge, $firstYear, $secondYear, $twoYear) {
+        $stmt = $this->db->prepare("UPDATE tariff SET first_year = ?, second_year = ?, two_year = ? WHERE package_id = ? AND age BETWEEN ? AND ?");
+        $stmt->bind_param('iiiiii', $firstYear, $secondYear, $twoYear, $packageId, $startAge, $endAge);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+    
     public function deleteTariff($id) {
         $stmt = $this->db->prepare("DELETE FROM tariff WHERE id = ?");
         $stmt->bind_param('i', $id);

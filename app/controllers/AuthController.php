@@ -1,7 +1,7 @@
 <?php
 class AuthController extends Controller {
     public function showLoginForm() {
-        $this->view('user/login');
+        View::render('public/auth/login', ['pagetitle' => 'Login'], 'public');
     }
 
     public function login() {
@@ -18,15 +18,15 @@ class AuthController extends Controller {
             if ($_SESSION['role'] === 'admin') {
                 header('Location: /admin');
             } else {
-                header('Location: /');
+                header('Location: /user/dashboard');
             }
         } else {
-            $this->view('user/login', ['error' => 'Invalid username or password']);
+            View::render('public/auth/login', ['error' => 'Invalid username or password', 'pagetitle' => 'Login'], 'public');
         }
     }
 
     public function showRegisterForm() {
-        $this->view('user/register');
+        View::render('public/auth/register');
     }
 
     public function register() {
@@ -42,18 +42,18 @@ class AuthController extends Controller {
         if ($user->register($username, $email, $password)) {
             header('Location: /login');
         } else {
-            $this->view('user/register', ['error' => 'Registration failed']);
+            View::render('public/auth/register', ['error' => 'Registration failed']);
         }
     }
 
     public function logout() {
         $user = new User();
         $user->logout();
-        header('Location: /');
+        header('Location: /login');
     }
 
     public function showResetPasswordForm() {
-        $this->view('user/reset_password');
+        View::render('public/auth/reset_password');
     }
 
     public function resetPassword() {
@@ -66,16 +66,15 @@ class AuthController extends Controller {
         $user = new User();
         $token = $user->generatePasswordResetToken($email);
         if ($token) {
-            // Send email with the token (simplified)
             mail($email, "Password Reset", "Here is your password reset token: $token");
-            $this->view('user/reset_password', ['message' => 'Check your email for the reset token.']);
+            View::render('public/auth/reset_password', ['message' => 'Check your email for the reset token.']);
         } else {
-            $this->view('user/reset_password', ['error' => 'Email not found.']);
+            View::render('public/auth/reset_password', ['error' => 'Email not found.']);
         }
     }
 
     public function showNewPasswordForm() {
-        $this->view('user/new_password');
+        View::render('public/auth/new_password');
     }
 
     public function setNewPassword() {
@@ -90,7 +89,7 @@ class AuthController extends Controller {
         if ($user->resetPassword($token, $newPassword)) {
             header('Location: /login');
         } else {
-            $this->view('user/new_password', ['error' => 'Invalid token or password reset failed.']);
+            View::render('public/auth/new_password', ['error' => 'Invalid token or password reset failed.']);
         }
     }
 }

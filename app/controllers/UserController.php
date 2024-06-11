@@ -4,6 +4,10 @@ class UserController extends Controller {
         Middleware::auth();  // Ensure user is authenticated
     }
 
+    public function dashboard() {
+        $this->view('user/dashboard', [], 'user');
+    }
+
     public function showProfile() {
         $user = new User();
         $userInfo = $user->getUserById($_SESSION['user_id']);

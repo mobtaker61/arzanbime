@@ -19,9 +19,9 @@
                         <td><?php echo $company['name']; ?></td>
                         <td><?php echo $company['intro']; ?></td>
                         <td>
-                            <a href="/admin/companies/edit/<?php echo $company['id']; ?>" class="btn btn-warning">Edit</a>
-                            <button class="btn btn-danger delete-company" data-id="<?php echo $company['id']; ?>">Delete</button>
-                            <a href="/admin/packages/company/<?php echo $company['id']; ?>" class="btn btn-info">View Packages</a>
+                            <a href="/admin/companies/edit/<?php echo $company['id']; ?>" class="btn btn-warning"title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger delete-company" data-id="<?php echo $company['id']; ?>"title="Delete"><i class="fas fa-trash"></i></button>
+                            <a href="/admin/packages/company/<?php echo $company['id']; ?>" class="btn btn-info">Packages</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

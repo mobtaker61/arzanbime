@@ -5,7 +5,7 @@ class AdminController extends Controller {
         Middleware::admin();  // Ensure user is admin
     }
 
-    public function index() {
+    public function dashboard() {
         $postModel = new Post();
         $posts = $postModel->getAllPosts(5,1);
         $this->view('admin/dashboard', ['posts' => $posts,'pagetitle'=>'داشبورد'], 'admin');

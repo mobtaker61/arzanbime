@@ -8,7 +8,7 @@ class Package extends Model {
         return $result;
     }
 
-    public function getPackages($limit, $offset, $sortField, $sortOrder, $company_id = null) {
+    public function getPackages2($limit, $offset, $sortField, $sortOrder, $company_id = null) {
         $query = "SELECT package.*, company.name as company_name FROM package JOIN company ON package.company_id = company.id";
         if ($company_id) {
             $query .= " WHERE package.company_id = ?";
@@ -29,6 +29,33 @@ class Package extends Model {
         return $result;
     }
 
+    public function getPackages($limit, $offset, $sortField, $sortOrder, $companyId = null) {
+        $sql = "SELECT p.*, c.name as company_name, 
+                (SELECT COUNT(*) FROM tariff t WHERE t.package_id = p.id) as has_tariffs
+                FROM package p
+                LEFT JOIN company c ON p.company_id = c.id 
+                WHERE 1=1";
+
+        if ($companyId) {
+            $sql .= " AND c.id = ?";
+        }
+
+        $sql .= " ORDER BY $sortField $sortOrder LIMIT ? OFFSET ?";
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($companyId) {
+            $stmt->bind_param('iii', $companyId, $limit, $offset);
+        } else {
+            $stmt->bind_param('ii', $limit, $offset);
+        }
+
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
+   
     public function getPackageCount($company_id = null) {
         $query = "SELECT COUNT(*) as count FROM package";
         if ($company_id) {
@@ -68,20 +95,20 @@ class Package extends Model {
     }
 
     public function createPackage($data) {
-        $stmt = $this->db->prepare("INSERT INTO package (company_id, tip, discount_rate, sort, is_active) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param('issii', $data['company_id'], $data['tip'], $data['discount_rate'], $data['sort'], $data['is_active']);
+        $stmt = $this->db->prepare("INSERT INTO package (company_id, tip, discount_rate, sort, is_active, color) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param('isiiis', $data['company_id'], $data['tip'], $data['discount_rate'], $data['sort'], $data['is_active'], $data['color']);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
     public function updatePackage($id, $data) {
-        $stmt = $this->db->prepare("UPDATE package SET company_id = ?, tip = ?, discount_rate = ?, sort = ?, is_active = ? WHERE id = ?");
-        $stmt->bind_param('issiii', $data['company_id'], $data['tip'], $data['discount_rate'], $data['sort'], $data['is_active'], $id);
+        $stmt = $this->db->prepare("UPDATE package SET company_id = ?, tip = ?, discount_rate = ?, sort = ?, is_active = ?, color = ? WHERE id = ?");
+        $stmt->bind_param('isiiisi', $data['company_id'], $data['tip'], $data['discount_rate'], $data['sort'], $data['is_active'], $data['color'], $id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
-    }
+    }     
 
     public function deletePackage($id) {
         $stmt = $this->db->prepare("DELETE FROM package WHERE id = ?");

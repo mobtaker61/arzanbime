@@ -11,13 +11,16 @@ $router->add('/set_new_password', 'AuthController@showNewPasswordForm');
 $router->add('/set_new_password', 'AuthController@setNewPassword', 'POST');
 $router->add('/post/{id}', 'PostController@show'); // Dynamic URL for posts
 
+// User routes (requires authentication)
+$router->add('/user/dashboard', 'UserController@dashboard', 'GET', 'Middleware::auth');
+
 // Protected routes
 $router->add('/logout', 'AuthController@logout');
 $router->add('/profile', 'UserController@showProfile');
 $router->add('/profile', 'UserController@updateProfile', 'POST');
 
-// Admin routes
-$router->add('/admin', 'AdminController@index');
+// Admin routes (requires admin authentication)
+$router->add('/admin', 'AdminController@dashboard', 'GET', 'Middleware::admin');
 // Post routes
 $router->add('/admin/posts', 'PostController@index', 'GET');
 $router->add('/admin/posts/create', 'PostController@create');
@@ -39,11 +42,22 @@ $router->add('/admin/packages/create', 'PackageController@create', 'GET');
 $router->add('/admin/packages/store', 'PackageController@store', 'POST');
 $router->add('/admin/packages/edit/{id}', 'PackageController@edit', 'GET');
 $router->add('/admin/packages/update/{id}', 'PackageController@update', 'POST');
-$router->add('/admin/packages/delete/{id}', 'PackageController@delete', 'GET');
+$router->add('/admin/packages/delete/{id}', 'PackageController@delete', 'DELETE');
 $router->add('/admin/packages/company/{company_id}', 'PackageController@viewByCompany', 'GET'); // New route
+$router->add('/admin/packages/addAges/{id}', 'PackageController@addAges', 'POST');
+$router->add('/admin/packages/tariffs/{packageId}', 'PackageController@tariffs', 'GET');
 // Tariff routes
 $router->add('/admin/tariffs', 'TariffController@index', 'GET');
 $router->add('/admin/tariffs/store', 'TariffController@store', 'POST');
 $router->add('/admin/tariffs/edit/{id}', 'TariffController@edit', 'GET');
 $router->add('/admin/tariffs/update/{id}', 'TariffController@update', 'POST');
-$router->add('/admin/tariffs/delete/{id}', 'TariffController@delete', 'GET');
+$router->add('/admin/tariffs/delete/{id}', 'TariffController@delete', 'DELETE');
+$router->add('/admin/tariffs/updateField/{id}', 'TariffController@updateField', 'POST'); // New route for inline editing
+$router->add('/admin/tariffs/setTariff', 'TariffController@setTariff', 'POST');
+// Quotation routes
+$router->add('/admin/quotations', 'QuotationController@index', 'GET');
+$router->add('/admin/quotations/detail/{id}', 'QuotationController@detail', 'GET');
+$router->add('/admin/quotations/store', 'QuotationController@store', 'POST');
+$router->add('/admin/quotations/addFollowup', 'QuotationController@addFollowup', 'POST');
+$router->add('/admin/quotations/offers/{id}', 'QuotationController@showOffers', 'GET');
+

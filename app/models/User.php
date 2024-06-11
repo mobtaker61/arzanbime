@@ -2,7 +2,7 @@
 class User extends Model {
     public function register($username, $email, $password) {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $this->db->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')");
         $stmt->bind_param('sss', $username, $email, $passwordHash);
         return $stmt->execute();
     }
@@ -11,38 +11,24 @@ class User extends Model {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
-        $result = $this->fetchAssoc($stmt);
-        $stmt->close();
+        $user = $stmt->get_result()->fetch_assoc();
 
-        if (!empty($result)) {
-            $user = $result[0];
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-                return true;
-            }
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            return true;
         }
         return false;
-    }
-
-    public function isLoggedIn() {
-        return isset($_SESSION['user_id']);
-    }
-
-    public function logout() {
-        session_destroy();
     }
 
     public function generatePasswordResetToken($email) {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
-        $result = $this->fetchAssoc($stmt);
-        $stmt->close();
+        $user = $stmt->get_result()->fetch_assoc();
 
-        if (!empty($result)) {
-            $user = $result[0];
+        if ($user) {
             $token = bin2hex(random_bytes(16));
             $stmt = $this->db->prepare("UPDATE users SET reset_token = ? WHERE id = ?");
             $stmt->bind_param('si', $token, $user['id']);
@@ -56,17 +42,23 @@ class User extends Model {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE reset_token = ?");
         $stmt->bind_param('s', $token);
         $stmt->execute();
-        $result = $this->fetchAssoc($stmt);
-        $stmt->close();
+        $user = $stmt->get_result()->fetch_assoc();
 
-        if (!empty($result)) {
-            $user = $result[0];
+        if ($user) {
             $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
             $stmt = $this->db->prepare("UPDATE users SET password = ?, reset_token = NULL WHERE id = ?");
             $stmt->bind_param('si', $passwordHash, $user['id']);
             return $stmt->execute();
         }
         return false;
+    }
+
+    public function logout() {
+        session_destroy();
+    }
+
+    public function isLoggedIn() {
+        return isset($_SESSION['user_id']);
     }
 
     public function getAllUsers() {
@@ -95,6 +87,14 @@ class User extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
+    public function getAdminUsers() {
+        $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role = 'admin'");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $result;
+    }
+        
     public function createUser($data) {
         $stmt = $this->db->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
         $stmt->bind_param('ssss', $data['username'], $data['password'], $data['email'], $data['role']);

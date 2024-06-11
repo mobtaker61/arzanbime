@@ -18,9 +18,8 @@
                 <td><?php echo $post['post_type']; ?></td>
                 <td><?php echo $post['is_active'] ? 'Yes' : 'No'; ?></td>
                 <td>
-                    <a href="/admin/posts/edit/<?php echo $post['id']; ?>" class="btn btn-warning">Edit</a>
-                    <button class="btn btn-danger delete-post" data-id="<?php echo $post['id']; ?>">Delete</button>
-                </td>
+                    <a href="/admin/posts/edit/<?php echo $post['id']; ?>" class="btn btn-warning" title="Edit"><i class="fas fa-edit"></i></a>
+                    <button class="btn btn-danger delete-post" data-id="<?php echo $post['id']; ?>"  title="Delete"><i class="fas fa-trash"></i></button>
             </tr>
         <?php endforeach; ?>
     </tbody>

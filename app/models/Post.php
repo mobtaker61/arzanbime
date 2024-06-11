@@ -28,7 +28,7 @@ class Post extends Model {
     }
 
     public function getPostsByType($type, $limit, $offset) {
-        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? AND is_active = 1 LIMIT ? OFFSET ?");
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? AND is_active = 1 ORDER BY id DESC LIMIT ? OFFSET ?");
         $stmt->bind_param('iii', $type, $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -38,7 +38,7 @@ class Post extends Model {
 
     public function getPostsByPostType($postType, $page, $limit) {
         $offset = ($page - 1) * $limit;
-        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? LIMIT ? OFFSET ?");
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? ORDER BY id DESC LIMIT ? OFFSET ?");
         $stmt->bind_param('iii', $postType, $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);

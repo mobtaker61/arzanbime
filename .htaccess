@@ -5,6 +5,10 @@
     RewriteCond %{REQUEST_METHOD} ^(DELETE|PUT|PATCH) [NC]
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 
+    <Limit GET POST PUT DELETE OPTIONS>
+        Require all granted
+    </Limit>
+
     # Redirect all requests to index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
