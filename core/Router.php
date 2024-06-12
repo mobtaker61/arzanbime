@@ -19,6 +19,12 @@ class Router {
             if (preg_match($pattern, $urlPath, $matches) && $_SERVER['REQUEST_METHOD'] === $route['method']) {
                 array_shift($matches);
                 list($controller, $action) = explode('@', $route['controllerAction']);
+                echo "Controller: $controller, Action: $action<br>"; // Debugging output
+                echo "Loading class: $controller<br>"; // Debugging output
+                if (!class_exists($controller)) {
+                    echo "Class $controller not found!<br>"; // Debugging output
+                    exit();
+                }
                 $controller = new $controller();
                 call_user_func_array([$controller, $action], $matches);
                 return;
