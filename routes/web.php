@@ -11,6 +11,12 @@ $router->add('/set_new_password', 'AuthController@showNewPasswordForm');
 $router->add('/set_new_password', 'AuthController@setNewPassword', 'POST');
 $router->add('/post/{id}', 'PostController@show'); // Dynamic URL for posts
 
+
+// Public User routes
+$router->add('/offices/byProvince/{provinceId}', 'OfficeController@getOfficesByProvince', 'GET');
+$router->add('/companies', 'CompanyController@index', 'GET');
+$router->add('/companies/details/{companyId}', 'CompanyController@getCompanyDetails', 'GET');
+
 // User routes (requires authentication)
 $router->add('/user/dashboard', 'UserController@dashboard', 'GET', 'Middleware::auth');
 

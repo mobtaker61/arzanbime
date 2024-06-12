@@ -8,7 +8,7 @@ class Office extends Model {
         return $result;
     }
 
-    public function getOfficesByProvince($provinceId) {
+    public function getOfficesByProvinceId($provinceId) {
         $stmt = $this->db->prepare("SELECT * FROM office WHERE province_id = ?");
         $stmt->bind_param('i', $provinceId);
         $stmt->execute();

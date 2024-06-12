@@ -6,6 +6,14 @@ class CompanyController extends Controller {
         $this->view('admin/companies/index', ['companies' => $companies,'pagetitle' => 'شرکتها'], 'admin');
     }
 
+    public function getCompanyDetails($companyId) {
+        $companyModel = new Company();
+        $company = $companyModel->getCompanyById($companyId);
+
+        header('Content-Type: application/json');
+        echo json_encode($company);
+    }
+
     public function create() {
         $this->view('admin/companies/create', ['pagetitle' => 'شرکت جدید'], 'admin');
     }
