@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class Middleware {
     public static function auth() {
         if (!isset($_SESSION['user_id'])) {

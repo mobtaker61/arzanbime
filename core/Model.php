@@ -1,4 +1,7 @@
 <?php
+namespace Core;
+use mysqli;
+
 class Model {
     protected $db;
 

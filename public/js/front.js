@@ -58,28 +58,9 @@ window.addEventListener("scroll", () => {
   lastScrollTop = st <= 0 ? 0 : st;
 });
 
-// COMPANY CARDS
-const companyCards = document.querySelectorAll(".company-card");
-const companyDetail = document.querySelector("#company-card-detail");
-
-for (let index = 0; index < companyCards.length; index++) {
-  const card = companyCards[index];
-
-  card.addEventListener("click", (event) => {
-    let selectedCard = event.target?.closest("li");
-    for (let index = 0; index < companyCards.length; index++) {
-      companyCards[index].classList.remove("active-company-card");
-    }
-    selectedCard.classList.add("active-company-card");
-    companyDetail.innerHTML = DETAILS[selectedCard.id];
-  });
-}
-
 // CARDS SCROLL
 
 const baseSettings = {
-  slidesPerView: 2,
-  spaceBetween: 20,
   navigation: {
     nextEl: ".swiper-button-next",
     prevEl: ".swiper-button-prev",
@@ -91,7 +72,33 @@ const baseSettings = {
   //  reverseDirection: true,
   //},
   loop: true,
+};
+
+new Swiper(".companies-slider", {
+  ...baseSettings,
   breakpoints: {
+    320: {
+        slidesPerView: 2,
+        spaceBetween: 20,
+      },
+    700: {
+      slidesPerView: 4,
+      spaceBetween: 20,
+    },
+    1215: {
+      slidesPerView: 6,
+      spaceBetween: 20,
+    },
+  },
+});
+
+new Swiper(".articles-slider", {
+  ...baseSettings,
+  breakpoints: {
+    320: {
+        slidesPerView: 2,
+        spaceBetween: 20,
+      },
     700: {
       slidesPerView: 3,
       spaceBetween: 20,
@@ -101,12 +108,7 @@ const baseSettings = {
       spaceBetween: 20,
     },
   },
-};
 
-new Swiper(".companies-slider", { ...baseSettings });
-
-new Swiper(".articles-slider", {
-  ...baseSettings,
   //autoplay: true,
   //loop: true,
 });

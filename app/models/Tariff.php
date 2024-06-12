@@ -1,4 +1,9 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+use Exception;
+
 class Tariff extends Model {
     public function gettariffs($companyId, $packageId, $limit, $offset, $sortField = 'age', $sortOrder = 'ASC') {
         $sql = "SELECT t.*, p.tip as package_tip, c.name as company_name 

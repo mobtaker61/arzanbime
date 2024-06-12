@@ -1,9 +1,11 @@
 <?php
-require_once 'NotificationCenter.php';
-require_once 'ObserverInterface.php';
-require_once 'ConsoleObserver.php';
-require_once 'TelegramObserver.php';
-require_once 'JavaScriptAlertObserver.php';
+namespace Core;
+
+require_once __DIR__ . '/NotificationCenter.php';
+require_once __DIR__ . '/ObserverInterface.php';
+require_once __DIR__ . '/ConsoleObserver.php';
+require_once __DIR__ . '/TelegramObserver.php';
+require_once __DIR__ . '/JavaScriptAlertObserver.php';
 
 class Controller {
     protected $notificationCenter;

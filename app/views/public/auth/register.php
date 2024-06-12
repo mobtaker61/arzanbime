@@ -1,5 +1,7 @@
 <?php
-$pagetitle = "ثبت نام کاربر";
+use Core\Security;
+
+$pagetitle = "ورود کاربر";
 $description = "صفحه ورود به سایت.";
 $keywords = "ورود, سایت";
 ?>

@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class Security {
     public static function generateCSRFToken() {
         if (empty($_SESSION['csrf_token'])) {

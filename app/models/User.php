@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class User extends Model {
     public function register($username, $email, $password) {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);

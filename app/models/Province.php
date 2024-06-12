@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Province extends Model {
     public function getAllProvinces() {
         $stmt = $this->db->prepare("SELECT * FROM province");

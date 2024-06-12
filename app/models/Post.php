@@ -1,4 +1,7 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
 class Post extends Model {
     public function getAllPosts($limit, $offset) {
         $stmt = $this->db->prepare("SELECT * FROM post WHERE is_active = 1 LIMIT ? OFFSET ?");

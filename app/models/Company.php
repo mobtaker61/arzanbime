@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Company extends Model {
     public function getAllCompanies() {
         $stmt = $this->db->prepare("SELECT * FROM company WHERE is_active = 1");

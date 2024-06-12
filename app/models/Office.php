@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Office extends Model {
     public function getAllOffices() {
         $stmt = $this->db->prepare("SELECT * FROM office");

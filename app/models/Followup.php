@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Followup extends Model {
     public function getFollowupsByQuotationId($quotationId) {
         $stmt = $this->db->prepare("SELECT * FROM followup WHERE quotation_id = ? ORDER BY date DESC");

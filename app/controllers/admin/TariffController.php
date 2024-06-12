@@ -1,4 +1,12 @@
 <?php
+
+namespace App\Controllers\Admin;
+
+use App\Models\Tariff;
+use App\Models\Company;
+use App\Models\Package;
+use Core\Controller;
+
 class TariffController extends Controller {
     public function index() {
         $tariffModel = new Tariff();

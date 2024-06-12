@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Package extends Model {
     public function getAllPackages() {
         $stmt = $this->db->prepare("SELECT package.*, company.name as company_name FROM package JOIN company ON package.company_id = company.id");

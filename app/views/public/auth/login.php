@@ -1,4 +1,6 @@
 <?php
+use Core\Security;
+
 $pagetitle = "ورود کاربر";
 $description = "صفحه ورود به سایت.";
 $keywords = "ورود, سایت";

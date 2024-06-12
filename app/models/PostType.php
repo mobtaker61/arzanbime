@@ -1,4 +1,7 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
 class PostType extends Model {
     public function getAllPostTypes() {
         $stmt = $this->db->prepare("SELECT * FROM post_type");

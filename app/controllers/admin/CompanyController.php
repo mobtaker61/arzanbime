@@ -1,4 +1,11 @@
 <?php
+
+namespace App\Controllers\Admin;
+
+use App\Models\Company;
+use Core\Controller;
+use Exception;
+
 class CompanyController extends Controller {
     public function index() {
         $companyModel = new Company();

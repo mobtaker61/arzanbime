@@ -1,4 +1,11 @@
 <?php
+
+namespace App\Controllers\Admin;
+
+use App\Models\Post;
+use Core\Controller;
+use Core\Middleware;
+
 class AdminController extends Controller {
     public function __construct() {
         Middleware::auth();   // Ensure user is authenticated

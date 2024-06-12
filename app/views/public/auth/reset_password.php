@@ -1,3 +1,10 @@
+<?php
+use Core\Security;
+
+$pagetitle = "ورود کاربر";
+$description = "صفحه ورود به سایت.";
+$keywords = "ورود, سایت";
+?>
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <h2>Reset Password</h2>

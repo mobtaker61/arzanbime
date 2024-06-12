@@ -1,4 +1,14 @@
 <?php
+
+namespace App\Controllers;
+
+use App\Models\Post;
+use App\Models\Province;
+use App\Models\Office;
+use App\Models\Company;
+use Core\Controller;
+use Core\View;
+
 class HomeController extends Controller
 {
     public function index()

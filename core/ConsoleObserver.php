@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class ConsoleObserver implements ObserverInterface {
     public function update($message) {
         if (is_array($message)) {

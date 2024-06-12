@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Newsletter extends Model {
     public function getAllNewsletters() {
         $stmt = $this->db->prepare("SELECT * FROM newsletter");

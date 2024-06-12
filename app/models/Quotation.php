@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Quotation extends Model {
     public function getAllQuotations($limit, $offset, $sortField, $sortOrder, $filterTel, $filterStatus) {
         $sql = "SELECT * FROM quotation WHERE 1=1";

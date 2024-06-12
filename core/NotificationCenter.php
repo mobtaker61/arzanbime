@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class NotificationCenter {
     private $observers = [];
     private $observerTypes = [];

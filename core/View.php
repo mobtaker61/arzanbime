@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class View {
     public static function render($view, $data = [], $layout = 'public') {
         extract($data);

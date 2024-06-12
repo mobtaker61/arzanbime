@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class JavaScriptAlertObserver implements ObserverInterface {
     public function update($message) {
         if (is_array($message)) {

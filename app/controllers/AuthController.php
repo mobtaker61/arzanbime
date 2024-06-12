@@ -1,4 +1,12 @@
 <?php
+
+namespace App\Controllers;
+
+use App\Models\User;
+use Core\Controller;
+use Core\Security;
+use Core\View;
+
 class AuthController extends Controller {
     public function showLoginForm() {
         View::render('public/auth/login', ['pagetitle' => 'Login'], 'public');

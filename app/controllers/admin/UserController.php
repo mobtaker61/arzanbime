@@ -1,4 +1,12 @@
 <?php
+
+namespace App\Controllers\Admin;
+
+use App\Models\User;
+use Core\Controller;
+use Core\Middleware;
+use Core\Security;
+
 class UserController extends Controller {
     public function __construct() {
         Middleware::auth();  // Ensure user is authenticated

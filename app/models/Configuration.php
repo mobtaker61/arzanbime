@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use Core\Model;
+
 class Configuration extends Model {
     public function getAllConfigurations() {
         $stmt = $this->db->prepare("SELECT * FROM configuration");

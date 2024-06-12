@@ -1,4 +1,11 @@
 <?php
+
+namespace App\Controllers;
+
+use App\Models\Office;
+use Core\Controller;
+
+
 class OfficeController extends Controller {
     public function getOfficesByProvince($provinceId) {
         $officeModel = new Office();

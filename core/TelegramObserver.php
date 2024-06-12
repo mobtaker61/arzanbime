@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+
 class TelegramObserver implements ObserverInterface {
     private $botToken;
     private $chatId;

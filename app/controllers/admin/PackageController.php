@@ -1,5 +1,12 @@
 <?php
 
+namespace App\Controllers\Admin;
+
+use App\Models\Package;
+use App\Models\Company;
+use App\Models\Tariff;
+use Core\Controller;
+
 class PackageController extends Controller {
     public function index() {
         $packageModel = new Package();
