@@ -19,7 +19,7 @@ $files = scanDirectory(__DIR__ . '/app');
 foreach ($files as $file) {
     $expected = realpath($file);
     $actual = $file;
-    echo $actual . ' --> ' . $file . PHP_EOL;
+    echo $actual . ' --> ' . $file . ' = ' . $actual = $file . '<br/>';
     if ($expected !== $actual) {
         echo "Mismatch: $actual -> $expected\n";
     }
