@@ -1,6 +1,6 @@
 # Ignore the config.php file
 config/config.php
-
+public/uploads
 
 
 error_log
