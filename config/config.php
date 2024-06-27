@@ -1,9 +1,9 @@
 <?php
 return [
     'db' => [
-        'host' => 'localhost',
-        'user' => 'root',
-        'pass' => '',
-        'name' => 'blog_db',
+        'host' => '188.132.198.82',
+        'user' => 'arzanbime_mdb',
+        'pass' => 'k0moBdbDsmL%',
+        'name' => 'arzanbime_main',
     ],
 ];
