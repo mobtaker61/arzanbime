@@ -1,57 +1,78 @@
 <?php
-$pagetitle = "خانه";
-$description = "این صفحه اصلی وبلاگ است که آخرین پست ها و اخبار را نمایش می دهد.";
-$keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
+$pagetitle = $pagetitle ?? 'خانه';
+$description = $description ?? 'این صفحه اصلی وبلاگ است که آخرین پست ها و اخبار را نمایش می دهد.';
+$keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها';
 ?>
 
+<section class="pady center-sec flex justify-between items-center gap-6 mobile-large:gap-3 mobile-large:flex-col mobile-large:items-start mb-6">
+    <div id="features">
+        <h2 class="h3-bar">فقط در 10 دقیقه</h2>
+        <img src="/public/assets/banner-1.png" alt="خرید بیمه اقامت فقط در 10 دقیقه">
+        <div class="slider-container hidden">
+            <div class="slider">
+                <div class="slide">
+                    <img src="/path/to/clipart1.png" alt="Clipart 1">
+                </div>
+                <div class="slide">
+                    <img src="/path/to/clipart2.png" alt="Clipart 2">
+                </div>
+                <div class="slide">
+                    <img src="/path/to/clipart3.png" alt="Clipart 3">
+                </div>
+            </div>
+        </div>
 
-<section class="pady center-sec flex justify-between items-center gap-6 mobile-large:gap-3 mobile-large:flex-col mobile-large:items-start">
-    <div>
-        <h2 class="h3-bar">بیمه ویژه اقامت 2024</h2>
-        <ul class="[&_li_a]:inline-block [&_li_a]:text-vkl-t-sub-header [&_li_a]:pt-5 tablet-medium:[&_li_a]:pt-3 [&_li:first-child_a]:pt-0">
+        <ul class="[&_li_a]:inline-block [&_li_a]:text-vkl-t-sub-header [&_li_a]:pt-5 tablet-medium:[&_li_a]:pt-3 [&_li:first-child_a]:pt-0 hidden">
             <li>
-                <a href="">مورد ویژه شماره اول همراه با توضیحات کامل مربوطه</a>
+                تاریخ تولد یا سن ات رو تو فرم بنویس!
             </li>
             <li>
-                <a href="">مورد ویژه شماره اول همراه با توضیحات کامل مربوطه</a>
+                طبق نرخ تخفیفی ویژه خودت، پرداخت رو انجام بده
             </li>
             <li>
-                <a href="">مورد ویژه شماره اول همراه با توضیحات کامل مربوطه</a>
-            </li>
-            <li>
-                <a href="">مورد ویژه شماره اول همراه با توضیحات کامل مربوطه</a>
-            </li>
-            <li>
-                <a href="">مورد ویژه شماره اول همراه با توضیحات کامل مربوطه</a>
+                منتظر دریافت فایل بیمه نامه زیر 10 دقیقه باش
             </li>
         </ul>
     </div>
-    <div class="w-1/2 mobile-large:w-full mobile-large:mt-3">
+    <div id="quota-form" class="w-1/2 mobile-large:w-full mobile-large:mt-3">
         <h2 class="text-vkl-t-sub-header font-bold text-vkl-c-header mr-auto w-fit mb-5 mobile-large:h3-bar">
             استعلام
         </h2>
-        <form class="grid-cols-2 grid gap-6 mobile-large:gap-3 placeholder:text-vkl-c-normal">
-            <input class="input placeholder:text-vkl-c-normal" type="date" name="birth" dir="ltr" placeholder="تاریخ تولد*" value="2000-01-01" />
-            <input class="input placeholder:text-vkl-c-normal" type="text" placeholder="سن*" name="age" inputmode="numeric" maxlength="3" />
+        <form id="quota-form-element" class="grid-cols-2 grid gap-6 mobile-large:gap-3 placeholder:text-vkl-c-normal">
+            <input id="birth" class="input placeholder:text-vkl-c-normal" type="date" name="birth" dir="ltr" placeholder="تاریخ تولد*" value="2000-01-01" />
+            <input id="age" class="input placeholder:text-vkl-c-normal" type="text" placeholder="سن*" name="age" inputmode="numeric" maxlength="3" readonly />
             <div class="input col-span-2 grid-cols-2 grid gap-6 mobile-large:gap-3">
-                <label>مدت بیمه پردازی*</label>
+                <label>مدت درخواست *</label>
                 <span class="gap-6 flex mobile-large:gap-3 mobile-small:mr-auto">
                     <span>
-                        <input value="1" type="radio" name="length" />
+                        <input id="duration-1" value="1" type="radio" name="duration" />
                         <span>یک سال</span>
                     </span>
                     <span>
-                        <input value="2" type="radio" name="length" />
+                        <input id="duration-2" value="2" type="radio" name="duration" />
                         <span>دوسال</span>
                     </span>
                 </span>
             </div>
-            <button class="pri-btn col-span-2 mobile-medium:py-2">استعلام قیمت</button>
+            <div class="col-span-2 grid-cols-3 grid gap-6 mobile-large:gap-3">
+                <input id="tel" class="input placeholder:text-vkl-c-normal col-span-2 " type="tel" name="tel" placeholder="شماره تلفن*" required />
+                <select id="country-code" class="input placeholder:text-vkl-c-normal" title="تلفن">
+                    <option value="+90" data-flag="tr">🇹🇷 +90</option>
+                    <option value="+98" data-flag="ir">🇮🇷 +98</option>
+                </select>
+            </div>
+            <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید</p>
+            <button type="submit" class="pri-btn col-span-2 mobile-medium:py-2">استعلام قیمت</button>
         </form>
     </div>
 </section>
+<!-- Add this section to show the response -->
+<section id="quota-response" class="pady center-sec" style="display: none;">
+    <div id="response-message" class="text-vkl-c-header"></div>
+</section>
 
-<section id="companies" class="center-sec">
+<!-- **** COMPANY ***** -->
+<section id="companies" class="py-6 center-sec">
     <div class="mx-auto text-start">
         <div class="flex justify-between w-full">
             <h2 class="h3-bar mb-3">شرکت‌های بیمه</h2>
@@ -79,7 +100,10 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
         </div>
         <div class="swiper-pagination"></div>
     </div>
-    <div id="company-card-detail" class="p-6 mobile-large:p-3 pady mt-0 overflow-hidden bg-red-200 rounded-3xl tablet-medium:rounded-2xl mobile-large:rounded-xl grid grid-cols-2 tablet-small:grid-cols-1 gap-6 mobile-large:gap-3 mobile-medium:gap-6 mobile-large:flex-col mobile-large:items-start">
+    <div id="company-card-detail" class="p-6 mobile-large:p-3 mt-0 overflow-hidden bg-red-200 rounded-3xl tablet-medium:rounded-2xl mobile-large:rounded-xl grid grid-cols-2 tablet-small:grid-cols-1 gap-6 mobile-large:gap-3 mobile-medium:gap-6 mobile-large:flex-col mobile-large:items-start">
+        <div id="tariff-summary" class="relative overflow-hidden">
+            <!-- Company Package Tariff by Age Range with Tabs -->
+        </div>
         <div class="flex justify-start items-start tablet-small:items-center flex-col">
             <h1 id="company-name" class="text-vkl-t-h2 font-bold text-red-950">
                 <!-- Company Name -->
@@ -92,13 +116,10 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
                 <button class="pri-btn">دانلود لیست</button>
             </div>
         </div>
-        <div id="assurance-table" dir="ltr" class="relative overflow-hidden">
-            <p class="image">image</p>
-        </div>
     </div>
 </section>
 
-<section id="faq" class="pady center-sec">
+<section id="faq" class="py-6 center-sec">
     <h3 class="h3-bar mb-6">سوالات متداول</h3>
     <div class="grid grid-cols-3 tablet-small:grid-cols-1 gap-6 tablet-small:gap-0 mobile-medium:gap-0 mobile-large:flex-col mobile-large:items-start">
         <ul id="qa-text" class="col-span-2">
@@ -108,17 +129,20 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
                         <h4 class="font-bold"><?php echo $post['title']; ?></h4>
                         <i class="ph ph-caret-down text-xl mobile-large:text-base"></i>
                     </button>
-                    <p class="h-0 opacity-0 relative z-10">
-                        <?php echo $post['caption']; ?>
+                    <p class="hidden h-0 opacity-0 relative z-10 p-3">
+                        <?php echo nl2br($post['caption']); ?>
                     </p>
                 </li>
             <?php endforeach; ?>
+            <div class="flex justify-end mt-1">
+                <a href="/posts/faq" class="pri-btn">همه سئوالات</a>
+            </div>
         </ul>
-        <img width="380" height="300" alt="مرد کنار زمین" src="/public/assets/a-vector-globe-GME6DF1B.png" />
+        <img width="380" height="300" class="mobile-medium:hidden" alt="مرد کنار زمین" src="/public/assets/a-vector-globe-GME6DF1B.png" />
     </div>
 </section>
 
-<section id="gift" class="pady center-sec mt-0">
+<section id="gift" class="py-6 center-sec mt-0">
     <h3 class="h3-bar mb-2">هدیه ویژه ارزان بیمه</h3>
     <p class="text-vkl-c-header mb-9 tablet-large:mb-6 mobile-large:mb-8">
         با استفاده از کد اختصاصی خود، دوستانتان را معرفی کنید و هدیه بگیرید.
@@ -149,7 +173,7 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
     </div>
 </section>
 
-<section id="notice" class="pady center-sec mb-6">
+<section id="notice" class="py-6 center-sec mb-6">
     <h3 class="h3-bar mb-6">اطلاعیه های اداره اقامت</h3>
     <div class="grid grid-cols-3 tablet-small:grid-cols-1 gap-6 mobile-large:flex-col mobile-large:items-start">
         <img class="mobile-medium:hidden" width="380" height="300" alt="مرد کنار زمین" src="/public/assets/a-vector-globe-GME6DF1B.png" />
@@ -164,14 +188,14 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
                     </button>
                 </li>
             <?php endforeach; ?>
+            <div class="flex justify-end mt-1">
+                <a href="/posts/notice" class="pri-btn">همه اطلاعیه ها</a>
+            </div>
         </ul>
-    </div>
-    <div class="flex justify-end mt-1">
-        <a href="/posts?type=notice" class="pri-btn">همه اطلاعیه ها</a>
     </div>
 </section>
 
-<section id="offices" class="pady pady mt-0 mb-0 py-10 tablet-medium:py-24 mobile-large:py-16 bg-neutral-300">
+<section id="offices" class="py-6 mt-0 mb-0 py-10 tablet-medium:py-24 mobile-large:py-16 bg-neutral-300">
     <div class="center-sec mt-0 mb-0">
         <h3 class="h3-bar mb-1">موقعیت ادارات اقامت ترکیه</h3>
         <div class="flex justify-center items-start mobile-medium:items-center gap-6 mobile-medium:gap-3 flex-col text-neutral-200 min-w-fit mb-6 mobile-medium:mb-0 w-45% mobile-medium:w-fit mobile-medium:mx-auto">
@@ -237,12 +261,11 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
                                     بیمه
                                 </p>
                             </div>
-                            <a href="/post/<?php echo $post['id']; ?>">
-                                <h2 class="font-bold">
+                            <h2 class="font-bold">
+                                <a href="/post/<?php echo $post['id']; ?>">
                                     <?php echo $post['title']; ?>
-                                </h2>
-                            </a>
-                            <p><?php echo $post['caption']; ?></p>
+                                </a>
+                            </h2>
                         </div>
                     </li>
                 <?php endforeach; ?>
@@ -252,52 +275,119 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
     </div>
 </section>
 
-<!-- *************** -->
+<!-- ******* MODAL ******** -->
+<!-- OTP Modal -->
+<div id="otp-modal" class="modal hidden fixed z-50 inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 class="text-2xl font-bold mb-4">تایید هویت</h2>
+            <p>لطفا کد تایید ارسال شده به موبایل خود را وارد کنید.</p>
+            <p>در صورت وارد کردن کد صحیح شما به صفحه نمایش نرخ هدایت میشوید</p>
+            <form id="otp-form">
+                <input id="otp" class="input placeholder:text-vkl-c-normal w-full mb-4" type="text" placeholder="Enter OTP" required />
+                <button type="submit" class="pri-btn w-full">کنترل</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- ******* SCRIPT ******** -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const companyCards = document.querySelectorAll(".company-card");
-        const firstCompanyCard = companyCards[0];
+        // Calculate age based on birth date input
+        document.getElementById("birth").addEventListener("input", function() {
+            const birthDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.getElementById("age").value = age;
+        });
 
-        function loadCompanyDetails(companyId, color, card) {
-            fetch(`/companies/details/${companyId}`, {
+        // Function to remove spaces from the telephone number
+        function removeSpaces(str) {
+            return str.replace(/\s+/g, '');
+        }
+        // Handle form submission
+        document.getElementById("quota-form-element").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const tel = removeSpaces(document.getElementById("country-code").value + document.getElementById("tel").value);
+            const formData = {
+                birth: document.getElementById("birth").value,
+                age: document.getElementById("age").value,
+                duration: document.querySelector('input[name="duration"]:checked').value,
+                tel: tel,
+            };
+
+            // Send OTP
+            fetch("/auth/send-otp", {
+                    method: "POST",
                     headers: {
-                        "X-Requested-With": "XMLHttpRequest",
+                        "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({
+                        tel: formData.tel
+                    }),
                 })
                 .then((response) => response.json())
                 .then((data) => {
-                    document.getElementById("company-name").textContent = data.name;
-                    document.getElementById("company-intro").textContent = data.intro;
-                    document.getElementById("company-card-detail").style.backgroundColor =
-                        color;
-                    // Remove active background color from all cards
-                    companyCards.forEach((card) => {
-                        card.classList.remove("active-company-card");
-                        card.style.backgroundColor = "";
-                    });
-
-                    // Add active background color to the selected card
-                    card.classList.add("active-company-card");
-                    card.style.backgroundColor = color;
+                    if (data.success) {
+                        // Store form data in session
+                        return fetch("/auth/store-quotation-data", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(formData),
+                        });
+                    } else {
+                        throw new Error(data.message || "Failed to send OTP");
+                    }
                 })
-                .catch((error) => console.error("Error:", error));
-        }
-
-        companyCards.forEach((card) => {
-            card.addEventListener("click", function() {
-                const companyId = this.getAttribute("data-id");
-                const companyColor = this.getAttribute("data-color");
-                loadCompanyDetails(companyId, companyColor, this);
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        document.getElementById("otp-modal").classList.remove("hidden");
+                    } else {
+                        alert(data.message || "Failed to store quotation data");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
         });
 
-        // Trigger click event on the first company card
-        if (firstCompanyCard) {
-            firstCompanyCard.click();
-        }
-    });
+        // Handle OTP form submission
+        document.getElementById("otp-form").addEventListener("submit", function(e) {
+            e.preventDefault();
 
-    document.addEventListener("DOMContentLoaded", function() {
+            const otp = document.getElementById("otp").value;
+
+            fetch("/auth/verify-otp", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        otp: otp
+                    }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        window.location.href = data.redirect; // Redirect to offers result page
+                    } else {
+                        alert(data.message || "Invalid OTP");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        });
+
+        // Province DropDown Select
         document.getElementById('province').addEventListener('change', function() {
             const provinceId = this.value;
             fetch(`/offices/byProvince/${provinceId}`, {
@@ -350,5 +440,143 @@ $keywords = "صفحه اصلی, وبلاگ, اخبار, پست ها";
                 })
                 .catch(error => console.error('Error:', error));
         });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelectorAll('.slide');
+        let currentIndex = slides.length - 1;
+
+        function showPreviousSlide() {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        setInterval(showPreviousSlide, 1000); // Change slide every 3 seconds
+    });
+
+    // Function to load company details and tariff summary
+    document.addEventListener("DOMContentLoaded", function() {
+        const companyCards = document.querySelectorAll(".company-card");
+        const firstCompanyCard = companyCards[0];
+
+        function loadCompanyDetails(companyId, color, card) {
+            fetch(`/companies/details/${companyId}`, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById("company-name").textContent = data.name;
+                    document.getElementById("company-intro").textContent = data.intro;
+                    document.getElementById("company-card-detail").style.backgroundColor = hexToRgba(color, 0.4);
+
+                    companyCards.forEach((card) => {
+                        card.classList.remove("active-company-card");
+                        card.style.backgroundColor = "";
+                    });
+
+                    card.classList.add("active-company-card");
+                    card.style.backgroundColor = hexToRgba(color, 0.4);
+
+                    return fetch(`/getTariffSummary/${companyId}`, {
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                        },
+                    });
+                })
+                .then((response) => response.json())
+                .then((tariffs) => {
+                    const tariffSummary = document.getElementById("tariff-summary");
+                    tariffSummary.innerHTML = "";
+
+                    const tabs = document.createElement("div");
+                    tabs.className = "tabs gap-3";
+                    const tabContents = document.createElement("div");
+                    tabContents.className = "tab-contents";
+
+                    let firstTab = true;
+                    for (const [tip, data] of Object.entries(tariffs)) {
+                        const tabId = `tab-${tip.replace(/\s+/g, '-')}`;
+
+                        const tabButton = document.createElement("button");
+                        tabButton.className = `tab-button pri-btn ${firstTab ? 'active' : ''}`;
+                        tabButton.textContent = `${tip}`;
+                        tabButton.setAttribute("data-tab", tabId);
+                        tabButton.style.width = '100%';
+                        tabButton.style.color = data.color; // Use the package color as text color
+                        tabButton.style.border = `solid 2px ${data.color}`; // Use the package color as border color
+                        tabs.appendChild(tabButton);
+
+                        const tabContent = document.createElement("div");
+                        tabContent.id = tabId;
+                        tabContent.className = `tab-content ${firstTab ? 'active' : ''}`;
+
+                        const table = document.createElement("table");
+                        table.className = "table-tariff table-auto w-full border-collapse border border-gray-200";
+                        table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">محدوده سنی</th>
+                                <th class="px-4 py-2">یک ساله</th>
+                                <!-- <th class="px-4 py-2">سال دوم</th> -->
+                                <th class="px-4 py-2">دو ساله</th>
+                            </tr>
+                        </thead>
+                        <tbody id="${tabId}-body"></tbody>
+                    `;
+                        tabContent.appendChild(table);
+                        tabContents.appendChild(tabContent);
+
+                        const tabBody = tabContent.querySelector(`#${tabId}-body`);
+                        tabBody.style.backgroundColor = 'white';
+                        data.tariffs.forEach((tariff) => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                            <td class="py-2 px-4 text-xl border-b">${tariff.age_range}</td>
+                            <td class="py-2 px-4 text-xl border-b numwc">${tariff.first_year}</td>
+                            <!--  <td class="py-2 px-4 text-xl border-b numwc">${tariff.second_year}</td> -->
+                            <td class="py-2 px-4 text-xl border-b numwc">${tariff.two_year}</td>
+                        `;
+                            tabBody.appendChild(row);
+                        });
+
+                        firstTab = false;
+                    }
+
+                    tariffSummary.appendChild(tabs);
+                    tariffSummary.appendChild(tabContents);
+
+                    document.querySelectorAll(".tab-button").forEach(button => {
+                        button.addEventListener("click", function() {
+                            const tabId = this.getAttribute("data-tab");
+
+                            document.querySelectorAll(".tab-button").forEach(btn => {
+                                btn.classList.remove("active");
+                            });
+                            this.classList.add("active");
+
+                            document.querySelectorAll(".tab-content").forEach(content => {
+                                content.classList.remove("active");
+                            });
+                            document.getElementById(tabId).classList.add("active");
+                        });
+                    });
+                })
+                .catch((error) => console.error("Error:", error));
+        }
+
+        companyCards.forEach((card) => {
+            card.addEventListener("click", function() {
+                const companyId = this.getAttribute("data-id");
+                const companyColor = this.getAttribute("data-color");
+                loadCompanyDetails(companyId, companyColor, this);
+            });
+        });
+
+        if (firstCompanyCard) {
+            firstCompanyCard.click();
+        }
     });
 </script>

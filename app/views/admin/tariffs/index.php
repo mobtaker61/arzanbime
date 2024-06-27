@@ -2,19 +2,19 @@
     <div class="col-md-6 d-flex align-items-center justify-content-start">
         <form id="filter-form" method="get" action="/admin/tariffs" class="d-flex form-group mr-3">
             <select name="company_id" id="company_id" class="form-control">
-                <option value="">All Companies</option>
+                <option value="">همه شرکتها</option>
                 <?php foreach ($companies as $company): ?>
                     <option value="<?php echo $company['id']; ?>"><?php echo $company['name']; ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="package_id" id="package_id" class="form-control ml-2">
-                <option value="">All Packages</option>
+                <option value="">همه پکیجها</option>
             </select>
-            <button type="submit" class="btn btn-secondary ml-2">Filter</button>
+            <button type="submit" class="btn btn-secondary ml-2">فیلتر</button>
         </form>
     </div>
     <div class="col-md-6 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setTariffModal">Set Tariff</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setTariffModal">تعیین نرخ</button>
     </div>
 </div>
 
@@ -262,7 +262,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return response.json();
         }).then(result => {
             if (result.success) {
-                alert('Tariff set successfully.');
                 $('#setTariffModal').modal('hide');
                 loadTariffs();
             } else {

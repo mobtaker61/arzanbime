@@ -4,26 +4,51 @@ namespace App\Models;
 use Core\Model;
 
 class User extends Model {
-    public function register($username, $email, $password) {
-        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')");
-        $stmt->bind_param('sss', $username, $email, $passwordHash);
-        return $stmt->execute();
-    }
-
     public function login($username, $password) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND is_active = 1 LIMIT 1");
         $stmt->bind_param('s', $username);
         $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
 
         if ($user && password_verify($password, $user['password'])) {
+            // Ensure session start
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
+
             return true;
         }
+
         return false;
+    }
+
+    public function register($username, $email, $password, $role = 'user') {
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param('ssss', $username, $email, $hashedPassword, $role);
+        $stmt->execute();
+        $stmt->close();
+        return $stmt->affected_rows > 0;
+    }
+
+    public function getRole() {
+        return $_SESSION['role'] ?? null;
+    }
+
+    public function logout() {
+        // Ensure session start
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        session_unset();
+        session_destroy();
     }
 
     public function generatePasswordResetToken($email) {
@@ -55,10 +80,6 @@ class User extends Model {
             return $stmt->execute();
         }
         return false;
-    }
-
-    public function logout() {
-        session_destroy();
     }
 
     public function isLoggedIn() {

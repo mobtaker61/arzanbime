@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>مدیریت - <?php echo $pagetitle; ?></title>
     <link rel="stylesheet" href="/public/adminlte/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/styles/overlayscrollbars.min.css" integrity="sha256-dSokZseQNT08wYEWiz5iLI8QPlKxG+TswNRD8k35cpg=" crossorigin="anonymous">
@@ -12,11 +13,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/public/adminlte/css/adminlte.rtl.min.css">
     <link rel="stylesheet" href="/public/css/custom.css">
+    <!-- Include TinyMCE -->
+    <script src="/public/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
+
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
     <div class="app-wrapper">
         <?php include 'header.php'; ?>
-        <?php include 'sidebar.php'; ?>
+        <?php
+        // Check if the user is an admin or agent and include the appropriate sidebar
+        if ($_SESSION['role'] === 'admin') {
+            include 'sidebar.php';
+        } elseif ($_SESSION['role'] === 'agent') {
+            include 'app/views/layouts/agent/sidebar.php';
+        }
+        ?>
         <main class="app-main">
             <div class="app-content-header">
                 <div class="container-fluid">
@@ -66,4 +77,5 @@
         });
     </script>
 </body>
+
 </html>

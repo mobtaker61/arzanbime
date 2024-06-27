@@ -38,7 +38,7 @@ class QuotationController extends Controller {
         $quotationModel = new Quotation();
         $followupModel = new Followup();
 
-        $quotation = $quotationModel->getQuotationById($id);
+        $quotation = $quotationModel->getQuotation($id);
         $followups = $followupModel->getFollowupsByQuotationId($id);
 
         $this->view('public/quotations/show', [

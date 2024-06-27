@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Core\Model;
 
-class Quotation extends Model {
-    public function getAllQuotations($limit, $offset, $sortField, $sortOrder, $filterTel, $filterStatus) {
+class Quotation extends Model
+{
+    public function getAllQuotations($limit, $offset, $sortField, $sortOrder, $filterTel, $filterStatus)
+    {
         $sql = "SELECT * FROM quotation WHERE 1=1";
 
         if ($filterTel) {
@@ -36,7 +39,8 @@ class Quotation extends Model {
         return $result;
     }
 
-    public function getQuotationCount($filterTel, $filterStatus) {
+    public function getQuotationCount($filterTel, $filterStatus)
+    {
         $sql = "SELECT COUNT(*) as count FROM quotation WHERE 1=1";
 
         if ($filterTel) {
@@ -65,32 +69,68 @@ class Quotation extends Model {
         return $count;
     }
 
-    public function getQuotationById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM quotation WHERE id = ?");
-        $stmt->bind_param('i', $id);
+    public function getQuotation($identifier)
+    {
+        // Determine if the identifier is numeric (ID) or not (UID)
+        if (is_numeric($identifier)) {
+            $stmt = $this->db->prepare("SELECT * FROM quotation WHERE id = ?");
+            $stmt->bind_param("i", $identifier);
+        } else {
+            $stmt = $this->db->prepare("SELECT * FROM quotation WHERE uid = ?");
+            $stmt->bind_param("s", $identifier);
+        }
+
         $stmt->execute();
-        return $this->fetchAssoc($stmt)[0];
+        $result = $stmt->get_result();
+        $quotation = $result->fetch_assoc();
+        $stmt->close();
+        return $quotation;
     }
 
-    public function createQuotation($tel, $birth_date, $age, $duration, $status) {
-        $stmt = $this->db->prepare("INSERT INTO quotation (tel, birth_date, age, duration, status) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param('ssiss', $tel, $birth_date, $age, $duration, $status);
-        return $stmt->execute();
+    public function createQuotation($data)
+    {
+        $uid = $this->generateUid();
+        $stmt = $this->db->prepare('INSERT INTO quotation (birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?)');
+
+        if ($stmt) {
+            $stmt->bind_param(
+                'sisss', // 's' for string, 'i' for integer
+                $data['birth'],
+                $data['age'],
+                $data['duration'],
+                $data['tel'],
+                $uid
+            );
+
+            $stmt->execute();
+            $stmt->close();
+            return $uid;
+        } else {
+            throw new \Exception('Failed to prepare statement: ' . $this->db->error);
+        }
     }
 
-    public function updateQuotation($id, $tel, $birth_date, $age, $duration, $status) {
+    private function generateUid()
+    {
+        return bin2hex(random_bytes(16));
+    }
+
+    public function updateQuotation($id, $tel, $birth_date, $age, $duration, $status)
+    {
         $stmt = $this->db->prepare("UPDATE quotation SET tel = ?, birth_date = ?, age = ?, duration = ?, status = ? WHERE id = ?");
         $stmt->bind_param('ssissi', $tel, $birth_date, $age, $duration, $status, $id);
         return $stmt->execute();
     }
 
-    public function deleteQuotation($id) {
+    public function deleteQuotation($id)
+    {
         $stmt = $this->db->prepare("DELETE FROM quotation WHERE id = ?");
         $stmt->bind_param('i', $id);
         return $stmt->execute();
     }
 
-    private function fetchAssoc($stmt) {
+    private function fetchAssoc($stmt)
+    {
         $stmt->store_result();
         $variables = [];
         $data = [];
@@ -110,4 +150,3 @@ class Quotation extends Model {
         return $results;
     }
 }
-?>

@@ -6,6 +6,7 @@ require_once __DIR__ . '/ObserverInterface.php';
 require_once __DIR__ . '/ConsoleObserver.php';
 require_once __DIR__ . '/TelegramObserver.php';
 require_once __DIR__ . '/JavaScriptAlertObserver.php';
+require_once __DIR__ . '/IMVerify.php';
 
 class Controller {
     protected $notificationCenter;
@@ -17,6 +18,7 @@ class Controller {
         $this->notificationCenter->attach(new ConsoleObserver(), 'console');
         $this->notificationCenter->attach(new TelegramObserver('5822956113:AAHQ9gsbWF3zaku0-mbPAB9vXEH8Encc_Fo', '146767798'), 'telegram');
         $this->notificationCenter->attach(new JavaScriptAlertObserver(), 'javascript_alert');
+        $this->notificationCenter->attach(new IMVerify(), 'sms');
     }
 
     protected function notify($message, $targets = []) {
@@ -28,26 +30,10 @@ class Controller {
         $viewPath = "app/views/$view.php";
         if ($layout === 'admin') {
             require "app/views/layouts/admin/master.php";
-        } else if ($layout == false){
-            require "app/views/layouts/partial.php";
-        } else {
+        } else if ($layout === 'user') {
             require "app/views/layouts/user/master.php";
-        }
-    }
-
-    protected function view2($view, $data = [], $layout = 'default') {
-        extract($data);
-
-        if ($layout !== false) {
-            // Include the master layout
-            include "app/views/layouts/{$layout}/header.php";
-        }
-
-        include "app/views/{$view}.php";
-
-        if ($layout !== false) {
-            // Include the master layout footer
-            include "app/views/layouts/{$layout}/footer.php";
+        } else {
+            require "app/views/layouts/public/master.php";
         }
     }
 

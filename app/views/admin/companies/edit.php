@@ -7,6 +7,11 @@
                 <input type="hidden" name="existing_logo" value="<?php echo $company['logo']; ?>">
             </div>
             <div class="form-group">
+                <label for="icon">Icon</label>
+                <input type="file" class="form-control" id="icon" name="icon">
+                <input type="hidden" name="existing_icon" value="<?php echo $company['icon']; ?>">
+            </div>
+            <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="<?php echo $company['name']; ?>" required>
             </div>

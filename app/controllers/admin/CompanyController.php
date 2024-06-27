@@ -9,7 +9,7 @@ use Exception;
 class CompanyController extends Controller {
     public function index() {
         $companyModel = new Company();
-        $companies = $companyModel->getAllCompanies();
+        $companies = $companyModel->getAllCompanies(false);
         $this->view('admin/companies/index', ['companies' => $companies,'pagetitle' => 'شرکتها'], 'admin');
     }
 
@@ -29,6 +29,7 @@ class CompanyController extends Controller {
         try {
             $data = [
                 'logo' => '',
+                'icon' => '',
                 'name' => $_POST['name'],
                 'intro' => $_POST['intro'],
                 'shareholders' => $_POST['shareholders'],
@@ -41,6 +42,10 @@ class CompanyController extends Controller {
 
             if ($_FILES['logo']['name']) {
                 $data['logo'] = $this->uploadFile($_FILES['logo']);
+            }
+
+            if ($_FILES['icon']['name']) {
+                $data['icon'] = $this->uploadFile($_FILES['icon']);
             }
 
             if ($_FILES['contract_file']['name']) {
@@ -74,6 +79,7 @@ class CompanyController extends Controller {
         try {
             $data = [
                 'logo' => '',
+                'icon' => '',
                 'name' => $_POST['name'],
                 'intro' => $_POST['intro'],
                 'shareholders' => $_POST['shareholders'],
@@ -88,6 +94,12 @@ class CompanyController extends Controller {
                 $data['logo'] = $this->uploadFile($_FILES['logo']);
             } else {
                 $data['logo'] = $_POST['existing_logo'];
+            }
+
+            if ($_FILES['icon']['name']) {
+                $data['icon'] = $this->uploadFile($_FILES['icon']);
+            } else {
+                $data['icon'] = $_POST['existing_icon'];
             }
 
             if ($_FILES['contract_file']['name']) {

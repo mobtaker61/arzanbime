@@ -1,18 +1,26 @@
 <?php
+
 namespace App\Models;
 
 use Core\Model;
 
-class Company extends Model {
-    public function getAllCompanies() {
-        $stmt = $this->db->prepare("SELECT * FROM company WHERE is_active = 1");
+class Company extends Model
+{
+    public function getAllCompanies($onlyActive = true)
+    {
+        if ($onlyActive) {
+            $stmt = $this->db->prepare("SELECT * FROM company WHERE is_active = 1 ORDER BY sort");
+        } else {
+            $stmt = $this->db->prepare("SELECT * FROM company ORDER BY sort");
+        }
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return $result;
     }
 
-    public function getCompanyById($id) {
+    public function getCompanyById($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM company WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -21,32 +29,13 @@ class Company extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
-    public function createCompany($data) {
-        $stmt = $this->db->prepare("INSERT INTO company (logo, name, intro, shareholders, contract_file, tariffs_images, color, sort, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    public function createCompany($data)
+    {
+        $stmt = $this->db->prepare("INSERT INTO company (logo, name, intro, shareholders, contract_file, tariffs_images, color, sort, is_active, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $tariffs_images = json_encode($data['tariffs_images']);
         echo $tariffs_images;
         $stmt->bind_param(
-            'ssssssssi',
-            $data['logo'],
-            $data['name'],
-            $data['intro'],
-            $data['shareholders'],
-            $data['contract_file'],
-            $tariffs_images,
-            $data['color'],
-            $data['sort'],
-            $data['is_active']
-        );
-        $result = $stmt->execute();
-        $stmt->close();
-        return $result;
-    }
-
-    public function updateCompany($id, $data) {
-        $stmt = $this->db->prepare("UPDATE company SET logo = ?, name = ?, intro = ?, shareholders = ?, contract_file = ?, tariffs_images = ?, color = ?, sort = ?, is_active = ? WHERE id = ?");
-        $tariffs_images = json_encode($data['tariffs_images']);
-        $stmt->bind_param(
-            'ssssssssii',
+            'ssssssssis',
             $data['logo'],
             $data['name'],
             $data['intro'],
@@ -56,6 +45,29 @@ class Company extends Model {
             $data['color'],
             $data['sort'],
             $data['is_active'],
+            $data['icon']
+        );
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function updateCompany($id, $data)
+    {
+        $stmt = $this->db->prepare("UPDATE company SET logo = ?, name = ?, intro = ?, shareholders = ?, contract_file = ?, tariffs_images = ?, color = ?, sort = ?, is_active = ?, icon = ? WHERE id = ?");
+        $tariffs_images = json_encode($data['tariffs_images']);
+        $stmt->bind_param(
+            'ssssssssisi',
+            $data['logo'],
+            $data['name'],
+            $data['intro'],
+            $data['shareholders'],
+            $data['contract_file'],
+            $tariffs_images,
+            $data['color'],
+            $data['sort'],
+            $data['is_active'],
+            $data['icon'],
             $id
         );
         $result = $stmt->execute();
@@ -63,7 +75,8 @@ class Company extends Model {
         return $result;
     }
 
-    public function deleteCompany($id) {
+    public function deleteCompany($id)
+    {
         $stmt = $this->db->prepare("DELETE FROM company WHERE id = ?");
         $stmt->bind_param('i', $id);
         $result = $stmt->execute();
@@ -71,7 +84,8 @@ class Company extends Model {
         return $result;
     }
 
-    private function fetchAssoc($stmt) {
+    private function fetchAssoc($stmt)
+    {
         $stmt->store_result();
         $variables = [];
         $data = [];

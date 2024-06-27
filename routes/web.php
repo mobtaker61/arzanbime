@@ -14,35 +14,34 @@ $router->add('/reset_password', 'App\Controllers\AuthController@showResetPasswor
 $router->add('/reset_password', 'App\Controllers\AuthController@resetPassword', 'POST');
 $router->add('/set_new_password', 'App\Controllers\AuthController@showNewPasswordForm');
 $router->add('/set_new_password', 'App\Controllers\AuthController@setNewPassword', 'POST');
-$router->add('/post/{id}', 'App\Controllers\PostController@show', 'GET');
-
-// Sitemap route
-$router->add('/sitemap.xml', function() {
-    header('Content-Type: application/xml');
-    readfile('app/public/sitemap.xml');
-    exit();
-});
-
+$router->add('/auth/send-otp', 'App\Controllers\AuthController@sendOTP', 'POST');
+$router->add('/auth/verify-otp', 'App\Controllers\AuthController@verifyOTP', 'POST');
+$router->add('/auth/store-quotation-data', 'App\Controllers\AuthController@storeQuotationData', 'POST');
+$router->add('/getTariffSummary/{companyId:\d+}', 'App\Controllers\HomeController@getTariffSummary');
+// Contact page route
+$router->add('/contact', 'App\Controllers\ContactController@index');
+$router->add('/contact/submit', 'App\Controllers\ContactController@submit', 'POST');
 // Public User routes
 $router->add('/offices/byProvince/{provinceId}', 'App\Controllers\OfficeController@getOfficesByProvince', 'GET');
 $router->add('/companies', 'App\Controllers\CompanyController@index', 'GET');
 $router->add('/companies/details/{companyId}', 'App\Controllers\CompanyController@getCompanyDetails', 'GET');
-
+// Offers route (requires public layout)
+$router->add('/offers/{uid}', 'App\Controllers\OffersController@show', 'GET');
 // Post
 $router->add('/posts', 'App\Controllers\PostController@index', 'GET');
 $router->add('/posts/{postType}', 'App\Controllers\PostController@index', 'GET');
 $router->add('/post/{id}', 'App\Controllers\PostController@show', 'GET');
 
 // User routes (requires authentication)
-$router->add('/user/dashboard', 'App\Controllers\UserController@dashboard', 'GET', 'Middleware::auth');
+$router->add('/user/dashboard', 'App\Controllers\UserController@dashboard', 'GET');
 
 // Protected routes
 $router->add('/logout', 'App\Controllers\AuthController@logout');
-$router->add('/profile', 'App\Controllers\UserController@showProfile');
-$router->add('/profile', 'App\Controllers\UserController@updateProfile', 'POST');
+$router->add('/user/profile', 'App\Controllers\UserController@showProfile');
+$router->add('/user/profile', 'App\Controllers\UserController@updateProfile', 'POST');
 
 // Admin routes (requires admin authentication)
-$router->add('/admin', 'App\Controllers\Admin\AdminController@dashboard', 'GET', 'Middleware::admin');
+$router->add('/admin', 'App\Controllers\Admin\AdminController@dashboard', 'GET');
 
 // Admin post routes
 $router->add('/admin/posts', 'App\Controllers\Admin\PostController@index', 'GET');
@@ -87,3 +86,15 @@ $router->add('/admin/quotations/detail/{id}', 'App\Controllers\Admin\QuotationCo
 $router->add('/admin/quotations/store', 'App\Controllers\Admin\QuotationController@store', 'POST');
 $router->add('/admin/quotations/addFollowup', 'App\Controllers\Admin\QuotationController@addFollowup', 'POST');
 $router->add('/admin/quotations/offers/{id}', 'App\Controllers\Admin\QuotationController@showOffers', 'GET');
+
+// Agent routes (requires agent authentication)
+$router->add('/agent', 'App\Controllers\Agent\AgentController@dashboard', 'GET');
+
+//************** EXTRA **********************/
+// Sitemap route
+$router->add('/sitemap.xml', 'App\Controllers\SitemapController@index');
+
+// RSS feed routes
+$router->add('/rss', 'App\Controllers\RssController@index', 'GET');
+$router->add('/rss/{postType}', 'App\Controllers\RssController@byPostType', 'GET');
+

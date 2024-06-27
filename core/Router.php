@@ -1,14 +1,16 @@
 <?php
+
 namespace Core;
 
 class Router {
     private $routes = [];
 
-    public function add($route, $controllerAction, $method = 'GET') {
+    public function add($route, $controllerAction, $method = 'GET', $middleware = null) {
         $this->routes[] = [
             'route' => $route,
             'controllerAction' => $controllerAction,
-            'method' => $method
+            'method' => $method,
+            'middleware' => $middleware
         ];
     }
 
@@ -19,15 +21,22 @@ class Router {
             if (preg_match($pattern, $urlPath, $matches) && $_SERVER['REQUEST_METHOD'] === $route['method']) {
                 array_shift($matches);
                 list($controller, $action) = explode('@', $route['controllerAction']);
-                echo "Controller: $controller, Action: $action<br>"; // Debugging output
-                echo "Loading class: $controller<br>"; // Debugging output
-                if (!class_exists($controller)) {
-                    echo "Class $controller not found!<br>"; // Debugging output
-                    exit();
+
+                if ($route['middleware']) {
+                    call_user_func([$route['middleware'], 'admin']); // Change 'admin' to the appropriate method if necessary
                 }
-                $controller = new $controller();
-                call_user_func_array([$controller, $action], $matches);
-                return;
+
+                if (class_exists($controller)) {
+                    $controllerInstance = new $controller();
+                    if (method_exists($controllerInstance, $action)) {
+                        call_user_func_array([$controllerInstance, $action], $matches);
+                        return;
+                    } else {
+                        error_log("Action $action does not exist on controller $controller");
+                    }
+                } else {
+                    error_log("Controller $controller does not exist");
+                }
             }
         }
         http_response_code(404);

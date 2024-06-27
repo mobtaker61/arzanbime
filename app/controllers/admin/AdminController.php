@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use App\Models\Post;
 use Core\Controller;
 use Core\Middleware;
+use Core\View;
 
 class AdminController extends Controller {
     public function __construct() {

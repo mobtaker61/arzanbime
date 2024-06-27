@@ -5,7 +5,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Logo</th>
+                    <th>icon</th>
                     <th>Name</th>
                     <th>Intro</th>
                     <th>Actions</th>
@@ -15,7 +15,7 @@
                 <?php foreach ($companies as $company): ?>
                     <tr>
                         <td><?php echo $company['id']; ?></td>
-                        <td><img src="<?php echo $company['logo']; ?>" class="img-thumbnail" style="max-width: 100px;"></td>
+                        <td><img src="<?php echo $company['icon']; ?>" class="img-thumbnail" style="max-width: 100px;"/></td>
                         <td><?php echo $company['name']; ?></td>
                         <td><?php echo $company['intro']; ?></td>
                         <td>

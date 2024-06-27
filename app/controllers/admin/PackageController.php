@@ -12,7 +12,7 @@ class PackageController extends Controller {
         $packageModel = new Package();
         $companyModel = new Company();
 
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 15;
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
         $offset = ($page - 1) * $limit;
 
@@ -121,7 +121,7 @@ class PackageController extends Controller {
     
         ob_start();
         extract($viewData); // Extract variables for use in the included file
-        include realpath(__DIR__ . '/../views/admin/tariffs/tariff_table.php');
+        include realpath(__DIR__ . '/../../views/admin/tariffs/tariff_table.php');
         $html = ob_get_clean();
     
         header('Content-Type: text/html');

@@ -50,7 +50,7 @@ class QuotationController extends Controller {
         $followupModel = new Followup();
         $userModel = new User();
 
-        $quotation = $quotationModel->getQuotationById($id);
+        $quotation = $quotationModel->getQuotation($id);
         $followups = $followupModel->getFollowupsByQuotationId($id);
         $adminUsers = $userModel->getAdminUsers();
 
@@ -79,7 +79,7 @@ class QuotationController extends Controller {
         $quotationModel = new Quotation();
         $tariffModel = new Tariff();
 
-        $quotation = $quotationModel->getQuotationById($id);
+        $quotation = $quotationModel->getQuotation($id);
         $tariffs = $tariffModel->getTariffsByAge($quotation['age']);
 
         $viewData = [
