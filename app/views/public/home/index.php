@@ -333,11 +333,11 @@ $userLoggedIn = isset($_SESSION['user_id']);
             };
 
             const telElement = document.getElementById("tel");
+            alert('aaaa');
             if (telElement) {
                 const tel = removeSpaces(document.getElementById("country-code").value + telElement.value);
                 formData.tel = tel;
-
-                fetch("/auth/check-tel", {
+                fetch("/auth/check-tel", {                    
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
