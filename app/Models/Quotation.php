@@ -90,38 +90,14 @@ class Quotation extends Model
 
     public function createQuotation($data)
     {
-        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel) VALUES (?, ?, ?, ?, ?)");
-        if (!$stmt) {
-            throw new Exception($this->db->error);
-        }
-        $stmt->bind_param('issss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel']);
+        $uid = $this->generateUid();
+        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?, ?)");
+        if (!$stmt) {throw new Exception($this->db->error);}
+        $stmt->bind_param('isssss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel'],$uid);
         $stmt->execute();
         $uid = $stmt->insert_id;
         $stmt->close();
         return $uid;
-    }
-
-    public function createQuotation1($data)
-    {
-        $uid = $this->generateUid();
-        $stmt = $this->db->prepare('INSERT INTO quotation (birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?)');
-
-        if ($stmt) {
-            $stmt->bind_param(
-                'sisss', // 's' for string, 'i' for integer
-                $data['birth_date'],
-                $data['age'],
-                $data['duration'],
-                $data['tel'],
-                $uid
-            );
-
-            $stmt->execute();
-            $stmt->close();
-            return $uid;
-        } else {
-            throw new \Exception('Failed to prepare statement: ' . $this->db->error);
-        }
     }
 
     private function generateUid()
