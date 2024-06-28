@@ -260,7 +260,7 @@ class AuthController extends Controller
         $profile->createProfile($profileData);
 
         $_SESSION['user_id'] = $userId;
-        $_SESSION['username'] = $user['username'];
+        $_SESSION['username'] = $username;
         $_SESSION['user_role'] = 'user';
 
         return $userId;
