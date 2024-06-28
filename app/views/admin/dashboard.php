@@ -1,5 +1,5 @@
 <?php
-$pagetitle = "Admin Dashboard";
+$pagetitle = "داشبورد مدیریتی";
 ?>
 
 <section class="pady center-sec">

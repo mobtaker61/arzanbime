@@ -4,30 +4,44 @@
     <div class="mobile-large:w-full mobile-large:mt-3">
         <h2 class="text-vkl-t-sub-header font-bold text-vkl-c-header mr-auto w-fit mb-5 mobile-large:h3-bar">ثبت نام</h2>
 
-        <?php use Core\Security; if (!empty($error)) : ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php endif; ?>
-
         <form class="grid gap-3 mobile-large:gap-3 placeholder:text-vkl-c-normal" action="/register" method="post">
-            <input type="hidden" name="csrf_token" value="<?php echo Security::generateCSRFToken(); ?>">
-
-            <label>نام کاربری</label>
-            <input class="input placeholder:text-vkl-c-normal" type="text" placeholder="Username" name="username" required>
-
-            <label>ایمیل</label>
-            <input class="input placeholder:text-vkl-c-normal" type="email" placeholder="Email" name="email" required>
-
-            <label>رمز ورود</label>
-            <input class="input placeholder:text-vkl-c-normal" type="password" placeholder="Password" name="password" required>
-
-            <label>نقش</label>
-            <select class="input placeholder:text-vkl-c-normal" name="role">
-                <option value="user">User</option>
-                <option value="agent">Agent</option>
-                <option value="admin">Admin</option>
-            </select>
-
-            <button class="pri-btn col-span-2 mobile-medium:py-2">ثبت نام</button>
+            <input type="hidden" name="csrf_token" value="<?php use Core\Security; echo Security::generateCSRFToken(); ?>">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="name" class="block">نام</label>
+                    <input type="text" name="name" id="name" class="border border-gray-300 p-2 w-full" required>
+                </div>
+                <div>
+                    <label for="surname" class="block">نام خانوادگی</label>
+                    <input type="text" name="surname" id="surname" class="border border-gray-300 p-2 w-full" required>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="tel" class="block">موبایل</label>
+                    <input type="tel" name="tel" id="tel" class="border border-gray-300 p-2 w-full" required>
+                </div>
+                <div>
+                    <label for="email" class="block">ایمیل</label>
+                    <input type="email" name="email" id="email" class="border border-gray-300 p-2 w-full">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="username" class="block">Username</label>
+                    <input type="text" name="username" id="username" class="border border-gray-300 p-2 w-full" required>
+                    <input type="hidden" name="role" id="role" value="1">
+                    <input type="hidden" name="birth_date" id="birth_date" class="border border-gray-300 p-2 w-full" required>
+                </div>
+                <div>
+                    <label for="password" class="block">Password</label>
+                    <input type="password" name="password" id="password" class="border border-gray-300 p-2 w-full" required>
+                </div>
+            </div>
+            <button type="submit" class="pri-btn bg-blue-500 text-white px-4 py-2 rounded">ثبت نام</button>
         </form>
+        <?php if (!empty($error)) : ?>
+            <div class="alert alert-danger py-6"><?php echo $error; ?></div>
+        <?php endif; ?>
     </div>
 </section>

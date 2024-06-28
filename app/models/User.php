@@ -1,10 +1,14 @@
 <?php
+
 namespace App\Models;
 
 use Core\Model;
+use Exception;
 
-class User extends Model {
-    public function login($username, $password) {
+class User extends Model
+{
+    public function login($username, $password)
+    {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ? AND is_active = 1 LIMIT 1");
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -14,34 +18,62 @@ class User extends Model {
 
         if ($user && password_verify($password, $user['password'])) {
             // Ensure session start
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
-
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-
+            $_SESSION['user_role'] = $user['role'];
             return true;
         }
-
         return false;
     }
 
-    public function register($username, $email, $password, $role = 'user') {
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $this->db->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param('ssss', $username, $email, $hashedPassword, $role);
+    public function register($data)
+    {
+        $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
+        $stmt = $this->db->prepare("INSERT INTO users (username, password, role, is_active) VALUES (?, ?, ?, 1)");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('sss', $data['username'], $hashedPassword, $data['role']);
         $stmt->execute();
+        $userId = $stmt->insert_id;
         $stmt->close();
-        return $stmt->affected_rows > 0;
+
+        return $userId;
     }
 
-    public function getRole() {
+    public function isUsernameOrTelExists($username, $tel, $email)
+    {
+        // Check username in users table
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE username = ?");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $stmt->store_result();
+        $userExists = $stmt->num_rows > 0;
+        $stmt->close();
+        // Check email or phone in profiles table
+        $stmt = $this->db->prepare("SELECT id FROM profiles WHERE phone = ? OR email = ?");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('ss', $tel, $email);
+        $stmt->execute();
+        $stmt->store_result();
+        $profileExists = $stmt->num_rows > 0;
+        $stmt->close();
+
+        return $userExists || $profileExists;
+    }
+
+    public function getRole()
+    {
         return $_SESSION['role'] ?? null;
     }
 
-    public function logout() {
+    public function logout()
+    {
         // Ensure session start
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -51,7 +83,8 @@ class User extends Model {
         session_destroy();
     }
 
-    public function generatePasswordResetToken($email) {
+    public function generatePasswordResetToken($email)
+    {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param('s', $email);
         $stmt->execute();
@@ -67,7 +100,8 @@ class User extends Model {
         return false;
     }
 
-    public function resetPassword($token, $newPassword) {
+    public function resetPassword($token, $newPassword)
+    {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE reset_token = ?");
         $stmt->bind_param('s', $token);
         $stmt->execute();
@@ -82,11 +116,13 @@ class User extends Model {
         return false;
     }
 
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         return isset($_SESSION['user_id']);
     }
 
-    public function getAllUsers() {
+    public function getAllUsers()
+    {
         $stmt = $this->db->prepare("SELECT * FROM users");
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -94,7 +130,8 @@ class User extends Model {
         return $result;
     }
 
-    public function getUserById($id) {
+    public function getUserById($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -103,7 +140,8 @@ class User extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
-    public function getUserByUsername($username) {
+    public function getUserByUsername($username)
+    {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -112,15 +150,17 @@ class User extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
-    public function getAdminUsers() {
+    public function getAdminUsers()
+    {
         $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role = 'admin'");
         $stmt->execute();
         $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $result;
     }
-        
-    public function createUser($data) {
+
+    public function createUser($data)
+    {
         $stmt = $this->db->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
         $stmt->bind_param('ssss', $data['username'], $data['password'], $data['email'], $data['role']);
         $result = $stmt->execute();
@@ -128,15 +168,17 @@ class User extends Model {
         return $result;
     }
 
-    public function updateUser($id, $data) {
-        $stmt = $this->db->prepare("UPDATE users SET username = ?, password = ?, email = ?, role = ? WHERE id = ?");
-        $stmt->bind_param('ssssi', $data['username'], $data['password'], $data['email'], $data['role'], $id);
+    public function updateUser($id, $data)
+    {
+        $stmt = $this->db->prepare("UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?");
+        $stmt->bind_param('sssi', $data['username'], $data['password'],  $data['role'], $id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
     }
 
-    public function deleteUser($id) {
+    public function deleteUser($id)
+    {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $result = $stmt->execute();
@@ -144,7 +186,8 @@ class User extends Model {
         return $result;
     }
 
-    private function fetchAssoc($stmt) {
+    private function fetchAssoc($stmt)
+    {
         $stmt->store_result();
         $variables = [];
         $data = [];

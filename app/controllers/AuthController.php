@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\Profile;
 use App\Models\Quotation;
 use App\Models\User;
 use Core\Controller;
@@ -35,7 +36,7 @@ class AuthController extends Controller
         $user = new User();
         if ($user->login($username, $password)) {
             // Redirect based on user role
-            switch ($_SESSION['role']) {
+            switch ($_SESSION['user_role']) {
                 case 'admin':
                     header('Location: /admin');
                     break;
@@ -48,7 +49,7 @@ class AuthController extends Controller
             }
             exit(); // Ensure no further code is executed after the redirection
         } else {
-            View::render('public/auth/login', ['error' => 'Invalid username or password', 'pagetitle' => 'Login'], 'public');
+            View::render('public/auth/login', ['error' => 'نام کاربری یا رمز عبور اشتباه است', 'pagetitle' => 'ورود کاربر'], 'public');
         }
     }
 
@@ -63,25 +64,48 @@ class AuthController extends Controller
             die('CSRF token validation failed');
         }
 
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $role = $_POST['role'] ?? 'user';
+        $data = [
+            'username' => $_POST['username'],
+            'password' => $_POST['password'],
+            'name' => $_POST['name'],
+            'surname' => $_POST['surname'],
+            'tel' => $_POST['tel'],
+            'email' => $_POST['email'],
+            'birth_date' => $_POST['birth'],
+            'role' => $_POST['role'] ?? 'user'
+        ];
 
         $user = new User();
-        if ($user->register($username, $email, $password, $role)) {
-            header('Location: /login');
-            exit();
-        } else {
-            View::render('public/auth/register', ['error' => 'Registration failed', 'pagetitle' => 'Register'], 'public');
+        if ($user->isUsernameOrTelExists($data['username'], $data['tel'], $data['email'])) {
+            View::render('public/auth/register', ['error' => 'نام کاربری، ایمیل یا تلفن قبلا ثبت شده است', 'pagetitle' => 'ثبت نام کاربر'], 'public');
+            return;
         }
+
+        $userId = $user->register($data);
+
+        $profileData = [
+            'user_id' => $userId,
+            'profile_image' => '',
+            'name' => $data['name'],
+            'surname' => $data['surname'],
+            'birth_date' => $data['birth_da'],
+            'email' => $data['email'],
+            'phone' => $data['tel'],
+            'is_verified' => 0
+        ];
+
+        $profile = new Profile();
+        $profile->createProfile($profileData);
+
+        header('Location: /login');
+        exit();
     }
 
     public function logout()
     {
         $user = new User();
         $user->logout();
-        header('Location: /login');
+        header('Location: /');
         exit();
     }
 
@@ -136,6 +160,15 @@ class AuthController extends Controller
         $data = json_decode(file_get_contents('php://input'), true);
         $tel = preg_replace('/\s+/', '', $data['tel']); // Remove spaces
 
+        $_SESSION['quotation_data'] = [
+            'birth' => $data['birth'],
+            'age' => $data['age'],
+            'duration' => $data['duration'],
+            'tel' => $tel,
+            'role' => 'user',
+            'user_id' => null,
+        ];
+
         if ($this->imVerify->send($tel)) {
             echo json_encode(['success' => true]);
         } else {
@@ -149,20 +182,14 @@ class AuthController extends Controller
         $otp = $data['otp'];
 
         if ($this->imVerify->checkIsValid($otp)) {
-            // Store the data in the quotations table
             $quotationModel = new Quotation();
-            $quotationData = [
-                'birth' => $_SESSION['quotation_data']['birth'],
-                'age' => $_SESSION['quotation_data']['age'],
-                'duration' => $_SESSION['quotation_data']['duration'],
-                'tel' => $_SESSION['quotation_data']['tel'],
-            ];
+            $quotationData = $_SESSION['quotation_data'];
+            $quotationData['user_id'] = $quotationData['user_id'] ?? $this->createUserFromQuotationData($quotationData);
+
             $uid = $quotationModel->createQuotation($quotationData);
 
-            // Clear the session data
             unset($_SESSION['quotation_data']);
 
-            // Redirect to the offers page
             echo json_encode(['success' => true, 'redirect' => "/offers/$uid"]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid OTP']);
@@ -171,15 +198,72 @@ class AuthController extends Controller
 
     public function storeQuotationData()
     {
-        // Store the quotation data in the session
         $data = json_decode(file_get_contents('php://input'), true);
+        $quotationModel = new Quotation();
+        $quotationData = $_SESSION['quotation_data'];
+
+        $uid = $quotationModel->createQuotation($quotationData);
+
         $_SESSION['quotation_data'] = [
             'birth' => $data['birth'],
             'age' => $data['age'],
             'duration' => $data['duration'],
-            'tel' => preg_replace('/\s+/', '', $data['tel']), // Remove spaces
+            'tel' => preg_replace('/\s+/', '', $data['tel']),
+            'user_id' => $data['user_id'] ?? null,
         ];
 
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true, 'redirect' => "/offers/$uid"]);
+    }
+
+    public function checkTel()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $tel = preg_replace('/\s+/', '', $data['tel']);
+
+        $profileModel = new Profile();
+        $profile = $profileModel->getProfileByPhone($tel);
+
+        if ($profile) {
+            $_SESSION['user_id'] = $profile[0]['user_id'];
+            $_SESSION['user_role'] = 'user';
+            echo json_encode(['exists' => true, 'user_id' => $profile[0]['user_id']]);
+        } else {
+            echo json_encode(['exists' => false]);
+        }
+    }
+
+    private function createUserFromQuotationData($quotationData)
+    {
+        $user = new User();
+        $profile = new Profile();
+
+        $username = $quotationData['tel'];
+        $password = password_hash($username, PASSWORD_BCRYPT);
+
+        $userId = $user->register([
+            'username' => $username,
+            'password' => $password,
+            'role' => 'user',
+            'is_active' => 1
+        ]);
+
+        $profileData = [
+            'user_id' => $userId,
+            'profile_image' => '',
+            'name' => '',
+            'surname' => '',
+            'birth_date' => $quotationData['birth'],
+            'email' => null,
+            'phone' => $quotationData['tel'],
+            'is_verified' => 1
+        ];
+
+        $profile->createProfile($profileData);
+
+        $_SESSION['user_id'] = $userId;
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['user_role'] = 'user';
+
+        return $userId;
     }
 }

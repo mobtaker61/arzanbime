@@ -17,9 +17,10 @@
                     <h4 class="font-bold text-red-700">لینک های مفید</h4>
                 </li>
                 <li><a href="">خرید بیمه نامه</a></li>
-                <li><a href="">راهنما</a></li>
-                <li><a href="">اطلاعیه ها</a></li>
-                <li><a href="">نرخ ها</a></li>
+                <li><a href="/guide">راهنما</a></li>
+                <li><a href="/ntice">اطلاعیه ها</a></li>
+                <li><a href="/faq">سئوالات</a></li>
+                <li><a href="/login">ورود</a></li>
             </ul>
         </div>
         <div class="grid-cols-2 grid gap-x-15 tablet-medium:mt-6 mobile-medium:grid-cols-1 mobile-medium:mt-0">

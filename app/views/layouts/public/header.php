@@ -1,10 +1,11 @@
 <?php
 $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$userRole = $_SESSION['user_role'] ?? null; // Assuming you have stored the user role in the session
 ?>
 
 <header id="desc-header" class="max-w-180 fixed w-full top-0 text-vkl-t-sub text-neutral-50 z-50">
     <section class="center-sec py-6 tablet-small:py-3 flex items-center gap-10 tablet-small:justify-between">
-        <a href="/">
+        <a title="خانه" href="/">
             <svg class="tablet-small:relative tablet-small:z-50" width="98" height="22" viewBox="0 0 98 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="header-logo">
                     <path id="Vector" d="M98 15.7C97.3444 15.724 96.6897 15.754 96.0341 15.769C95.5253 15.78 95.0164 15.771 94.4292 15.771V0H98V15.7Z" fill="#690101" />
@@ -48,7 +49,17 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 </li>
             </ul>
         </nav>
-
+        <?php if ($userRole) : ?>
+            <?php
+            $dashboardUrl = '/user/dashboard';
+            if ($userRole === 'agent') {
+                $dashboardUrl = '/agent';
+            } elseif ($userRole === 'admin') {
+                $dashboardUrl = '/admin';
+            }
+            ?>
+            <a href="<?php echo $dashboardUrl; ?>" class="pri-btn bg-green mr-4 py-1 rounded-lg tablet-small:hidden">پنل کاربری</a>
+        <?php endif; ?>
         <button class="pri-btn mr-auto py-1 rounded-lg tablet-small:hidden">
             مشاوره رایگان
         </button>

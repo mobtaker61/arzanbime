@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/public/adminlte/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/styles/overlayscrollbars.min.css" integrity="sha256-dSokZseQNT08wYEWiz5iLI8QPlKxG+TswNRD8k35cpg=" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" integrity="sha256-Qsx5lrStHZyR9REqhUF8iQt73X06c8LGIUPzpOhwRrI=" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/public/adminlte/css/adminlte.rtl.min.css">
@@ -22,9 +22,9 @@
         <?php include 'header.php'; ?>
         <?php
         // Check if the user is an admin or agent and include the appropriate sidebar
-        if ($_SESSION['role'] === 'admin') {
+        if ($_SESSION['user_role'] === 'admin') {
             include 'sidebar.php';
-        } elseif ($_SESSION['role'] === 'agent') {
+        } elseif ($_SESSION['user_role'] === 'agent') {
             include 'app/views/layouts/agent/sidebar.php';
         }
         ?>

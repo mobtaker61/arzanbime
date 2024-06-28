@@ -17,6 +17,8 @@ $router->add('/set_new_password', 'App\Controllers\AuthController@setNewPassword
 $router->add('/auth/send-otp', 'App\Controllers\AuthController@sendOTP', 'POST');
 $router->add('/auth/verify-otp', 'App\Controllers\AuthController@verifyOTP', 'POST');
 $router->add('/auth/store-quotation-data', 'App\Controllers\AuthController@storeQuotationData', 'POST');
+$router->add('/auth/check-tel', 'App\Controllers\AuthController@checkTel', 'POST');
+$router->add('/logout', 'App\Controllers\AuthController@logout');
 $router->add('/getTariffSummary/{companyId:\d+}', 'App\Controllers\HomeController@getTariffSummary');
 // Contact page route
 $router->add('/contact', 'App\Controllers\ContactController@index');
@@ -33,13 +35,13 @@ $router->add('/posts/{postType}', 'App\Controllers\PostController@index', 'GET')
 $router->add('/post/{id}', 'App\Controllers\PostController@show', 'GET');
 
 // User routes (requires authentication)
-$router->add('/user/dashboard', 'App\Controllers\UserController@dashboard', 'GET');
-
-// Protected routes
-$router->add('/logout', 'App\Controllers\AuthController@logout');
-$router->add('/user/profile', 'App\Controllers\UserController@showProfile');
-$router->add('/user/profile', 'App\Controllers\UserController@updateProfile', 'POST');
-
+$router->add('/user/dashboard', 'App\Controllers\UserController@dashboard');
+$router->add('/user/profile', 'App\Controllers\ProfileController@show');
+$router->add('/user/profile/create', 'App\Controllers\ProfileController@create');
+$router->add('/user/profile/store', 'App\Controllers\ProfileController@store', 'POST');
+$router->add('/user/profile/edit/{id}', 'App\Controllers\ProfileController@edit');
+$router->add('/user/profile/update', 'App\Controllers\ProfileController@update', 'POST');
+$router->add('/user/profile/uploadImage', 'App\Controllers\ProfileController@uploadImage', 'POST');
 // Admin routes (requires admin authentication)
 $router->add('/admin', 'App\Controllers\Admin\AdminController@dashboard', 'GET');
 
@@ -97,4 +99,3 @@ $router->add('/sitemap.xml', 'App\Controllers\SitemapController@index');
 // RSS feed routes
 $router->add('/rss', 'App\Controllers\RssController@index', 'GET');
 $router->add('/rss/{postType}', 'App\Controllers\RssController@byPostType', 'GET');
-

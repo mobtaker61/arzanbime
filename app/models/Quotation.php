@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Core\Model;
+use Exception;
 
 class Quotation extends Model
 {
-    public function getAllQuotations($limit, $offset, $sortField, $sortOrder, $filterTel, $filterStatus)
+    public function getAllQuotations($limit = 10, $offset = 1, $sortField = 'id', $sortOrder = 'DESC', $filterTel = null, $filterStatus = null)
     {
         $sql = "SELECT * FROM quotation WHERE 1=1";
 
@@ -89,13 +90,26 @@ class Quotation extends Model
 
     public function createQuotation($data)
     {
+        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel) VALUES (?, ?, ?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('issss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel']);
+        $stmt->execute();
+        $uid = $stmt->insert_id;
+        $stmt->close();
+        return $uid;
+    }
+
+    public function createQuotation1($data)
+    {
         $uid = $this->generateUid();
         $stmt = $this->db->prepare('INSERT INTO quotation (birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?)');
 
         if ($stmt) {
             $stmt->bind_param(
                 'sisss', // 's' for string, 'i' for integer
-                $data['birth'],
+                $data['birth_date'],
                 $data['age'],
                 $data['duration'],
                 $data['tel'],

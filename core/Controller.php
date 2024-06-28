@@ -27,11 +27,15 @@ class Controller {
 
     protected function view($view, $data = [], $layout = 'user') {
         extract($data);
+        ob_start();
         $viewPath = "app/views/$view.php";
+        $content = ob_get_clean();
         if ($layout === 'admin') {
             require "app/views/layouts/admin/master.php";
         } else if ($layout === 'user') {
             require "app/views/layouts/user/master.php";
+        } else if ($layout === 'agent') {
+            require "app/views/layouts/agent/master.php";
         } else {
             require "app/views/layouts/public/master.php";
         }

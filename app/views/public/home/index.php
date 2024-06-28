@@ -2,6 +2,7 @@
 $pagetitle = $pagetitle ?? 'خانه';
 $description = $description ?? 'این صفحه اصلی وبلاگ است که آخرین پست ها و اخبار را نمایش می دهد.';
 $keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها';
+$userLoggedIn = isset($_SESSION['user_id']);
 ?>
 
 <section class="pady center-sec flex justify-between items-center gap-6 mobile-large:gap-3 mobile-large:flex-col mobile-large:items-start mb-6">
@@ -54,14 +55,16 @@ $keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها
                     </span>
                 </span>
             </div>
-            <div class="col-span-2 grid-cols-3 grid gap-6 mobile-large:gap-3">
-                <input id="tel" class="input placeholder:text-vkl-c-normal col-span-2 " type="tel" name="tel" placeholder="شماره تلفن*" required />
-                <select id="country-code" class="input placeholder:text-vkl-c-normal" title="تلفن">
-                    <option value="+90" data-flag="tr">🇹🇷 +90</option>
-                    <option value="+98" data-flag="ir">🇮🇷 +98</option>
-                </select>
-            </div>
-            <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید</p>
+            <?php if (!$userLoggedIn) : ?>
+                <div class="col-span-2 grid-cols-3 grid gap-6 mobile-large:gap-3">
+                    <input id="tel" class="input placeholder:text-vkl-c-normal col-span-2 " type="tel" name="tel" placeholder="شماره تلفن*" required />
+                    <select id="country-code" class="input placeholder:text-vkl-c-normal" title="تلفن">
+                        <option value="+90" data-flag="tr">🇹🇷 +90</option>
+                        <option value="+98" data-flag="ir">🇮🇷 +98</option>
+                    </select>
+                </div>
+                <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید</p>
+            <?php endif; ?>
             <button type="submit" class="pri-btn col-span-2 mobile-medium:py-2">استعلام قیمت</button>
         </form>
     </div>
@@ -293,6 +296,14 @@ $keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها
 <!-- ******* SCRIPT ******** -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Function to check if the user is logged in
+        function isUserLoggedIn() {
+            // Implement your logic to check if the user is logged in
+            // This could be a check for a session variable, cookie, etc.
+            // For example:
+            return <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        }
+
         // Calculate age based on birth date input
         document.getElementById("birth").addEventListener("input", function() {
             const birthDate = new Date(this.value);
@@ -309,54 +320,97 @@ $keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها
         function removeSpaces(str) {
             return str.replace(/\s+/g, '');
         }
+
         // Handle form submission
         document.getElementById("quota-form-element").addEventListener("submit", function(e) {
             e.preventDefault();
 
-            const tel = removeSpaces(document.getElementById("country-code").value + document.getElementById("tel").value);
             const formData = {
                 birth: document.getElementById("birth").value,
                 age: document.getElementById("age").value,
                 duration: document.querySelector('input[name="duration"]:checked').value,
-                tel: tel,
+                role: "user",
             };
 
-            // Send OTP
-            fetch("/auth/send-otp", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        tel: formData.tel
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        // Store form data in session
-                        return fetch("/auth/store-quotation-data", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(formData),
-                        });
-                    } else {
-                        throw new Error(data.message || "Failed to send OTP");
-                    }
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        document.getElementById("otp-modal").classList.remove("hidden");
-                    } else {
-                        alert(data.message || "Failed to store quotation data");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+            const telElement = document.getElementById("tel");
+            if (telElement) {
+                const tel = removeSpaces(document.getElementById("country-code").value + telElement.value);
+                formData.tel = tel;
+
+                fetch("/auth/check-tel", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            tel: formData.tel
+                        })
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.exists) {
+                            // User exists, store the quotation and redirect
+                            formData.user_id = data.user_id;
+                            return fetch("/auth/store-quotation-data", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(formData)
+                                })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.success) {
+                                        window.location.href = data.redirect; // Redirect to offers result page
+                                    } else {
+                                        throw new Error(data.message || "Failed to store quotation data");
+                                    }
+                                });
+                        } else {
+                            // User does not exist, send OTP
+                            return fetch("/auth/send-otp", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(formData)
+                                    
+                                    //body: JSON.stringify({tel: formData.tel})
+                                })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.success) {
+                                        document.getElementById("otp-modal").classList.remove("hidden");
+                                    } else {
+                                        throw new Error(data.message || "Failed to send OTP");
+                                    }
+                                });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            } else {
+                // User is logged in, store the quotation directly
+                fetch("/auth/store-quotation-data", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert(data.message || "Failed to store quotation data");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
         });
 
         // Handle OTP form submission
@@ -368,11 +422,11 @@ $keywords = $keywords ?? 'صفحه اصلی, وبلاگ, اخبار, پست ها
             fetch("/auth/verify-otp", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         otp: otp
-                    }),
+                    })
                 })
                 .then((response) => response.json())
                 .then((data) => {
