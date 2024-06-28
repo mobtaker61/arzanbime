@@ -24,8 +24,7 @@ class AuthController extends Controller
         View::render('public/auth/login', ['pagetitle' => 'Login'], 'public');
     }
 
-    public function login()
-    {
+    public function login(){
         if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
             die('CSRF token validation failed');
         }
