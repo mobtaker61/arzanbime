@@ -24,7 +24,8 @@ class AuthController extends Controller
         View::render('public/auth/login', ['pagetitle' => 'Login'], 'public');
     }
 
-    public function login(){
+    public function login()
+    {
         if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
             die('CSRF token validation failed');
         }
@@ -35,6 +36,7 @@ class AuthController extends Controller
         $user = new User();
         if ($user->login($username, $password)) {
             // Redirect based on user role
+            $this->notify($username . ' is logged.', ['telegram']);
             switch ($_SESSION['user_role']) {
                 case 'admin':
                     header('Location: /admin');
@@ -187,8 +189,10 @@ class AuthController extends Controller
 
             $uid = $quotationModel->createQuotation($quotationData);
 
-            unset($_SESSION['quotation_data']);
+            $this->notify('استعلام جدید در: ' . PHP_EOL . json_encode($_SESSION['quotation_data']) . PHP_EOL . PHP_EOL . 'https://arzanbime.com/offers/' . $uid, ['telegram']);
+            $this->imVerify->send($quotationData['tel'], 'نتیجه استعلام شما در آدرس ' . 'https://arzanbime.com/offers/' . $uid);
 
+            unset($_SESSION['quotation_data']);
             echo json_encode(['success' => true, 'redirect' => "/offers/$uid"]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid OTP']);
@@ -198,18 +202,24 @@ class AuthController extends Controller
     public function storeQuotationData()
     {
         $data = json_decode(file_get_contents('php://input'), true);
+        $_SESSION['quotation_data'] = [
+            'birth' => $data['birth'],
+            'age' => $data['age'],
+            'duration' => $data['duration'],
+            //            'tel' => preg_replace('/\s+/', '', $data['tel']),
+            'user_id' => $data['user_id'] ?? $_SESSION['user_id'],
+        ];
+
         $quotationModel = new Quotation();
         $quotationData = $_SESSION['quotation_data'];
 
         $uid = $quotationModel->createQuotation($quotationData);
 
-        $_SESSION['quotation_data'] = [
-            'birth' => $data['birth'],
-            'age' => $data['age'],
-            'duration' => $data['duration'],
-//            'tel' => preg_replace('/\s+/', '', $data['tel']),
-            'user_id' => $data['user_id'] ?? null,
-        ];
+        $profile = new Profile;
+        $tel = $profile->getProfileByUserId($_SESSION['user_id']);
+
+        $this->notify('استعلام جدید در: ' . PHP_EOL . json_encode($_SESSION['quotation_data']) . PHP_EOL . PHP_EOL . 'https://arzanbime.com/offers/' . $uid, ['telegram']);
+        $this->imVerify->send($tel['phone'], 'نتیجه استعلام شما در آدرس ' . 'https://arzanbime.com/offers/' . $uid);
 
         echo json_encode(['success' => true, 'redirect' => "/offers/$uid"]);
     }
