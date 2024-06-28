@@ -95,10 +95,10 @@ class Quotation extends Model
         if (!$stmt) {throw new Exception($this->db->error);}
         $stmt->bind_param('isssss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel'],$uid);
         $stmt->execute();
-        $uid = $stmt->insert_id;
         $stmt->close();
         return $uid;
     }
+
 
     private function generateUid()
     {

@@ -207,7 +207,7 @@ class AuthController extends Controller
             'birth' => $data['birth'],
             'age' => $data['age'],
             'duration' => $data['duration'],
-            'tel' => preg_replace('/\s+/', '', $data['tel']),
+//            'tel' => preg_replace('/\s+/', '', $data['tel']),
             'user_id' => $data['user_id'] ?? null,
         ];
 
