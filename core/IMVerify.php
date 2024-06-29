@@ -1,6 +1,9 @@
 <?php
 
 namespace Core;
+use Kavenegar\KavenegarApi;
+use Kavenegar\Exceptions\ApiException;
+use Kavenegar\Exceptions\HttpException;
 
 class IMVerify
 {
@@ -14,7 +17,26 @@ class IMVerify
         return $_SESSION['vcode'];
     }
 
-    public function send($gsm, $msg = null)
+    public function send_kave($gsm, $msg = null)//KavehNegar
+    {
+        try{
+            $api = new KavenegarApi("53794731446E7A7565713361797A667174652F4952413D3D");
+            $sender = "0018018949161";
+            $receptor = array("09386053900","+905419322155");
+            $message = "وب سرویس تخصصی کاوه نگار ";
+            $result = $api->Send($sender,$receptor,$message);
+            if($result){
+                var_dump($result);
+            }
+        }
+        catch(ApiException $e){
+            echo $e->errorMessage();
+        }
+        catch(HttpException $e){
+            echo $e->errorMessage();
+        }
+    }
+    public function send($gsm, $msg = null)//IletimMerkezi
     {
         $code   = $this->createVerificationCode();
         $text   = $msg ?? 'Doğrulama kodunuz: ' . $code;
