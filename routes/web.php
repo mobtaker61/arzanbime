@@ -35,7 +35,7 @@ $router->add('/posts/{postType}', 'App\Controllers\PostController@index', 'GET')
 $router->add('/post/{id}', 'App\Controllers\PostController@show', 'GET');
 
 // User routes (requires authentication)
-$router->add('/user/dashboard', 'App\Controllers\UserController@dashboard');
+$router->add('/user', 'App\Controllers\UserController@dashboard');
 $router->add('/user/profile', 'App\Controllers\ProfileController@show');
 $router->add('/user/profile/create', 'App\Controllers\ProfileController@create');
 $router->add('/user/profile/store', 'App\Controllers\ProfileController@store', 'POST');

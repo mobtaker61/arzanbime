@@ -35,17 +35,17 @@ class AuthController extends Controller
 
         $user = new User();
         if ($user->login($username, $password)) {
-            // Redirect based on user role
-            $this->notify($username . ' is logged.', ['telegram']);
-            switch ($_SESSION['user_role']) {
+            switch ($_SESSION['user_role']) { // Redirect based on user role
                 case 'admin':
                     header('Location: /admin');
                     break;
                 case 'agent':
+                    $this->notify($username . ' is logged.', ['telegram']);
                     header('Location: /agent');
                     break;
                 default:
-                    header('Location: /user/dashboard');
+                    $this->notify($username . ' is logged.', ['telegram']);
+                    header('Location: /user');
                     break;
             }
             exit(); // Ensure no further code is executed after the redirection
@@ -65,16 +65,7 @@ class AuthController extends Controller
             die('CSRF token validation failed');
         }
 
-        $data = [
-            'username' => $_POST['username'],
-            'password' => $_POST['password'],
-            'name' => $_POST['name'],
-            'surname' => $_POST['surname'],
-            'tel' => $_POST['tel'],
-            'email' => $_POST['email'],
-            'birth_date' => $_POST['birth'],
-            'role' => $_POST['role'] ?? 'user'
-        ];
+        $data = $this->getUserDataFromRequest();
 
         $user = new User();
         if ($user->isUsernameOrTelExists($data['username'], $data['tel'], $data['email'])) {
@@ -83,20 +74,7 @@ class AuthController extends Controller
         }
 
         $userId = $user->register($data);
-
-        $profileData = [
-            'user_id' => $userId,
-            'profile_image' => '',
-            'name' => $data['name'],
-            'surname' => $data['surname'],
-            'birth_date' => $data['birth_da'],
-            'email' => $data['email'],
-            'phone' => $data['tel'],
-            'is_verified' => 0
-        ];
-
-        $profile = new Profile();
-        $profile->createProfile($profileData);
+        $this->createUserProfile($userId, $data);
 
         header('Location: /login');
         exit();
@@ -109,6 +87,37 @@ class AuthController extends Controller
         header('Location: /');
         exit();
     }
+
+    private function getUserDataFromRequest()
+    {
+        return [
+            'username' => $_POST['username'],
+            'password' => $_POST['password'],
+            'name' => $_POST['name'],
+            'surname' => $_POST['surname'],
+            'tel' => $_POST['tel'],
+            'email' => $_POST['email'],
+            'birth_date' => $_POST['birth'],
+            'role' => $_POST['role'] ?? 'user'
+        ];
+    }
+
+    private function createUserProfile($userId, $data)
+    {
+        $profileData = [
+            'user_id' => $userId,
+            'profile_image' => '',
+            'name' => $data['name'],
+            'surname' => $data['surname'],
+            'birth_date' => $data['birth_date'],
+            'email' => $data['email'],
+            'phone' => $data['tel'],
+            'is_verified' => 0
+        ];
+
+        $profile = new Profile();
+        $profile->createProfile($profileData);
+    }    
 
     public function showResetPasswordForm()
     {
