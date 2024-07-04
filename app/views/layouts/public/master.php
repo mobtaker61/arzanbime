@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/public/assets/a-logo-EmGrkL-A.png" />
+    <link rel="icon" type="image/svg+xml" href="/public/assets/ab-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?php echo $pagetitle . ' - ارزان بیمه'; ?></title>
     <meta name="description" content="<?php echo $description ?? 'خرید بیمه سلامت ویژه اقامت از شرکتهای معتبر ترکیه بصورت مستقیم و با تخفیف استثنایی'; ?>">
@@ -18,6 +18,7 @@
 </head>
 
 <body class="text-vkl-t-normal font-anjoman bg-neutral-50 text-vkl-c-normal max-w-180 mx-auto overflow-x-hidden">
+    <?php include 'bodycode.php'; ?>
     <?php include 'app/views/layouts/public/header.php'; ?>
     <?php echo $content ?? ''; ?>
     <footer>
