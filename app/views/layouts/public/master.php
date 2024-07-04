@@ -15,18 +15,6 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" type="text/css" href="/public/css/front.css" />
-
-    <script>
-        //FCM
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/firebase-messaging-sw.js')
-                .then(function(registration) {
-                    console.log('Service Worker registration successful with scope: ', registration.scope);
-                }).catch(function(err) {
-                    console.log('Service Worker registration failed: ', err);
-                });
-        }
-    </script>
 </head>
 
 <body class="text-vkl-t-normal font-anjoman bg-neutral-50 text-vkl-c-normal max-w-180 mx-auto overflow-x-hidden">
