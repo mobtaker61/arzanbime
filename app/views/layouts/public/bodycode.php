@@ -1,15 +1,8 @@
 <script type="module">
     // Import the functions you need from the SDKs you need
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import {
-        getAnalytics
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-    import {
-        getMessaging,
-        getToken
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {getMessaging, getToken} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-messaging.js";
+    import {getAnalytics} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -31,6 +24,49 @@
     // Get registration token. Initially this makes a network call, once retrieved
     // subsequent calls to getToken will return from cache.
     const messaging = getMessaging();
+
+    // Request permission to send notifications
+    messaging.requestPermission()
+        .then(function() {
+            console.log('Notification permission granted.');
+            // Get the token
+            return messaging.getToken({
+                vapidKey: 'BF67snExbAKukiyj32dVrstE16NomXfL00JkZvuYy1Ugs5MUN2-CBP33RJ4jiuRkI_duC9cUWecTGlX71fr7NYo'
+            });
+        })
+        .then(function(token) {
+            console.log('FCM Token:', token);
+            // Save the token to your server/database
+            saveTokenToServer(token);
+        })
+        .catch(function(err) {
+            console.log('Unable to get permission to notify.', err);
+        });
+
+    function saveTokenToServer(token) {
+        // Send the token to the server
+        fetch('/save-token', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify({token: token}),
+        });
+    }
+
+    messaging.onMessage((payload) => {
+        console.log('Message received. ', payload);
+        // Customize notification here
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+            body: payload.notification.body,
+            icon: payload.notification.icon
+        };
+
+        if (Notification.permission === 'granted') {
+            new Notification(notificationTitle, notificationOptions);
+        }
+    });
+
+
     getToken(messaging, {
         vapidKey: 'BF67snExbAKukiyj32dVrstE16NomXfL00JkZvuYy1Ugs5MUN2-CBP33RJ4jiuRkI_duC9cUWecTGlX71fr7NYo'
     }).then((currentToken) => {
@@ -63,18 +99,4 @@
     // Call the requestPermission function
     requestPermission();
 
-    messaging.onMessage((payload) => {
-        console.log('Message received: ', payload);
-        const notificationTitle = payload.notification.title;
-        const notificationOptions = {
-            body: payload.notification.body,
-            icon: payload.notification.icon
-        };
-
-        if (!("Notification" in window)) {
-            alert("This browser does not support system notifications");
-        } else if (Notification.permission === "granted") {
-            new Notification(notificationTitle, notificationOptions);
-        }
-    });
 </script>
