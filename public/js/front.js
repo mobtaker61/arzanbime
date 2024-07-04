@@ -1,14 +1,3 @@
-//FCM
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-  .then(function(registration) {
-      console.log('Service Worker registration successful with scope: ', registration.scope);
-  }).catch(function(err) {
-      console.log('Service Worker registration failed: ', err);
-  });
-}
-
-
 // OPEN QA
 const buttons = document.querySelectorAll("#qa-button");
 
