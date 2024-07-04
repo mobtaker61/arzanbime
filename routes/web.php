@@ -20,6 +20,8 @@ $router->add('/auth/store-quotation-data', 'App\Controllers\AuthController@store
 $router->add('/auth/check-tel', 'App\Controllers\AuthController@checkTel', 'POST');
 $router->add('/logout', 'App\Controllers\AuthController@logout');
 $router->add('/getTariffSummary/{companyId:\d+}', 'App\Controllers\HomeController@getTariffSummary');
+$router->add('/save-token', 'App\Controllers\NotificationController@saveToken', 'POST');
+$router->add('/send-notification/{userId}/{title}/{body}', 'App\Controllers\NotificationController@sendNotificationToUser');
 // Contact page route
 $router->add('/contact', 'App\Controllers\ContactController@index');
 $router->add('/contact/submit', 'App\Controllers\ContactController@submit', 'POST');

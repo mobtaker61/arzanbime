@@ -29,3 +29,28 @@ $keywords = "ورود, سایت";
         <?php endif; ?>
     </div>
 </section>
+
+<script>
+    function saveToken(token) {
+        fetch('/save-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': 'YOUR_CSRF_TOKEN'
+            },
+            body: JSON.stringify({ token: token })
+        }).then(response => response.json())
+        .then(data => {
+            console.log('Token saved:', data);
+        }).catch(error => {
+            console.error('Error saving token:', error);
+        });
+    }
+
+    messaging.getToken().then((token) => {
+        console.log('Token received: ', token);
+        saveToken(token);
+    }).catch((err) => {
+        console.error('Unable to get token.', err);
+    });
+</script>
