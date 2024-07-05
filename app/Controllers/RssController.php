@@ -11,7 +11,7 @@ class RssController extends Controller {
         header("Content-Type: application/rss+xml; charset=utf-8");
 
         $postModel = new Post();
-        $posts = $postModel->getAllPosts();
+        $posts = $postModel->getAllPosts(100,1,'ASC');
 
         echo '<?xml version="1.0" encoding="UTF-8"?>';
         echo '<?xml-stylesheet type="text/xsl" href="/rss.xsl"?>';  // Include the XSLT stylesheet reference

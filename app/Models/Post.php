@@ -20,6 +20,10 @@ class Post extends Model
         if (!$stmt) {
             throw new Exception($this->db->error);
         }
+
+        $limit = $limit ?? PHP_INT_MAX; // If $limit is null, use a very large number
+        $offset = $offset ?? 0; // If $offset is null, use 0
+
         $stmt->bind_param('ii', $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -68,6 +72,10 @@ class Post extends Model
         if (!$stmt) {
             throw new Exception($this->db->error);
         }
+
+        $limit = $limit ?? PHP_INT_MAX; // If $limit is null, use a very large number
+        $offset = $offset ?? 0; // If $offset is null, use 0
+
         $stmt->bind_param('iii', $typeId, $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
@@ -75,10 +83,13 @@ class Post extends Model
         return $result;
     }
 
-    public function getPostsByPostType($postType, $page, $limit)
+    public function getPostsByPostType($postType, $page = null, $limit = null)
     {
-        $offset = ($page - 1) * $limit;
         $stmt = $this->db->prepare("SELECT * FROM post WHERE post_type = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+        
+        $limit = $limit ?? PHP_INT_MAX; // If $limit is null, use a very large number
+        $offset = ($page - 1) * $limit ?? 0; // If $offset is null, use 0
+
         $stmt->bind_param('iii', $postType, $limit, $offset);
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
