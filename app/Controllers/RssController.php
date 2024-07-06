@@ -29,6 +29,7 @@ class RssController extends Controller
             echo '<title>' . htmlspecialchars($post['title']) . '</title>';
             echo '<link>https://www.arzanbime.com/post/' . $post['id'] . '</link>';
             echo '<author>Administrator</author>';
+            echo '<image>https://www.arzanbime.com'. $post['image'] .'</image>';
             echo '<category>'. $post['post_type'] .'</category>';
             echo '<description>' . htmlspecialchars($post['caption']) . '</description>';
             echo '<content:encoded>' . htmlspecialchars($post['full_body']) . '</content:encoded>';
@@ -69,6 +70,7 @@ class RssController extends Controller
             echo '<title>' . htmlspecialchars($post['title']) . '</title>';
             echo '<link>https://www.arzanbime.com/post/' . $post['id'] . '</link>';
             echo '<author>Administrator</author>';
+            echo '<image>https://www.arzanbime.com'. $post['image'] .'</image>';
             echo '<category>'. $type['title'] .'</category>';
             echo '<description>' . htmlspecialchars($post['full_body']) . '</description>';
             echo '<pubDate>' . date(DATE_RSS, strtotime($post['created_at'])) . '</pubDate>';
