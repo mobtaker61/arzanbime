@@ -8,7 +8,7 @@ use FFI\Exception;
 class PostType extends Model
 {
     public function getPostTypeBySlug($slug) {
-        $stmt = $this->db->prepare("SELECT * FROM post_type WHERE slug = ?");
+        $stmt = $this->db->prepare("SELECT * FROM post_type WHERE slug = ? LIMIT 1");
         if (!$stmt) {
             throw new Exception($this->db->error);
         }

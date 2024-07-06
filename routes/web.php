@@ -95,9 +95,7 @@ $router->add('/admin/quotations/offers/{id}', 'App\Controllers\Admin\QuotationCo
 $router->add('/agent', 'App\Controllers\Agent\AgentController@dashboard', 'GET');
 
 //************** EXTRA **********************/
-// Sitemap route
-$router->add('/sitemap.xml', 'App\Controllers\SitemapController@index');
-
-// RSS feed routes
+// Sitemap & RSS feed routes
+$router->add('/sitemap.xml', 'App\Controllers\RssController@sitemap');
 $router->add('/rss', 'App\Controllers\RssController@index', 'GET');
 $router->add('/rss/{postType}', 'App\Controllers\RssController@byPostType', 'GET');
