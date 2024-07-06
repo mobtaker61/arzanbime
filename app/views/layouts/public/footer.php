@@ -39,19 +39,19 @@
                 <ul class="grid gap-2 grid-cols-1 mobile-medium:mt-5">
                     <li class="flex justify-start items-start gap-2">
                         <span><i class="ph text-red-700 ph-map-pin text-xl"></i></span>
-                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit</span>
+                        <span>Mollagürani Mh. Muratpaşa Sk. No:2/303 Fatih/İSTANBUL</span>
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-phone text-xl"></i></span>
-                        <a href="tel:098123456789">098123456789</a>
+                        <a href="tel:+905441810804">05441810804</a>
+                    </li>
+                    <li class="flex justify-start items-center gap-2">
+                        <span><i class="ph text-red-700 ph-whatsapp-logo text-xl"></i></span>
+                        <a href="https://wa.me/message/EU6QW3GORLX6D1">05441810804</a>
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-envelope-simple text-xl"></i></span>
-                        <a href="tel:098123456789">098123456789</a>
-                    </li>
-                    <li class="flex justify-start items-center gap-2">
-                        <span><i class="ph text-red-700 ph-envelope-simple text-xl"></i></span>
-                        <a href="mailto:email@gmail.com">email@gmail.com</a>
+                        <a href="mailto:email@gmail.com">info[@]arzanbime.com</a>
                     </li>
                 </ul>
             </div>
