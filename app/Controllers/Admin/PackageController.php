@@ -181,12 +181,6 @@ class PackageController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Package deleted successfully.']);
     }
 
-    public function viewByCompany1($company_id) {
-        $packageModel = new Package();
-        $packages = $packageModel->getPackagesByCompany($company_id);
-        $this->view('admin/packages/index', ['packages' => $packages,'pagetitle' => 'پکیج های شرکت'], 'admin');
-    }
-
     public function viewByCompany($companyId) {
         $packageModel = new Package();
         $packages = $packageModel->getPackagesByCompany($companyId);
@@ -195,7 +189,6 @@ class PackageController extends Controller {
         echo json_encode(['packages' => $packages,'pagetitle' => 'پکیج های شرکت']);
     }
     
-
     private function sendJsonResponse($response) {
         header('Content-Type: application/json');
         echo json_encode($response);

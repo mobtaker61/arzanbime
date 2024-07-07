@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/public/adminlte/css/adminlte.rtl.min.css">
     <link rel="stylesheet" href="/public/css/custom.css">
-    <!-- Include TinyMCE -->
+     <!-- Include TinyMCE -->
     <script src="/public/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 

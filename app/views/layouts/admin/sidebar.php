@@ -45,6 +45,41 @@
                                 <p>تعرفه</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="/admin/package-discounts" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>کمیسیون</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <p>
+                            کاربران
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/user-levels" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>سطوح</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/packages" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>نماینده</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/tariffs" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>کاربر</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item">

@@ -91,6 +91,24 @@ $router->add('/admin/quotations/store', 'App\Controllers\Admin\QuotationControll
 $router->add('/admin/quotations/addFollowup', 'App\Controllers\Admin\QuotationController@addFollowup', 'POST');
 $router->add('/admin/quotations/offers/{id}', 'App\Controllers\Admin\QuotationController@showOffers', 'GET');
 
+// Admin user levels routes
+$router->add('/admin/user-levels', 'App\Controllers\Admin\UserLevelController@index', 'GET');
+$router->add('/admin/user-levels/create', 'App\Controllers\Admin\UserLevelController@create', 'GET');
+$router->add('/admin/user-levels/store', 'App\Controllers\Admin\UserLevelController@store', 'POST');
+$router->add('/admin/user-levels/edit/{id}', 'App\Controllers\Admin\UserLevelController@edit', 'GET');
+$router->add('/admin/user-levels/update/{id}', 'App\Controllers\Admin\UserLevelController@update', 'POST');
+$router->add('/admin/user-levels/delete/{id}', 'App\Controllers\Admin\UserLevelController@delete', 'GET');
+
+// Admin package discounts routes
+$router->add('/admin/package-discounts', 'App\Controllers\Admin\PackageDiscountController@index', 'GET');
+$router->add('/admin/package-discounts/create', 'App\Controllers\Admin\PackageDiscountController@create', 'GET');
+$router->add('/admin/package-discounts/store', 'App\Controllers\Admin\PackageDiscountController@store', 'POST');
+$router->add('/admin/package-discounts/edit/{id}', 'App\Controllers\Admin\PackageDiscountController@edit', 'GET');
+$router->add('/admin/package-discounts/update/{id}', 'App\Controllers\Admin\PackageDiscountController@update', 'POST');
+$router->add('/admin/package-discounts/delete/{id}', 'App\Controllers\Admin\PackageDiscountController@delete', 'GET');
+
+
+//************** AGENT **********************/
 // Agent routes (requires agent authentication)
 $router->add('/agent', 'App\Controllers\Agent\AgentController@dashboard', 'GET');
 

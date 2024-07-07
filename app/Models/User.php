@@ -186,6 +186,16 @@ class User extends Model
         return $result;
     }
 
+    public function getUserLevel($userId)
+    {
+        $stmt = $this->db->prepare("SELECT ul.* FROM users u JOIN user_levels ul ON u.user_level_id = ul.id WHERE u.id = ?");
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result;
+    }
+
     private function fetchAssoc($stmt)
     {
         $stmt->store_result();
