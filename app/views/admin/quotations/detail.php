@@ -8,10 +8,9 @@
     </div>
 
     <?php if (!empty($followups)): ?>
-        <div class="timeline"> <!-- timeline time label -->
-            <div class="time-label"> <span class="text-bg-danger">تاریخچه پیگیری</span> </div> <!-- /.timeline-label -->
+        <div class="timeline">
+            <div class="time-label"> <span class="text-bg-danger">تاریخچه پیگیری</span> </div>
                 <?php foreach ($followups as $followup): ?>
-                    <!-- timeline item -->
                     <div>
                         <i class="timeline-icon bi bi-chat-text-fill text-bg-warning"></i>
                             <div class="timeline-item">
@@ -20,7 +19,7 @@
                                 <div class="timeline-body"><?php echo $followup['comment']; ?></div>
                                 <div class="timeline-footer"> <span class="btn btn-warning btn-sm"><?php echo $followup['refer_to']; ?></span> </div>
                             </div>
-                    </div> <!-- END timeline item -->
+                    </div>
                 <?php endforeach; ?>
     <?php else: ?>
         <div class="alert alert-dark" role="alert">هنوز اقدامی روی این درخواست انجام نشده است</div>

@@ -107,6 +107,33 @@ $router->add('/admin/package-discounts/edit/{id}', 'App\Controllers\Admin\Packag
 $router->add('/admin/package-discounts/update/{id}', 'App\Controllers\Admin\PackageDiscountController@update', 'POST');
 $router->add('/admin/package-discounts/delete/{id}', 'App\Controllers\Admin\PackageDiscountController@delete', 'GET');
 
+// Admin agent routes
+$router->add('/admin/agents', 'App\Controllers\Admin\AgentController@index', 'GET');
+$router->add('/admin/agents/store', 'App\Controllers\Admin\AgentController@store', 'POST');
+$router->add('/admin/agents/edit/{id}', 'App\Controllers\Admin\AgentController@edit', 'GET');
+$router->add('/admin/agents/update/{id}', 'App\Controllers\Admin\AgentController@update', 'POST');
+$router->add('/admin/agents/delete/{id}', 'App\Controllers\Admin\AgentController@delete', 'DELETE');
+
+// Admin user routes
+$router->add('/admin/users', 'App\Controllers\Admin\UserController@index', 'GET');
+$router->add('/admin/users/store', 'App\Controllers\Admin\UserController@store', 'POST');
+$router->add('/admin/users/edit/{id}', 'App\Controllers\Admin\UserController@edit', 'GET');
+$router->add('/admin/users/update/{id}', 'App\Controllers\Admin\UserController@update', 'POST');
+$router->add('/admin/users/delete/{id}', 'App\Controllers\Admin\UserController@delete', 'DELETE');
+
+// Admin broker routes
+$router->add('/admin/brokers', 'App\Controllers\Admin\BrokerController@index', 'GET');
+$router->add('/admin/brokers/store', 'App\Controllers\Admin\BrokerController@store', 'POST');
+$router->add('/admin/brokers/edit/{id}', 'App\Controllers\Admin\BrokerController@edit', 'GET');
+$router->add('/admin/brokers/update/{id}', 'App\Controllers\Admin\BrokerController@update', 'POST');
+$router->add('/admin/brokers/delete/{id}', 'App\Controllers\Admin\BrokerController@delete', 'DELETE');
+
+// Admin broker package commission routes
+$router->add('/admin/commissions', 'App\Controllers\Admin\BrokerPackageCommissionController@index', 'GET');
+$router->add('/admin/commissions/store', 'App\Controllers\Admin\BrokerPackageCommissionController@store', 'POST');
+$router->add('/admin/commissions/edit/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@edit', 'GET');
+$router->add('/admin/commissions/update/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@update', 'POST');
+$router->add('/admin/commissions/delete/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@delete', 'DELETE');
 
 //************** AGENT **********************/
 // Agent routes (requires agent authentication)

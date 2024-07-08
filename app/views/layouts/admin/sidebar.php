@@ -15,14 +15,13 @@
                             <p>محتوا</p>
                         </a>
                     </li>
-
-
                 </li>
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <i class="nav-icon bi bi-building"></i>
                         <p>
-                            خدمات
+                            شرکتها
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>
@@ -30,9 +29,27 @@
                         <li class="nav-item">
                             <a href="/admin/companies" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
-                                <p>شرکتها</p>
+                                <p>بیمه گذار</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="/admin/brokers" class="nav-link">
+                                <i class="nav-icon bi bi-briefcase"></i>
+                                <p>بروکر</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-database"></i>
+                        <p>
+                            خدمات
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="/admin/packages" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
@@ -51,11 +68,18 @@
                                 <p>کمیسیون</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="/admin/commissions" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>کمیسیون بروکر</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-box-seam-fill"></i>
+                        <i class="nav-icon bi bi-people"></i>
                         <p>
                             کاربران
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -69,13 +93,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/packages" class="nav-link">
+                            <a href="/admin/agents" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>نماینده</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/tariffs" class="nav-link">
+                            <a href="/admin/users" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>کاربر</p>
                             </a>

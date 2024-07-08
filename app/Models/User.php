@@ -26,21 +26,15 @@ class User extends Model
         return false;
     }
 
-    public function register($data)
-    {
-        $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
-        $stmt = $this->db->prepare("INSERT INTO users (username, password, role, is_active) VALUES (?, ?, ?, 1)");
-        if (!$stmt) {
-            throw new Exception($this->db->error);
-        }
-        $stmt->bind_param('sss', $data['username'], $hashedPassword, $data['role']);
+    public function register($data) {
+        $stmt = $this->db->prepare("INSERT INTO users (username, password, role, user_level_id, is_active) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param('sssii', $data['username'], $data['password'], $data['role'], $data['user_level_id'], $data['is_active']);
         $stmt->execute();
         $userId = $stmt->insert_id;
         $stmt->close();
-
         return $userId;
     }
-
+        
     public function isUsernameOrTelExists($username, $tel, $email)
     {
         // Check username in users table
@@ -150,6 +144,33 @@ class User extends Model
         return !empty($result) ? $result[0] : null;
     }
 
+    public function getUsersByRole($role, $search = '', $limit = 10, $offset = 0) {
+        $search = "%$search%";
+        $stmt = $this->db->prepare("SELECT users.*, profiles.name, profiles.surname, profiles.email, profiles.phone, user_levels.name as user_level FROM users 
+            LEFT JOIN profiles ON users.id = profiles.user_id 
+            LEFT JOIN user_levels ON users.user_level_id = user_levels.id
+            WHERE role = ? AND (users.username LIKE ? OR profiles.name LIKE ? OR profiles.surname LIKE ? OR profiles.email LIKE ? OR profiles.phone LIKE ?)
+            LIMIT ? OFFSET ?");
+        $stmt->bind_param('ssssssii', $role, $search, $search, $search, $search, $search, $limit, $offset);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }    
+
+    public function getUserCountByRole($role, $search = '') {
+        $search = "%$search%";
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM users 
+            LEFT JOIN profiles ON users.id = profiles.user_id 
+            WHERE role = ? AND (users.username LIKE ? OR profiles.name LIKE ? OR profiles.surname LIKE ? OR profiles.email LIKE ? OR profiles.phone LIKE ?)");
+        $stmt->bind_param('ssssss', $role, $search, $search, $search, $search, $search);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count;
+    }
+
     public function getAdminUsers()
     {
         $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role = 'admin'");
@@ -168,13 +189,25 @@ class User extends Model
         return $result;
     }
 
-    public function updateUser($id, $data)
-    {
-        $stmt = $this->db->prepare("UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?");
-        $stmt->bind_param('sssi', $data['username'], $data['password'],  $data['role'], $id);
-        $result = $stmt->execute();
+    public function updateUser($id, $data) {
+        $query = "UPDATE users SET username = ?, role = ?, user_level_id = ?, is_active = ?";
+        $types = 'ssii';
+        $params = [$data['username'], $data['role'], $data['user_level_id'], $data['is_active']];
+
+        if (isset($data['password'])) {
+            $query .= ", password = ?";
+            $types .= 's';
+            $params[] = $data['password'];
+        }
+
+        $query .= " WHERE id = ?";
+        $types .= 'i';
+        $params[] = $id;
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
         $stmt->close();
-        return $result;
     }
 
     public function deleteUser($id)

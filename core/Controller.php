@@ -12,6 +12,8 @@ class Controller {
     protected $notificationCenter;
 
     public function __construct() {
+        Middleware::loadUserData();
+        
         $this->notificationCenter = new NotificationCenter();
         
         // Attach observers with types

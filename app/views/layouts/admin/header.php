@@ -90,14 +90,14 @@
             <!-- User Account Dropdown -->
             <li class="nav-item dropdown user-menu">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="/public/adminlte/assets/img/user2-160x160.jpg" class="user-image rounded-circle shadow" alt="User Image">
-                    <span class="d-none d-md-inline">Alexander Pierce</span>
+                    <img src="<?php echo $_SESSION['user_data']['profile_image'] ?? '/public/adminlte/assets/img/default-profile.png'; ?>" class="user-image rounded-circle shadow" alt="User Image">
+                    <span class="d-none d-md-inline"><?php echo $_SESSION['user_data']['name'] . ' ' . $_SESSION['user_data']['surname']; ?></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                     <li class="user-header text-bg-primary">
-                        <img src="/public/adminlte/assets/img/user2-160x160.jpg" class="rounded-circle shadow" alt="User Image">
-                        <p>Alexander Pierce - Web Developer</p>
-                        <small>Member since Nov. 2023</small>
+                        <img src="<?php echo $_SESSION['user_data']['profile_image'] ?? '/public/adminlte/assets/img/default-profile.png'; ?>" class="rounded-circle shadow" alt="User Image">
+                        <p><?php echo $_SESSION['user_data']['name'] . ' ' . $_SESSION['user_data']['surname']; ?></p>
+                        <small>Member since <?php echo date('M. Y', strtotime($_SESSION['user_data']['created_at'])); ?></small>
                     </li>
                     <li class="user-footer">
                         <a href="/user/profile" class="btn btn-default btn-flat">پروفایل</a>

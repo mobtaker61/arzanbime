@@ -91,7 +91,6 @@
                 </button>
             </div>
             <div class="modal-body" id="quotation-detail-content">
-                <!-- Quotation details will be loaded here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -131,8 +130,8 @@
                         <textarea class="form-control" id="comment" name="comment" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="reffer_to">Referred To</label>
-                        <select class="form-control" id="reffer_to" name="reffer_to">
+                        <label for="refer_to">Referred To</label>
+                        <select class="form-control" id="refer_to" name="refer_to">
                             <option value="">None</option>
                             <?php foreach ($adminUsers as $user): ?>
                                 <option value="<?php echo $user['id']; ?>"><?php echo $user['username']; ?></option>
@@ -157,12 +156,10 @@
 <div class="modal fade" id="quotationOffersModal" tabindex="-1" role="dialog" aria-labelledby="quotationOffersModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="offers-modal-content">
-            <!-- Offers content will be loaded here -->
         </div>
     </div>
 </div>
 
-<!-- ***************************************************** -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('create-quotation-form').addEventListener('submit', function(event) {
@@ -237,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
         button.addEventListener('click', function() {
             const quotationId = this.getAttribute('data-id');
             document.getElementById('quotation_id').value = quotationId;
-            document.getElementById('date').value = new Date().toISOString().slice(0, 16); // Set current date and time
+            document.getElementById('date').value = new Date().toISOString().slice(0, 16);
             $('#addCommentModal').modal('show');
         });
     });

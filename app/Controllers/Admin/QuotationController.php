@@ -17,7 +17,7 @@ class QuotationController extends Controller {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
         $offset = ($page - 1) * $limit;
         $sortField = isset($_GET['sortField']) ? $_GET['sortField'] : 'id';
-        $sortOrder = isset($_GET['sortOrder']) ? $_GET['sortOrder'] : 'DESC';  // Default sort order to DESC
+        $sortOrder = isset($_GET['sortOrder']) ? $_GET['sortOrder'] : 'DESC';
         $filterTel = isset($_GET['tel']) ? $_GET['tel'] : '';
         $filterStatus = isset($_GET['status']) ? $_GET['status'] : '';
 
@@ -39,7 +39,7 @@ class QuotationController extends Controller {
         ];
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            $this->view('admin/quotations/quotation_table', $viewData, false); // No layout for AJAX
+            $this->view('admin/quotations/quotation_table', $viewData, false); 
         } else {
             $this->view('admin/quotations/index', $viewData, 'admin');
         }
@@ -54,13 +54,11 @@ class QuotationController extends Controller {
         $followups = $followupModel->getFollowupsByQuotationId($id);
         $adminUsers = $userModel->getAdminUsers();
 
-        // Map user IDs to usernames
         $userMap = [];
         foreach ($adminUsers as $user) {
             $userMap[$user['id']] = $user['username'];
         }
 
-        // Replace user IDs with usernames in follow-ups
         foreach ($followups as &$followup) {
             $followup['responsible_user'] = $userMap[$followup['responsible_user']] ?? $followup['responsible_user'];
             $followup['refer_to'] = $userMap[$followup['refer_to']] ?? $followup['refer_to'];
@@ -72,7 +70,7 @@ class QuotationController extends Controller {
             'adminUsers' => $adminUsers
         ];
 
-        $this->view('admin/quotations/detail', $viewData, false); // No layout for AJAX
+        $this->view('admin/quotations/detail', $viewData, false);
     }
     
     public function showOffers($id) {
@@ -142,3 +140,4 @@ class QuotationController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Followup created successfully.', 'followups' => $followups]);
     }    
 }
+?>

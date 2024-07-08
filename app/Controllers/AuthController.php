@@ -164,7 +164,8 @@ class AuthController extends Controller
             'age' => $data['age'],
             'duration' => $data['duration'],
             'tel' => $tel,
-            'role' => 'user',
+            'role' => 'user',            
+            'user_level_id' => 2,
             'user_id' => null,
         ];
 

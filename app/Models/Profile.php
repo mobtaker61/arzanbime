@@ -64,6 +64,14 @@ class Profile extends Model
         $stmt->execute();
         $stmt->close();
     }
+    
+    public function deleteProfile($userId)
+    {
+        $stmt = $this->db->prepare("DELETE FROM profiles WHERE user_id = ?");
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     private function fetchAssoc($stmt)
     {

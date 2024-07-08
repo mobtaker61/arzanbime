@@ -5,7 +5,9 @@ use Core\Model;
 
 class PackageDiscount extends Model {
     public function getAllPackageDiscounts() {
-        $stmt = $this->db->prepare("SELECT pd.*, p.tip, ul.name as user_level_name FROM package_discounts pd JOIN package p ON pd.package_id = p.id JOIN user_levels ul ON pd.user_level_id = ul.id");
+        $stmt = $this->db->prepare("SELECT pd.*, p.tip, ul.name as user_level_name FROM package_discounts pd 
+        JOIN package p ON pd.package_id = p.id 
+        JOIN user_levels ul ON pd.user_level_id = ul.id");
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
