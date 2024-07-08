@@ -63,7 +63,8 @@ $userLoggedIn = isset($_SESSION['user_id']);
                         <option value="+98" data-flag="ir">🇮🇷 +98</option>
                     </select>
                 </div>
-                <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید</p>
+                <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید<br/>
+                احراز هویت برای هر شماره موبایل فقط یکبار انجام میشود و در دفعات بعدی کدی ارسال نمیشود</p>
             <?php endif; ?>
             <button type="submit" class="pri-btn col-span-2 mobile-medium:py-2">استعلام قیمت</button>
         </form>
@@ -373,8 +374,6 @@ $userLoggedIn = isset($_SESSION['user_id']);
                                         "Content-Type": "application/json"
                                     },
                                     body: JSON.stringify(formData)
-                                    
-                                    //body: JSON.stringify({tel: formData.tel})
                                 })
                                 .then((response) => response.json())
                                 .then((data) => {
@@ -391,6 +390,7 @@ $userLoggedIn = isset($_SESSION['user_id']);
                     });
             } else {
                 // User is logged in, store the quotation directly
+                formData.user_id = <?php echo $_SESSION['user_id'] ?? 'null'; ?>;
                 fetch("/auth/store-quotation-data", {
                         method: "POST",
                         headers: {

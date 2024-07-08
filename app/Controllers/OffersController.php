@@ -25,10 +25,16 @@ class OffersController extends Controller
 
         // Fetch tariffs based on the quotation data
         $tariffs = $tariffModel->getTariffsByAge($quotation['age']);
+        $userLevelId = $quotation['user_level_id']; // فرض می‌کنیم که سطح کاربر در داده‌های استعلام موجود است
+
         // Calculate discounts and payable amounts
         foreach ($tariffs as &$tariff) {
-            $commissionRate = $tariff['commission'] / 100;
-            $tariff['discount_rate'] = intval($tariff['commission']);
+            $discountRate = $tariffModel->getPackageDiscount($tariff['package_id'], $userLevelId);
+            if ($discountRate === null) {
+                $discountRate = 0;
+            }
+            $commissionRate = $discountRate / 100;
+            $tariff['discount_rate'] = intval($discountRate);
             $tariff['first_year_discount'] = intval($tariff['first_year'] * $commissionRate);
             $tariff['two_year_discount'] = intval($tariff['two_year'] * $commissionRate);
             $tariff['first_year_pay'] = intval($tariff['first_year'] - $tariff['first_year_discount']);

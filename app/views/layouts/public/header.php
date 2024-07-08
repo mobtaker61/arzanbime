@@ -50,15 +50,7 @@ $userRole = $_SESSION['user_role'] ?? null; // Assuming you have stored the user
             </ul>
         </nav>
         <?php if ($userRole) : ?>
-            <?php
-            $dashboardUrl = '/user/dashboard';
-            if ($userRole === 'agent') {
-                $dashboardUrl = '/agent';
-            } elseif ($userRole === 'admin') {
-                $dashboardUrl = '/admin';
-            }
-            ?>
-            <a href="<?php echo $dashboardUrl; ?>" class="pri-btn bg-green mr-4 py-1 rounded-lg tablet-small:hidden">پنل کاربری</a>
+            <a href="<?php echo '/'. $userRole; ?>" class="pri-btn bg-green mr-4 py-1 rounded-lg tablet-small:hidden">پنل کاربری</a>
         <?php endif; ?>
         <button class="pri-btn mr-auto py-1 rounded-lg tablet-small:hidden">
             مشاوره رایگان

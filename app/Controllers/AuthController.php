@@ -35,19 +35,8 @@ class AuthController extends Controller
 
         $user = new User();
         if ($user->login($username, $password)) {
-            switch ($_SESSION['user_role']) { // Redirect based on user role
-                case 'admin':
-                    header('Location: /admin');
-                    break;
-                case 'agent':
-                    $this->notify($username . ' is logged.', ['telegram']);
-                    header('Location: /agent');
-                    break;
-                default:
-                    $this->notify($username . ' is logged.', ['telegram']);
-                    header('Location: /user');
-                    break;
-            }
+            $this->notify($username . ' is logged.', ['telegram']);
+            header('Location: /' . $_SESSION['user_role']);
             exit(); // Ensure no further code is executed after the redirection
         } else {
             View::render('public/auth/login', ['error' => 'نام کاربری یا رمز عبور اشتباه است', 'pagetitle' => 'ورود کاربر'], 'public');
@@ -117,7 +106,7 @@ class AuthController extends Controller
 
         $profile = new Profile();
         $profile->createProfile($profileData);
-    }    
+    }
 
     public function showResetPasswordForm()
     {
@@ -224,7 +213,7 @@ class AuthController extends Controller
 
         $uid = $quotationModel->createQuotation($quotationData);
 
-        $profile = new Profile;
+        $profile = new Profile();
         $tel = $profile->getProfileByUserId($_SESSION['user_id']);
 
         $this->notify('استعلام جدید در: ' . PHP_EOL . json_encode($_SESSION['quotation_data']) . PHP_EOL . PHP_EOL . 'https://arzanbime.com/offers/' . $uid, ['telegram']);
@@ -262,6 +251,7 @@ class AuthController extends Controller
             'username' => $username,
             'password' => $password,
             'role' => 'user',
+            'user_level_id' => 2,//بعدا باید از جدول تنطیمات خوانده شود
             'is_active' => 1
         ]);
 

@@ -74,10 +74,10 @@ class Quotation extends Model
     {
         // Determine if the identifier is numeric (ID) or not (UID)
         if (is_numeric($identifier)) {
-            $stmt = $this->db->prepare("SELECT * FROM quotation WHERE id = ?");
+            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id FROM quotation q LEFT JOIN users u ON q.user_id = u.id WHERE q.id = ?");
             $stmt->bind_param("i", $identifier);
         } else {
-            $stmt = $this->db->prepare("SELECT * FROM quotation WHERE uid = ?");
+            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id FROM quotation q LEFT JOIN users u ON q.user_id = u.id WHERE q.uid = ?");
             $stmt->bind_param("s", $identifier);
         }
 
@@ -92,8 +92,10 @@ class Quotation extends Model
     {
         $uid = $this->generateUid();
         $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?, ?)");
-        if (!$stmt) {throw new Exception($this->db->error);}
-        $stmt->bind_param('isssss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel'],$uid);
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('isssss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel'], $uid);
         $stmt->execute();
         $stmt->close();
         return $uid;

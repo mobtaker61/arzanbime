@@ -188,6 +188,16 @@ class Tariff extends Model
         return $result;
     }
 
+    public function getPackageDiscount($packageId, $userLevelId) {
+        $stmt = $this->db->prepare("SELECT discount_rate FROM package_discounts WHERE package_id = ? AND user_level_id = ?");
+        $stmt->bind_param('ii', $packageId, $userLevelId);
+        $stmt->execute();
+        $stmt->bind_result($discountRate);
+        $stmt->fetch();
+        $stmt->close();
+        return $discountRate;
+    }
+        
     public function updateTariff($id, $data)
     {
         $stmt = $this->db->prepare("UPDATE tariff SET package_id = ?, age = ?, first_year = ?, second_year = ?, two_year = ? WHERE id = ?");
