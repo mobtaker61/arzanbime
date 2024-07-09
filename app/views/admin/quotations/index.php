@@ -200,6 +200,8 @@
                 }).then(html => {
                     document.getElementById('quotation-detail-content').innerHTML = html;
                     $('#quotationDetailModal').modal('show');
+                    // Apply number formatting to new content
+                    applyNumberFormatting();
                 }).catch(error => {
                     console.error('Error:', error);
                 });
@@ -256,6 +258,8 @@
                 }).then(html => {
                     document.getElementById('offers-modal-content').innerHTML = html;
                     $('#quotationOffersModal').modal('show');
+                    // Apply number formatting to new content
+                    applyNumberFormatting();
                 }).catch(error => {
                     console.error('Error:', error);
                 });

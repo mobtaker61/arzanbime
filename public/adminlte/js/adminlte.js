@@ -713,3 +713,24 @@
 
 }));
 //# sourceMappingURL=adminlte.js.map
+
+// Function to format numbers with commas
+function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  
+  // Function to apply number formatting to elements with the class 'numwc'
+  function applyNumberFormatting() {
+    const elements = document.querySelectorAll(".numwc");
+    elements.forEach((element) => {
+      const number = parseInt(element.textContent.replace(/,/g, ""), 10);
+      if (!isNaN(number)) {
+        element.textContent = formatNumberWithCommas(number);
+      }
+    });
+  }
+  
+  // Initial call to apply number formatting on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    applyNumberFormatting();
+  });  

@@ -76,24 +76,6 @@
                 });
             }
         });
-
-        // Format Number With Commas
-        document.addEventListener("DOMContentLoaded", function() {
-            function formatNumberWithCommas(number) {
-                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
-
-            // Select all elements with the class 'numwc'
-            const elements = document.querySelectorAll(".numwc");
-
-            // Format each element's text content
-            elements.forEach((element) => {
-                const number = parseInt(element.textContent.replace(/,/g, ""), 10);
-                if (!isNaN(number)) {
-                    element.textContent = formatNumberWithCommas(number);
-                }
-            });
-        });
     </script>
 </body>
 
