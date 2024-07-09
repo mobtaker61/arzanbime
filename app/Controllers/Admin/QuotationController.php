@@ -7,6 +7,7 @@ use App\Models\Followup;
 use App\Models\User;
 use App\Models\Tariff;
 use Core\Controller;
+use Core\View;
 
 class QuotationController extends Controller {
     public function index() {
@@ -39,7 +40,7 @@ class QuotationController extends Controller {
         ];
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            $this->view('admin/quotations/quotation_table', $viewData, false); 
+            View::render('admin/quotations/quotation_table', $viewData, false); 
         } else {
             $this->view('admin/quotations/index', $viewData, 'admin');
         }
@@ -48,49 +49,78 @@ class QuotationController extends Controller {
     public function detail($id) {
         $quotationModel = new Quotation();
         $followupModel = new Followup();
+        $tariffModel = new Tariff();
         $userModel = new User();
 
         $quotation = $quotationModel->getQuotation($id);
         $followups = $followupModel->getFollowupsByQuotationId($id);
         $adminUsers = $userModel->getAdminUsers();
+        $tariffs = $tariffModel->getTariffsByAge($quotation['age']);
 
+        
         $userMap = [];
         foreach ($adminUsers as $user) {
             $userMap[$user['id']] = $user['username'];
         }
-
+        
         foreach ($followups as &$followup) {
             $followup['responsible_user'] = $userMap[$followup['responsible_user']] ?? $followup['responsible_user'];
             $followup['refer_to'] = $userMap[$followup['refer_to']] ?? $followup['refer_to'];
         }
-
+        
         $viewData = [
             'quotation' => $quotation,
             'followups' => $followups,
-            'adminUsers' => $adminUsers
+            'adminUsers' => $adminUsers,
+            'tariffs' => $tariffs,
+            'pagetitle' => 'اطلاعات درخواست'
         ];
 
-        $this->view('admin/quotations/detail', $viewData, false);
+        ob_start();
+        extract($viewData); // Extract variables for use in the included file
+        include realpath(__DIR__ . '/../../views/admin/quotations/detail.php');
+        $html = ob_get_clean();
+    
+        header('Content-Type: text/html');
+        echo $html;
     }
     
     public function showOffers($id) {
         $quotationModel = new Quotation();
         $tariffModel = new Tariff();
 
+        // Fetch tariffs based on the quotation data
         $quotation = $quotationModel->getQuotation($id);
         $tariffs = $tariffModel->getTariffsByAge($quotation['age']);
+        $userLevelId = $quotation['user_level_id']; // فرض می‌کنیم که سطح کاربر در داده‌های استعلام موجود است
+
+        // Calculate discounts and payable amounts
+        foreach ($tariffs as &$tariff) {
+            $discountRate = $tariffModel->getPackageDiscount($tariff['package_id'], $userLevelId);
+            if ($discountRate === null) {
+                $discountRate = 0;
+            }
+            $commissionRate = $discountRate / 100;
+            $tariff['discount_rate'] = intval($discountRate);
+            $tariff['first_year_discount'] = intval($tariff['first_year'] * $commissionRate);
+            $tariff['two_year_discount'] = intval($tariff['two_year'] * $commissionRate);
+            $tariff['first_year_pay'] = intval($tariff['first_year'] - $tariff['first_year_discount']);
+            $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);
+        }
 
         $viewData = [
             'quotation' => $quotation,
             'tariffs' => $tariffs,
-            'pagetitle' => 'Offers'
+            'pagetitle' => 'آفر قیمتی'
         ];
 
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            $this->view('admin/quotations/offer_modal_content', $viewData, false);
-        } else {
-            $this->view('admin/quotations/offers', $viewData, 'admin');
-        }
+        ob_start();
+        extract($viewData); // Extract variables for use in the included file
+        include realpath(__DIR__ . '/../../views/admin/quotations/offer_modal_content.php');
+        $html = ob_get_clean();
+        
+        header('Content-Type: text/html');
+        echo $html;       
     }
 
     public function store() {

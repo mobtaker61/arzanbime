@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/public/adminlte/css/adminlte.rtl.min.css">
     <link rel="stylesheet" href="/public/css/custom.css">
-     <!-- Include TinyMCE -->
+    <!-- Include TinyMCE -->
     <script src="/public/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 
@@ -75,6 +75,24 @@
                     },
                 });
             }
+        });
+
+        // Format Number With Commas
+        document.addEventListener("DOMContentLoaded", function() {
+            function formatNumberWithCommas(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Select all elements with the class 'numwc'
+            const elements = document.querySelectorAll(".numwc");
+
+            // Format each element's text content
+            elements.forEach((element) => {
+                const number = parseInt(element.textContent.replace(/,/g, ""), 10);
+                if (!isNaN(number)) {
+                    element.textContent = formatNumberWithCommas(number);
+                }
+            });
         });
     </script>
 </body>

@@ -106,12 +106,33 @@
                         </li>
                     </ul>
                 </li>
+
+
                 <li class="nav-item">
-                    <a href="/admin/quotations" class="nav-link">
-                        <i class="nav-icon bi bi-ui-checks"></i>
-                        <p>استعلامات</p>
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-people"></i>
+                        <p>
+                            درخواستها
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/quotations" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>استعلام کاربر</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/agents" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>استعلام نماینده</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-download"></i>
@@ -137,14 +158,7 @@
                     </a>
                 </li>
 
-
-
-
-
-
-
-
-                <li class="nav-header">سندها</li>
+                <li class="nav-header">تنطیمات</li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-download"></i>
