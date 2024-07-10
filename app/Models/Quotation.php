@@ -9,14 +9,18 @@ class Quotation extends Model
 {
     public function getAllQuotations($limit = 10, $offset = 1, $sortField = 'id', $sortOrder = 'DESC', $filterTel = null, $filterStatus = null)
     {
-        $sql = "SELECT * FROM quotation WHERE 1=1";
+        $sql = "SELECT q.*, u.user_level_id, p.name, p.surname, p.profile_image 
+            FROM quotation q
+            LEFT JOIN users u ON q.user_id = u.id
+            LEFT JOIN profiles p ON q.user_id = p.user_id
+            WHERE 1=1";
 
         if ($filterTel) {
-            $sql .= " AND tel LIKE ?";
+            $sql .= " AND q.tel LIKE ?";
         }
 
         if ($filterStatus) {
-            $sql .= " AND status = ?";
+            $sql .= " AND q.status = ?";
         }
 
         $sql .= " ORDER BY $sortField $sortOrder LIMIT ? OFFSET ?";
@@ -39,6 +43,33 @@ class Quotation extends Model
         $stmt->close();
         return $result;
     }
+
+    public function getQuotation($identifier)
+    {
+        // Determine if the identifier is numeric (ID) or not (UID)
+        if (is_numeric($identifier)) {
+            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id, p.name, p.surname, p.profile_image 
+                                        FROM quotation q 
+                                        LEFT JOIN users u ON q.user_id = u.id 
+                                        LEFT JOIN profiles p ON q.user_id = p.user_id 
+                                        WHERE q.id = ?");
+            $stmt->bind_param("i", $identifier);
+        } else {
+            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id, p.name, p.surname, p.profile_image 
+                                        FROM quotation q 
+                                        LEFT JOIN users u ON q.user_id = u.id 
+                                        LEFT JOIN profiles p ON q.user_id = p.user_id 
+                                        WHERE q.uid = ?");
+            $stmt->bind_param("s", $identifier);
+        }
+    
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $quotation = $result->fetch_assoc();
+        $stmt->close();
+        return $quotation;
+    }
+    
 
     public function getQuotationCount($filterTel, $filterStatus)
     {
@@ -70,32 +101,14 @@ class Quotation extends Model
         return $count;
     }
 
-    public function getQuotation($identifier)
-    {
-        // Determine if the identifier is numeric (ID) or not (UID)
-        if (is_numeric($identifier)) {
-            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id FROM quotation q LEFT JOIN users u ON q.user_id = u.id WHERE q.id = ?");
-            $stmt->bind_param("i", $identifier);
-        } else {
-            $stmt = $this->db->prepare("SELECT q.*, u.user_level_id FROM quotation q LEFT JOIN users u ON q.user_id = u.id WHERE q.uid = ?");
-            $stmt->bind_param("s", $identifier);
-        }
-
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $quotation = $result->fetch_assoc();
-        $stmt->close();
-        return $quotation;
-    }
-
     public function createQuotation($data)
     {
         $uid = $this->generateUid();
-        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel, uid) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel, status, uid) VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             throw new Exception($this->db->error);
         }
-        $stmt->bind_param('isssss', $data['user_id'], $data['birth'], $data['age'], $data['duration'], $data['tel'], $uid);
+        $stmt->bind_param('issiiss', $data['user_id'], $data['birth_date'], $data['age'], $data['duration'], $data['tel'],$data['status'], $uid);
         $stmt->execute();
         $stmt->close();
         return $uid;

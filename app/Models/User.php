@@ -182,11 +182,12 @@ class User extends Model
 
     public function createUser($data)
     {
-        $stmt = $this->db->prepare("INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param('ssss', $data['username'], $data['password'], $data['email'], $data['role']);
-        $result = $stmt->execute();
+        $stmt = $this->db->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+        $stmt->bind_param('sss', $data['username'], $data['password'], $data['role']);
+        $stmt->execute();
+        $userId = $stmt->insert_id;
         $stmt->close();
-        return $result;
+        return $userId;
     }
 
     public function updateUser($id, $data) {

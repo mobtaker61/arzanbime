@@ -124,7 +124,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/agents" class="nav-link">
+                            <a href="/admin/quotations/manual" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>استعلام نماینده</p>
                             </a>

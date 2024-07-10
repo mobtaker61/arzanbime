@@ -153,6 +153,24 @@ class Tariff extends Model
         return $result;
     }
 
+    public function getHighestCommission($packageId)
+    {
+        $stmt = $this->db->prepare("SELECT brokers.title, broker_package_commissions.commission_rate 
+                                    FROM broker_package_commissions
+                                    JOIN brokers ON broker_package_commissions.broker_id = brokers.id
+                                    WHERE broker_package_commissions.package_id = ?
+                                    ORDER BY broker_package_commissions.commission_rate DESC
+                                    LIMIT 1");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('i', $packageId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return !empty($result) ? $result : null;
+    }
+
     public function getTariffCountByPackageId($packageId)
     {
         $sql = "SELECT COUNT(*) as count 
@@ -188,7 +206,8 @@ class Tariff extends Model
         return $result;
     }
 
-    public function getPackageDiscount($packageId, $userLevelId) {
+    public function getPackageDiscount($packageId, $userLevelId)
+    {
         $stmt = $this->db->prepare("SELECT discount_rate FROM package_discounts WHERE package_id = ? AND user_level_id = ?");
         $stmt->bind_param('ii', $packageId, $userLevelId);
         $stmt->execute();
@@ -197,7 +216,7 @@ class Tariff extends Model
         $stmt->close();
         return $discountRate;
     }
-        
+
     public function updateTariff($id, $data)
     {
         $stmt = $this->db->prepare("UPDATE tariff SET package_id = ?, age = ?, first_year = ?, second_year = ?, two_year = ? WHERE id = ?");

@@ -18,7 +18,7 @@ class TariffController extends Controller {
 
         $companyId = isset($_GET['company_id']) ? intval($_GET['company_id']) : null;
         $packageId = isset($_GET['package_id']) ? intval($_GET['package_id']) : null;
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 25;
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 100;
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
         $offset = ($page - 1) * $limit;
         $sortField = isset($_GET['sortField']) ? $_GET['sortField'] : 'id';

@@ -1,3 +1,36 @@
+<style>
+    .lowest-price {
+        position: relative;
+        display: inline-block;
+    }
+
+    .lowest-price .tag {
+        position: absolute;
+        top: -15px;
+        right: -30px;
+        background-color: red;
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 50%;
+    }
+
+    .lowest-price .tag::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 10px solid red;
+    }
+</style>
+
+
 <?php
 $pagetitle = $pagetitle ?? 'پیشنهادات';
 $description = $description ?? 'صفحه پیشنهادات بر اساس اطلاعات وارد شده در فرم.';
@@ -55,7 +88,7 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
                         <div class="flex cta">
                             <div class="flex justify-between p-1" style="align-items: center;">
                                 <p>پرداختی شما&nbsp;</p>
-                                <p><span class="text-xl text-red-950 numwc"><?php echo $tariff['first_year_pay']; ?></span>&nbsp;لیر</p>
+                                <p class="first-year-pay"><span class="text-xl text-red-950 numwc"><?php echo $tariff['first_year_pay']; ?></span>&nbsp;لیر</p>
                                 <button type="button" class="pri-btn py-1 purchase-btn" data-quotation-id="<?php echo $quotation['id']; ?>" data-quotation-dur="1" data-tariff-id="<?php echo $tariff['id']; ?>" data-tariff-name="<?php echo $tariff['company_name'] . ' ' . $tariff['package_tip']; ?>" data-tariff-price="<?php echo $tariff['first_year_pay']; ?>">خرید</button>
                             </div>
                         </div>
@@ -94,7 +127,7 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
                         <div class="flex cta">
                             <div class="flex justify-between p-1" style="align-items: center;">
                                 <p>پرداختی شما&nbsp;</p>
-                                <p><span class="text-xl text-red-950 numwc"><?php echo $tariff['two_year_pay']; ?></span>&nbsp;لیر</p>
+                                <p class="two-year-pay"><span class="text-xl text-red-950 numwc"><?php echo $tariff['two_year_pay']; ?></span>&nbsp;لیر</p>
                                 <button type="button" class="pri-btn py-1 purchase-btn" data-quotation-id="<?php echo $quotation['id']; ?>" data-quotation-dur="2" data-tariff-id="<?php echo $tariff['id']; ?>" data-tariff-name="<?php echo $tariff['company_name'] . ' ' . $tariff['package_tip']; ?>" data-tariff-price="<?php echo $tariff['two_year_pay']; ?>">خرید</button>
                             </div>
                         </div>
@@ -191,5 +224,42 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
             const whatsappUrl = `https://wa.me/905511737383?text=${encodeURIComponent(finalMessage)}`;
             window.open(whatsappUrl, "_blank");
         });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const firstYearPayElements = document.querySelectorAll(".first-year-pay");
+        const twoYearPayElements = document.querySelectorAll(".two-year-pay");
+        let minPay = Infinity;
+        let minPayElement = null;
+        let minPay2 = Infinity;
+        let minPayElement2 = null;
+
+        // Find the element with the lowest first year pay
+        firstYearPayElements.forEach(function(element) {
+            const pay = parseFloat(element.textContent.replace(/,/g, ''));
+            if (pay < minPay) {
+                minPay = pay;
+                minPayElement = element;
+            }
+        });
+
+        // Find the element with the lowest first year pay
+        twoYearPayElements.forEach(function(element) {
+            const pay = parseFloat(element.textContent.replace(/,/g, ''));
+            if (pay < minPay2) {
+                minPay2 = pay;
+                minPayElement2 = element;
+            }
+        });
+
+        // Add the class to the element with the lowest first year pay
+        if (minPayElement) {
+            minPayElement.classList.add("lowest-price");
+            minPayElement.insertAdjacentHTML('beforeend', '<span class="tag">ارزانترین</span>');
+        }
+        if (minPayElement2) {
+            minPayElement2.classList.add("lowest-price");
+            minPayElement2.insertAdjacentHTML('beforeend', '<span class="tag">ارزانترین</span>');
+        }
     });
 </script>

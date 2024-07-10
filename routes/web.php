@@ -89,7 +89,9 @@ $router->add('/admin/quotations', 'App\Controllers\Admin\QuotationController@ind
 $router->add('/admin/quotations/detail/{id}', 'App\Controllers\Admin\QuotationController@detail', 'GET');
 $router->add('/admin/quotations/store', 'App\Controllers\Admin\QuotationController@store', 'POST');
 $router->add('/admin/quotations/addFollowup', 'App\Controllers\Admin\QuotationController@addFollowup', 'POST');
-$router->add('/admin/quotations/offers/{id}', 'App\Controllers\Admin\QuotationController@showOffers', 'GET');
+$router->add('/admin/quotations/manual', 'App\Controllers\Admin\QuotationController@manualQuotationForm','GET');
+$router->add('/admin/quotations/getOffers/{id}', 'App\Controllers\Admin\QuotationController@getOffers','GET');
+$router->add('/admin/quotations/check-or-create-user', 'App\Controllers\Admin\QuotationController@checkOrCreateUser','POST');
 
 // Admin user levels routes
 $router->add('/admin/user-levels', 'App\Controllers\Admin\UserLevelController@index', 'GET');
@@ -120,6 +122,8 @@ $router->add('/admin/users/store', 'App\Controllers\Admin\UserController@store',
 $router->add('/admin/users/edit/{id}', 'App\Controllers\Admin\UserController@edit', 'GET');
 $router->add('/admin/users/update/{id}', 'App\Controllers\Admin\UserController@update', 'POST');
 $router->add('/admin/users/delete/{id}', 'App\Controllers\Admin\UserController@delete', 'DELETE');
+$router->add('/admin/profiles/{id}', 'App\Controllers\Admin\QuotationController@getProfile', 'GET');
+$router->add('/admin/profiles/update', 'App\Controllers\Admin\QuotationController@updateProfile', 'POST');
 
 // Admin broker routes
 $router->add('/admin/brokers', 'App\Controllers\Admin\BrokerController@index', 'GET');

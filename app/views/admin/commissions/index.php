@@ -14,7 +14,7 @@
         <?php foreach ($commissions as $commission) : ?>
             <tr>
                 <td><?php echo htmlspecialchars($commission['broker_title']); ?></td>
-                <td><?php echo htmlspecialchars($commission['package_tip']); ?></td>
+                <td><?php echo htmlspecialchars($commission['co_name'] . ' - ' . $commission['package_tip']); ?></td>
                 <td><?php echo htmlspecialchars($commission['commission_rate']); ?>%</td>
                 <td>
                     <button class="btn btn-warning edit-btn" data-id="<?php echo $commission['id']; ?>">ویرایش</button>

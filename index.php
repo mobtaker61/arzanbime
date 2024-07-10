@@ -4,6 +4,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Set the session timeout
+ini_set('session.gc_maxlifetime', 14400); // 240 hourse
+// Set the session cookie lifetime
+ini_set('session.cookie_lifetime', 14400); // 240 hourse
+
 session_start();
 
 // Autoload classes

@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Core\Model;
 
-class BrokerPackageCommission extends Model {
-    public function getAllCommissions($limit, $offset, $search = '') {
-        $sql = "SELECT bpc.*, b.title as broker_title, p.tip as package_tip FROM broker_package_commissions bpc
+class BrokerPackageCommission extends Model
+{
+    public function getAllCommissions($limit, $offset, $search = '')
+    {
+        $sql = "SELECT bpc.*, b.title as broker_title, p.tip as package_tip, c.name as co_name
+                FROM broker_package_commissions bpc
                 JOIN brokers b ON bpc.broker_id = b.id
-                JOIN package p ON bpc.package_id = p.id";
+                JOIN package p ON bpc.package_id = p.id
+                JOIN company c ON p.company_id = c.id";
         if (!empty($search)) {
             $sql .= " WHERE b.title LIKE ? OR p.tip LIKE ?";
         }
@@ -29,7 +33,8 @@ class BrokerPackageCommission extends Model {
         return $result;
     }
 
-    public function getCommissionCount($search = '') {
+    public function getCommissionCount($search = '')
+    {
         $sql = "SELECT COUNT(*) as count FROM broker_package_commissions bpc
                 JOIN brokers b ON bpc.broker_id = b.id
                 JOIN package p ON bpc.package_id = p.id";
@@ -51,7 +56,8 @@ class BrokerPackageCommission extends Model {
         return $count;
     }
 
-    public function getCommissionById($id) {
+    public function getCommissionById($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM broker_package_commissions WHERE id = ?");
         if (!$stmt) {
             throw new \Exception("SQL prepare statement failed: " . $this->db->error);
@@ -63,7 +69,8 @@ class BrokerPackageCommission extends Model {
         return !empty($result) ? $result[0] : null;
     }
 
-    public function createCommission($data) {
+    public function createCommission($data)
+    {
         $stmt = $this->db->prepare("INSERT INTO broker_package_commissions (broker_id, package_id, commission_rate) VALUES (?, ?, ?)");
         if (!$stmt) {
             throw new \Exception("SQL prepare statement failed: " . $this->db->error);
@@ -73,7 +80,8 @@ class BrokerPackageCommission extends Model {
         $stmt->close();
     }
 
-    public function updateCommission($id, $data) {
+    public function updateCommission($id, $data)
+    {
         $stmt = $this->db->prepare("UPDATE broker_package_commissions SET broker_id = ?, package_id = ?, commission_rate = ? WHERE id = ?");
         if (!$stmt) {
             throw new \Exception("SQL prepare statement failed: " . $this->db->error);
@@ -83,7 +91,8 @@ class BrokerPackageCommission extends Model {
         $stmt->close();
     }
 
-    public function deleteCommission($id) {
+    public function deleteCommission($id)
+    {
         $stmt = $this->db->prepare("DELETE FROM broker_package_commissions WHERE id = ?");
         if (!$stmt) {
             throw new \Exception("SQL prepare statement failed: " . $this->db->error);
@@ -93,7 +102,8 @@ class BrokerPackageCommission extends Model {
         $stmt->close();
     }
 
-    private function fetchAssoc($stmt) {
+    private function fetchAssoc($stmt)
+    {
         $stmt->store_result();
         $variables = [];
         $data = [];

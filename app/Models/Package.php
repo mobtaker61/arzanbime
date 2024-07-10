@@ -15,28 +15,6 @@ class Package extends Model
         return $result;
     }
 
-    public function getPackages2($limit, $offset, $sortField, $sortOrder, $company_id = null)
-    {
-        $query = "SELECT package.*, company.name as company_name FROM package JOIN company ON package.company_id = company.id";
-        if ($company_id) {
-            $query .= " WHERE package.company_id = ?";
-        }
-        $query .= " ORDER BY $sortField $sortOrder LIMIT ? OFFSET ?";
-
-        $stmt = $this->db->prepare($query);
-
-        if ($company_id) {
-            $stmt->bind_param('iii', $company_id, $limit, $offset);
-        } else {
-            $stmt->bind_param('ii', $limit, $offset);
-        }
-
-        $stmt->execute();
-        $result = $this->fetchAssoc($stmt);
-        $stmt->close();
-        return $result;
-    }
-
     public function getPackages($limit, $offset, $sortField, $sortOrder, $companyId = null)
     {
         $sql = "SELECT p.*, c.name as company_name, 

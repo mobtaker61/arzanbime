@@ -14,7 +14,7 @@
         <?php foreach ($packageDiscounts as $discount) : ?>
             <tr>
                 <td><?= htmlspecialchars($discount['id']) ?></td>
-                <td><?= htmlspecialchars($discount['tip']) ?></td>
+                <td><?= htmlspecialchars($discount['company_name'] . ' - ' . $discount['tip']) ?></td>
                 <td><?= htmlspecialchars($discount['user_level_name']) ?></td>
                 <td><?= htmlspecialchars($discount['discount_rate']) ?>%</td>
                 <td>
