@@ -14,7 +14,7 @@
         </form>
     </div>
     <div class="col-md-6 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#setTariffModal">تعیین نرخ</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#setTariffModal">تعیین نرخ</button>
     </div>
 </div>
 
@@ -28,7 +28,7 @@
         <div class="modal-content">
             <form id="set-tariff-form">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="setTariffModalLabel">Set Tariff</h5>
+                    <h5 class="modal-title" id="setTariffModalLabel">تعریف نرخ</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

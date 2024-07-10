@@ -11,7 +11,7 @@
         </form>
     </div>
     <div class="col-md-6 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPackageModal">Create New Package</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPackageModal">Create New Package</button>
     </div>
 </div>
 
