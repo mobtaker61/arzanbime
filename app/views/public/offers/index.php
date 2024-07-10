@@ -64,7 +64,7 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
         </div>
         <div class="mb-6 gap-3">
             <?php if (!empty($tariffs)) : ?>
-                <?php foreach ($tariffs as $tariff) : ?>
+                <?php foreach ($tariffs as &$tariff) : ?>
                     <div class="flex tariff-box">
                         <div class="flex info">
                             <div class="flex package w-full">
@@ -104,7 +104,7 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
         </div>
         <div class="mb-6 gap-3">
             <?php if (!empty($tariffs)) : ?>
-                <?php foreach ($tariffs as $tariff) : ?>
+                <?php foreach ($tariffs as &$tariff) : ?>
                     <div class="flex tariff-box">
                         <div class="flex info">
                             <div class="flex package w-full">
@@ -159,12 +159,12 @@ $keywords = $keywords ?? 'پیشنهادات, بیمه, تعرفه';
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($tariffs as $tariff) : ?>
-                    <tr style="background-color: <?php echo $tariff['company_color']; ?>">
+                <?php foreach ($tariffs as &$tariff) : ?>
+                    <tr style="background-color: <?php echo $tariff['company_color']; ?>;color: white;">
                         <td class="border border-gray-200 px-4 py-2"><img src="<?php echo $tariff['company_icon']; ?>" alt="Icon" width="30" height="30"></td>
                         <td class="border border-gray-200 px-4 py-2"><?php echo $tariff['company_name']; ?></td>
                         <td class="border border-gray-200 px-4 py-2"><?php echo $tariff['package_tip']; ?></td>
-                        <td class="border border-gray-200 px-4 py-2"><?php echo number_format($tariff['commission']); ?>%</td>
+                        <td class="border border-gray-200 px-4 py-2"><?php echo number_format($tariff['discount_rate']); ?>%</td>
                         <td class="border border-gray-200 px-4 py-2"><?php echo number_format($tariff['first_year']); ?></td>
                         <td class="border border-gray-200 px-4 py-2"><?php echo number_format($tariff['first_year_discount']); ?></td>
                         <td class="border border-gray-200 px-4 py-2"><?php echo number_format($tariff['first_year_pay']); ?></td>

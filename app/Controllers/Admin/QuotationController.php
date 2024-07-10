@@ -82,8 +82,9 @@ class QuotationController extends Controller
             $tariff['first_year_discount'] = intval($tariff['first_year'] * $commissionRate);
             $tariff['two_year_discount'] = intval($tariff['two_year'] * $commissionRate);
             $tariff['first_year_pay'] = intval($tariff['first_year'] - $tariff['first_year_discount']);
-            $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);
+            $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);            
         }
+        $this->notify(json_encode($tariffs),['telegram']);
 
         $userMap = [];
         foreach ($adminUsers as $user) {
@@ -102,7 +103,6 @@ class QuotationController extends Controller
             'tariffs' => $tariffs,
             'pagetitle' => 'اطلاعات درخواست'
         ];
-
         ob_start();
         extract($viewData); // Extract variables for use in the included file
         include realpath(__DIR__ . '/../../views/admin/quotations/detail.php');

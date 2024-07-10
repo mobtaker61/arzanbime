@@ -9,7 +9,7 @@
         <?php for ($i = 1; $i <= 2; $i++) : $color = $i == 1 ? 'primary' : 'info'; ?>
             <h2 class="alert alert-<?php echo $color?> text-center"><?php echo $i == 1 ? 'یکساله' : 'دوساله'; ?></h2>
             <div class="row d-flex">
-                <?php foreach ($tariffs as $tariff) :
+                <?php foreach ($tariffs as &$tariff) :
                     $fyt = $i == 1 ? $tariff['first_year'] : $tariff['two_year'];
                     $fyd = $i == 1 ? $tariff['first_year_discount'] : $tariff['two_year_discount'];
                     $fyp = $i == 1 ? $tariff['first_year_pay'] : $tariff['two_year_pay'];
@@ -45,7 +45,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($tariffs as $tariff) : ?>
+                <?php foreach ($tariffs as &$tariff) : ?>
                     <tr>
                         <td><img style="width: 48px;height: 48px;" src="<?php echo $tariff['company_icon']; ?>" alt="<?php echo $tariff['company_name']; ?>" /></td>
                         <td><?php echo $tariff['company_name'] . " - " . $tariff['package_tip']; ?></td>

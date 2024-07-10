@@ -29,7 +29,7 @@
                             <h2 class="text-center">سود</h2>
                         </td>
                     </tr>
-                    <?php foreach ($tariffs as $tariff) :
+                    <?php foreach ($tariffs as &$tariff) :
                         $fyt = $i == 1 ? $tariff['first_year'] : $tariff['two_year'];
                         $fyd = $i == 1 ? $tariff['first_year_discount'] : $tariff['two_year_discount'];
                         $fyp = $i == 1 ? $tariff['first_year_pay'] : $tariff['two_year_pay'];
