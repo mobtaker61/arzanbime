@@ -18,13 +18,13 @@
     <tbody>
         <?php foreach ($users as $user) : ?>
             <tr>
-                <td><?php echo htmlspecialchars($user['username']); ?></td>
-                <td><?php echo htmlspecialchars($user['name']); ?></td>
-                <td><?php echo htmlspecialchars($user['surname']); ?></td>
-                <td><?php echo htmlspecialchars($user['email']); ?></td>
-                <td><?php echo htmlspecialchars($user['phone']); ?></td>
-                <td><?php echo htmlspecialchars($user['role']); ?></td>
-                <td><?php echo htmlspecialchars($user['user_level_id']); ?></td>
+                <td><?php echo $user['username']; ?></td>
+                <td><?php echo $user['name']; ?></td>
+                <td><?php echo $user['surname']; ?></td>
+                <td><?php echo $user['email']; ?></td>
+                <td><?php echo $user['phone']; ?></td>
+                <td><?php echo $user['role']; ?></td>
+                <td><?php echo $user['user_level_id']; ?></td>
                 <td><?php echo $user['is_active'] ? 'فعال' : 'غیرفعال'; ?></td>
                 <td>
                     <button class="btn btn-warning edit-btn" data-id="<?php echo $user['id']; ?>">ویرایش</button>

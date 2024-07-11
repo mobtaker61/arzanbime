@@ -84,7 +84,6 @@ class QuotationController extends Controller
             $tariff['first_year_pay'] = intval($tariff['first_year'] - $tariff['first_year_discount']);
             $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);            
         }
-        $this->notify(json_encode($tariffs),['telegram']);
 
         $userMap = [];
         foreach ($adminUsers as $user) {
