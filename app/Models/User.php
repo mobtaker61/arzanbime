@@ -26,7 +26,8 @@ class User extends Model
         return false;
     }
 
-    public function register($data) {
+    public function register($data)
+    {
         $stmt = $this->db->prepare("INSERT INTO users (username, password, role, user_level_id, is_active) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param('sssii', $data['username'], $data['password'], $data['role'], $data['user_level_id'], $data['is_active']);
         $stmt->execute();
@@ -34,7 +35,7 @@ class User extends Model
         $stmt->close();
         return $userId;
     }
-        
+
     public function isUsernameOrTelExists($username, $tel, $email)
     {
         // Check username in users table
@@ -117,10 +118,24 @@ class User extends Model
 
     public function getAllUsers()
     {
-        $stmt = $this->db->prepare("SELECT * FROM users");
+        $stmt = $this->db->prepare("SELECT u.id, u.username, u.user_level_id, p.name, p.surname, p.birth_date
+            FROM users u 
+            LEFT JOIN profiles p ON u.id = p.user_id");
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
+
+        foreach ($result as &$user) {
+            if (!empty($user['birth_date'])) {
+                $birthDate = new \DateTime($user['birth_date']);
+                $today = new \DateTime();
+                $age = $today->diff($birthDate)->y;
+                $user['age'] = $age;
+            } else {
+                $user['age'] = null;
+            }
+        }
+
         return $result;
     }
 
@@ -144,7 +159,8 @@ class User extends Model
         return !empty($result) ? $result[0] : null;
     }
 
-    public function getUsersByRole($role, $search = '', $limit = 10, $offset = 0) {
+    public function getUsersByRole($role, $search = '', $limit = 10, $offset = 0)
+    {
         $search = "%$search%";
         $stmt = $this->db->prepare("SELECT users.*, profiles.name, profiles.surname, profiles.email, profiles.phone, user_levels.name as user_level FROM users 
             LEFT JOIN profiles ON users.id = profiles.user_id 
@@ -156,9 +172,10 @@ class User extends Model
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return $result;
-    }    
+    }
 
-    public function getUserCountByRole($role, $search = '') {
+    public function getUserCountByRole($role, $search = '')
+    {
         $search = "%$search%";
         $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM users 
             LEFT JOIN profiles ON users.id = profiles.user_id 
@@ -180,6 +197,15 @@ class User extends Model
         return $result;
     }
 
+    public function getOperators()
+    {
+        $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role != 'user'");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $result;
+    }
+
     public function createUser($data)
     {
         $stmt = $this->db->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
@@ -190,7 +216,8 @@ class User extends Model
         return $userId;
     }
 
-    public function updateUser($id, $data) {
+    public function updateUser($id, $data)
+    {
         $query = "UPDATE users SET username = ?, role = ?, user_level_id = ?, is_active = ?";
         $types = 'ssii';
         $params = [$data['username'], $data['role'], $data['user_level_id'], $data['is_active']];

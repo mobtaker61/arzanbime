@@ -21,6 +21,30 @@
                     <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-building"></i>
                         <p>
+                            سفارشات
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/orders" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>لیست</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/brokers" class="nav-link">
+                                <i class="nav-icon bi bi-briefcase"></i>
+                                <p>بروکر</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-building"></i>
+                        <p>
                             شرکتها
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
@@ -107,7 +131,6 @@
                     </ul>
                 </li>
 
-
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-people"></i>
@@ -127,6 +150,36 @@
                             <a href="/admin/quotations/manual" class="nav-link">
                                 <i class="nav-icon bi bi-circle"></i>
                                 <p>استعلام نماینده</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon bi bi-people"></i>
+                        <p>
+                            حسابداری
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/admin/transactions" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>تراکنش کاربران</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/broker_transactions" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>تراکنش بروکرها</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/transaction-types" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>نوع تراکنش</p>
                             </a>
                         </li>
                     </ul>

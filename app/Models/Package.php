@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Core\Model;
+use Exception;
 
 class Package extends Model
 {
@@ -81,6 +82,20 @@ class Package extends Model
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
+        return $result;
+    }
+
+    public function getPackagesByBroker($brokerId)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM package WHERE broker_id = ?");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('i', $brokerId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
         return $result;
     }
 

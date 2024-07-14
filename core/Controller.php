@@ -8,6 +8,8 @@ require_once __DIR__ . '/TelegramObserver.php';
 require_once __DIR__ . '/JavaScriptAlertObserver.php';
 require_once __DIR__ . '/IMVerify.php';
 
+require_once __DIR__ . '/../vendor/autoload.php'; // مسیر را با توجه به ساختار پروژه خود تنظیم کنید
+
 class Controller {
     protected $notificationCenter;
 

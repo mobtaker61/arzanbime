@@ -7,8 +7,10 @@ use App\Models\Company;
 use App\Models\Package;
 use Core\Controller;
 
-class TariffController extends Controller {
-    public function index() {
+class TariffController extends Controller
+{
+    public function index()
+    {
         $tariffModel = new Tariff();
         $companyModel = new Company();
         $packageModel = new Package();
@@ -48,7 +50,35 @@ class TariffController extends Controller {
         }
     }
 
-    public function store() {
+    public function getHighestCommission($packageId)
+    {
+        $tariffModel = new Tariff();
+        $commissionData = $tariffModel->getHighestCommission($packageId);
+
+        header('Content-Type: application/json');
+        echo json_encode($commissionData);
+    }
+
+    public function getTariff()
+    {
+        $packageId = $_GET['package_id'];
+        $age = $_GET['age'];
+        $duration = $_GET['duration'];
+        $userLevelId = $_GET['user_level_id'];
+
+        $tariffModel = new Tariff();
+        $tariff = $tariffModel->getTariff($packageId, $age, $duration);
+        $commissionRate = $tariffModel->getPackageDiscount($packageId, $userLevelId);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+                'tariff' => $tariff,
+                'commission_rate' => $commissionRate
+            ]);
+    }
+
+    public function store()
+    {
         $data = [
             'package_id' => $_POST['package_id'],
             'age' => $_POST['age'],
@@ -59,25 +89,27 @@ class TariffController extends Controller {
 
         $tariffModel = new Tariff();
         $tariffModel->createTariff(
-            $data['package_id'], 
-            $data['age'], 
-            $data['first_year'], 
-            $data['second_year'], 
+            $data['package_id'],
+            $data['age'],
+            $data['first_year'],
+            $data['second_year'],
             $data['two_year']
         );
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Tariff created successfully.']);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $tariffModel = new Tariff();
         $tariff = $tariffModel->getTariffById($id);
-    
+
         header('Content-Type: application/json');
         echo json_encode($tariff);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $data = [
             'package_id' => $_POST['package_id'],
             'age' => $_POST['age'],
@@ -92,20 +124,22 @@ class TariffController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Tariff updated successfully.']);
     }
 
-    public function updateField($id) {
+    public function updateField($id)
+    {
         $data = json_decode(file_get_contents('php://input'), true);
         $first_year = $data['first_year'];
         $second_year = $data['second_year'];
         $two_year = $data['two_year'];
-    
+
         $tariffModel = new Tariff();
         $result = $tariffModel->updateField($id, $first_year, $second_year, $two_year);
-    
+
         header('Content-Type: application/json');
         echo json_encode(['success' => $result]);
     }
 
-    public function setTariff() {
+    public function setTariff()
+    {
         $data = json_decode(file_get_contents('php://input'), true);
         $packageId = $data['package_id'];
         $startAge = $data['start_age'];
@@ -125,8 +159,9 @@ class TariffController extends Controller {
             echo json_encode(['success' => false, 'message' => 'Failed to set tariff.']);
         }
     }
-       
-    public function delete($id) {
+
+    public function delete($id)
+    {
         $tariffModel = new Tariff();
         $tariffModel->deleteTariff($id);
         header('Content-Type: application/json');

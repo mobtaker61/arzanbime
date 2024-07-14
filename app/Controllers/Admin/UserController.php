@@ -9,14 +9,17 @@ use App\Models\Profile;
 use Core\Controller;
 use App\Models\UserLevel;
 
-class UserController extends Controller {
-    public function __construct() {
+class UserController extends Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         Middleware::auth();
         Middleware::admin();
     }
 
-    public function index() {
+    public function index()
+    {
         $userModel = new User();
         $userLevelModel = new UserLevel();
         $search = $_GET['search'] ?? '';
@@ -39,17 +42,18 @@ class UserController extends Controller {
         ], 'admin');
     }
 
-    public function store() {
+    public function store()
+    {
         $userData = [
             'username' => $_POST['username'],
             'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
-            'role' => $_POST['role'],
-            'user_level_id' => $_POST['user_level_id'],
+            'role' => $_POST['role'] ?? 'user',
+            'user_level_id' => $_POST['user_level_id'] ?? 2,
             'is_active' => isset($_POST['is_active']) ? 1 : 0
         ];
 
         $profileData = [
-            'profile_image' => $_POST['profile_image'],
+            'profile_image' => $_POST['profile_image'] ?? null,
             'name' => $_POST['name'],
             'surname' => $_POST['surname'],
             'birth_date' => $_POST['birth_date'],
@@ -59,16 +63,27 @@ class UserController extends Controller {
 
         $userModel = new User();
         $profileModel = new Profile();
-        
+
         $userId = $userModel->register($userData);
         $profileData['user_id'] = $userId;
         $profileModel->createProfile($profileData);
 
         header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'message' => 'User created successfully.']);
+        echo json_encode([
+            'success' => true,
+            'message' => 'User created successfully.',
+            'user' => [
+                'id' => $userId,
+                'username' => $userData['username'],
+                'name' => $profileData['name'],
+                'surname' => $profileData['surname'],
+                'birth_date' => $profileData['birth_date']  // Add birth_date to response
+            ]
+        ]);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $userModel = new User();
         $profileModel = new Profile();
         $userLevelModel = new UserLevel();
@@ -83,7 +98,8 @@ class UserController extends Controller {
         echo json_encode(['user' => $user, 'userLevels' => $userLevels]);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $userData = [
             'username' => $_POST['username'],
             'role' => $_POST['role'],
@@ -115,7 +131,8 @@ class UserController extends Controller {
         echo json_encode(['success' => true, 'message' => 'User updated successfully.']);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $userModel = new User();
         $profileModel = new Profile();
 

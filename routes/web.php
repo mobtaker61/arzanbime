@@ -83,15 +83,16 @@ $router->add('/admin/tariffs/update/{id}', 'App\Controllers\Admin\TariffControll
 $router->add('/admin/tariffs/delete/{id}', 'App\Controllers\Admin\TariffController@delete', 'DELETE');
 $router->add('/admin/tariffs/updateField/{id}', 'App\Controllers\Admin\TariffController@updateField', 'POST');
 $router->add('/admin/tariffs/setTariff', 'App\Controllers\Admin\TariffController@setTariff', 'POST');
+$router->add('/admin/tariffs/getTariff', 'App\Controllers\Admin\TariffController@getTariff');
 
 // Admin quotation routes
 $router->add('/admin/quotations', 'App\Controllers\Admin\QuotationController@index', 'GET');
 $router->add('/admin/quotations/detail/{id}', 'App\Controllers\Admin\QuotationController@detail', 'GET');
 $router->add('/admin/quotations/store', 'App\Controllers\Admin\QuotationController@store', 'POST');
 $router->add('/admin/quotations/addFollowup', 'App\Controllers\Admin\QuotationController@addFollowup', 'POST');
-$router->add('/admin/quotations/manual', 'App\Controllers\Admin\QuotationController@manualQuotationForm','GET');
-$router->add('/admin/quotations/getOffers/{id}', 'App\Controllers\Admin\QuotationController@getOffers','GET');
-$router->add('/admin/quotations/check-or-create-user', 'App\Controllers\Admin\QuotationController@checkOrCreateUser','POST');
+$router->add('/admin/quotations/manual', 'App\Controllers\Admin\QuotationController@manualQuotationForm', 'GET');
+$router->add('/admin/quotations/getOffers/{id}', 'App\Controllers\Admin\QuotationController@getOffers', 'GET');
+$router->add('/admin/quotations/check-or-create-user', 'App\Controllers\Admin\QuotationController@checkOrCreateUser', 'POST');
 
 // Admin user levels routes
 $router->add('/admin/user-levels', 'App\Controllers\Admin\UserLevelController@index', 'GET');
@@ -138,6 +139,31 @@ $router->add('/admin/commissions/store', 'App\Controllers\Admin\BrokerPackageCom
 $router->add('/admin/commissions/edit/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@edit', 'GET');
 $router->add('/admin/commissions/update/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@update', 'POST');
 $router->add('/admin/commissions/delete/{id}', 'App\Controllers\Admin\BrokerPackageCommissionController@delete', 'DELETE');
+
+// Admin Order routes
+$router->add('/admin/orders', 'App\Controllers\Admin\OrderController@index');
+$router->add('/admin/orders/export', 'App\Controllers\Admin\OrderController@exportToExcel');
+$router->add('/admin/orders/store', 'App\Controllers\Admin\OrderController@store', 'POST');
+$router->add('/admin/orders/getPackagesByBroker/{id}', 'App\Controllers\Admin\OrderController@getPackagesByBroker');
+$router->add('/admin/tariffs/getHighestCommission/{id:\d+}', 'App\Controllers\Admin\TariffController@getHighestCommission');
+
+// Admin Transaction
+$router->add('/admin/transactions', 'App\Controllers\Admin\TransactionController@index');
+$router->add('/admin/transactions/create', 'App\Controllers\Admin\TransactionController@create');
+$router->add('/admin/transactions/store', 'App\Controllers\Admin\TransactionController@store','POST');
+$router->add('/admin/transactions/edit/{id}', 'App\Controllers\Admin\TransactionController@edit');
+$router->add('/admin/transactions/update/{id}', 'App\Controllers\Admin\TransactionController@update','DELETE');
+
+$router->add('/admin/broker_transactions', 'App\Controllers\Admin\BrokerTransactionController@index');
+$router->add('/admin/broker_transactions/store', 'App\Controllers\Admin\BrokerTransactionController@store','POST');
+$router->add('/admin/broker_transactions/edit/{id:\d+}', 'App\Controllers\Admin\BrokerTransactionController@edit');
+$router->add('/admin/broker_transactions/update/{id:\d+}', 'App\Controllers\Admin\BrokerTransactionController@update','POST');
+
+$router->add('/admin/transaction-types', 'App\Controllers\Admin\TransactionTypeController@index');
+$router->add('/admin/transaction-types/store', 'App\Controllers\Admin\TransactionTypeController@store', 'POST');
+$router->add('/admin/transaction-types/update/{id:\d+}', 'App\Controllers\Admin\TransactionTypeController@update', 'POST');
+$router->add('/admin/transaction-types/delete/{id:\d+}', 'App\Controllers\Admin\TransactionTypeController@delete', 'DELETE');
+
 
 //************** AGENT **********************/
 // Agent routes (requires agent authentication)

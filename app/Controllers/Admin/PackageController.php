@@ -127,7 +127,7 @@ class PackageController extends Controller {
         header('Content-Type: text/html');
         echo $html;
     }
-    
+
     public function create() {
         $companyModel = new Company();
         $companies = $companyModel->getAllCompanies();

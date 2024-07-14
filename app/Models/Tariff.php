@@ -119,6 +119,17 @@ class Tariff extends Model
         return $result;
     }
 
+    public function getTariff($packageId, $age, $duration)
+    {
+        $column = $duration == 1 ? 'first_year' : 'second_year';
+        $stmt = $this->db->prepare("SELECT $column AS tariff FROM tariff WHERE package_id = ? AND age = ?");
+        $stmt->bind_param('ii', $packageId, $age);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result ? $result['tariff'] : null;
+    }    
+
     public function getTariffsByPackage($packageId)
     {
         $stmt = $this->db->prepare("SELECT * FROM tariff WHERE package_id = ? ORDER BY age ASC");
@@ -155,20 +166,17 @@ class Tariff extends Model
 
     public function getHighestCommission($packageId)
     {
-        $stmt = $this->db->prepare("SELECT brokers.title, broker_package_commissions.commission_rate 
+        $stmt = $this->db->prepare("SELECT brokers.title, broker_package_commissions.commission_rate, brokers.id AS broker_id 
                                     FROM broker_package_commissions
                                     JOIN brokers ON broker_package_commissions.broker_id = brokers.id
                                     WHERE broker_package_commissions.package_id = ?
                                     ORDER BY broker_package_commissions.commission_rate DESC
                                     LIMIT 1");
-        if (!$stmt) {
-            throw new Exception($this->db->error);
-        }
         $stmt->bind_param('i', $packageId);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         $stmt->close();
-        return !empty($result) ? $result : null;
+        return $result;
     }
 
     public function getTariffCountByPackageId($packageId)
@@ -211,10 +219,9 @@ class Tariff extends Model
         $stmt = $this->db->prepare("SELECT discount_rate FROM package_discounts WHERE package_id = ? AND user_level_id = ?");
         $stmt->bind_param('ii', $packageId, $userLevelId);
         $stmt->execute();
-        $stmt->bind_result($discountRate);
-        $stmt->fetch();
+        $result = $stmt->get_result()->fetch_assoc();
         $stmt->close();
-        return $discountRate;
+        return $result ? $result['discount_rate'] : null;
     }
 
     public function updateTariff($id, $data)
