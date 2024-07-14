@@ -6,7 +6,7 @@ public/uploads
 error_log
 .htaccess
 # Other files and directories to ignore
-/vendor
+#/vendor
 /node_modules
 .env
 .DS_Store
