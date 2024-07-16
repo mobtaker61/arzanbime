@@ -10,8 +10,17 @@
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <li class="nav-item">
+                        <a href="/admin" class="nav-link">
+                            <i class="nav-icon bi bi-speedometer2"></i>
+                            <p>داشبورد</p>
+                        </a>
+                    </li>
+                </li>
+
+                <li class="nav-item">
+                    <li class="nav-item">
                         <a href="/admin/posts" class="nav-link">
-                            <i class="nav-icon bi"></i>
+                            <i class="nav-icon bi bi-substack"></i>
                             <p>محتوا</p>
                         </a>
                     </li>
@@ -19,7 +28,7 @@
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-building"></i>
+                        <i class="nav-icon bi bi-basket"></i>
                         <p>
                             سفارشات
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -133,7 +142,7 @@
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-people"></i>
+                        <i class="nav-icon bi bi-chat-quote"></i>
                         <p>
                             درخواستها
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -157,7 +166,7 @@
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon bi bi-people"></i>
+                        <i class="nav-icon bi bi-cash-coin"></i>
                         <p>
                             حسابداری
                             <i class="nav-arrow bi bi-chevron-right"></i>
@@ -220,7 +229,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="/logout" class="nav-link">
-                        <i class="nav-icon bi"></i>
+                        <i class="nav-icon bi bi-box-arrow-right"></i>
                         <p>خروج</p>
                     </a>
                 </li>

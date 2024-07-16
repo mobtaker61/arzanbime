@@ -93,6 +93,7 @@ $router->add('/admin/quotations/addFollowup', 'App\Controllers\Admin\QuotationCo
 $router->add('/admin/quotations/manual', 'App\Controllers\Admin\QuotationController@manualQuotationForm', 'GET');
 $router->add('/admin/quotations/getOffers/{id}', 'App\Controllers\Admin\QuotationController@getOffers', 'GET');
 $router->add('/admin/quotations/check-or-create-user', 'App\Controllers\Admin\QuotationController@checkOrCreateUser', 'POST');
+$router->add('/admin/quotations/createFromOrder', 'App\Controllers\Admin\QuotationController@createFromOrder', 'POST');
 
 // Admin user levels routes
 $router->add('/admin/user-levels', 'App\Controllers\Admin\UserLevelController@index', 'GET');
@@ -146,6 +147,7 @@ $router->add('/admin/orders/export', 'App\Controllers\Admin\OrderController@expo
 $router->add('/admin/orders/store', 'App\Controllers\Admin\OrderController@store', 'POST');
 $router->add('/admin/orders/getPackagesByBroker/{id}', 'App\Controllers\Admin\OrderController@getPackagesByBroker');
 $router->add('/admin/tariffs/getHighestCommission/{id:\d+}', 'App\Controllers\Admin\TariffController@getHighestCommission');
+$router->add('/admin/orders/sendReminder', 'App\Controllers\Admin\OrderController@sendReminder', 'POST');
 
 // Admin Transaction
 $router->add('/admin/transactions', 'App\Controllers\Admin\TransactionController@index');
@@ -174,3 +176,9 @@ $router->add('/agent', 'App\Controllers\Agent\AgentController@dashboard', 'GET')
 $router->add('/sitemap.xml', 'App\Controllers\RssController@sitemap');
 $router->add('/rss', 'App\Controllers\RssController@index', 'GET');
 $router->add('/rss/{postType}', 'App\Controllers\RssController@byPostType', 'GET');
+$router->add('/admin/getChartData', 'App\Controllers\Admin\AdminController@getChartData');
+$router->add('/admin/getUsers', 'App\Controllers\Admin\AdminController@getUsers');
+$router->add('/admin/getBrokers', 'App\Controllers\Admin\AdminController@getBrokers');
+$router->add('/admin/fast/transactions', 'App\Controllers\Admin\AdminController@storeUserTransaction','POST');
+$router->add('/admin/fast/broker-transactions', 'App\Controllers\Admin\AdminController@storeBrokerTransaction','POST');
+$router->add('/admin/sendSms', 'App\Controllers\Admin\AdminController@sendSMS', 'POST');

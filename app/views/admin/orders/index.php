@@ -20,9 +20,7 @@
     </div>
     <div class="col-md-6 d-flex align-items-center justify-content-end">
         <a href="/admin/orders/export" class="btn btn-primary">Export to Excel</a>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
-            Create New Order
-        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">سفارش جدید</button>
     </div>
 </div>
 <div id="order-table">
@@ -35,7 +33,7 @@
         <div class="modal-content card card-warning card-outline mb-4">
             <form id="create-order-form">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createOrderModalLabel">Create New Order</h5>
+                    <h5 class="modal-title" id="createOrderModalLabel">سفارش جدید</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body card-body row">
@@ -227,6 +225,16 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const showModal = urlParams.get('showModal');
+        
+        if (showModal) {
+            var myModal = new bootstrap.Modal(document.getElementById('createOrderModal'), {
+                keyboard: false
+            });
+            myModal.show();
+        }
+        
         const createOrderModal = document.getElementById('createOrderModal');
         const startDateInput = document.getElementById('start_date');
         const endDateInput = document.getElementById('end_date');

@@ -256,3 +256,33 @@ blockquote {
 	margin-bottom: 0px;
 	padding-bottom: 0px;
 }
+
+/*    ADMIN CSS  */
+.hbd_box{
+	width: 586px;
+	height: 750px;
+	background-image: url('../assets/hbdcart.jpg');
+	color: white;
+}
+.hbd_box .name{
+position: relative;
+top: 325px;
+text-align: center;
+font-weight: 700;
+font-size: 2em;
+}
+.hbd_box .text{
+position: relative;
+top: 275px;
+margin: 125px 50px;
+text-align: center;
+font-size: 1em;
+}
+.hbd_box .gift{
+position: relative;
+top: 170px;
+margin: 125px 90px;
+text-align: center;
+font-size: 1.5em;
+color: #fefec0;
+}

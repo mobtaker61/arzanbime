@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/public/css/custom.css">
     <!-- Include TinyMCE -->
     <script src="/public/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js" integrity="sha512-7tWCgq9tTYS/QkGVyKrtLpqAoMV9XIUxoou+sPUypsaZx56cYR/qio84fPK9EvJJtKvJEwt7vkn6je5UVzGevw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -76,6 +77,51 @@
                 });
             }
         });
+
+        function formatDateToDuration(date) {
+            const now = new Date();
+            const past = new Date(date);
+            const diff = now - past;
+
+            const minute = 60 * 1000;
+            const hour = 60 * minute;
+            const day = 24 * hour;
+            const week = 7 * day;
+            const month = 30 * day;
+            const year = 365 * day;
+
+            if (diff < hour) {
+                const minutes = Math.floor((diff % hour) / minute);
+                return `${minutes} دقیقه پیش`;
+            } else if (diff < day) {
+                const hours = Math.floor(diff / hour);
+                const minutes = Math.floor((diff % hour) / minute);
+                return `${hours} ساعت و ${minutes} دقیقه پیش`;
+            } else if (diff < week) {
+                const days = Math.floor(diff / day);
+                return `${days} روز پیش`;
+            } else if (diff < month) {
+                const weeks = Math.floor(diff / week);
+                return `${weeks} هفته پیش`;
+            } else if (diff < year) {
+                const months = Math.floor(diff / month);
+                return `${months} ماه پیش`;
+            } else {
+                const years = Math.floor(diff / year);
+                return `${years} سال`;
+            } 
+        }
+
+
+        function updateDurations() {
+            const dateElements = document.querySelectorAll('.dur_date');
+            dateElements.forEach(function(el) {
+                const date = el.innerText;
+                el.innerText = formatDateToDuration(date);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateDurations);
     </script>
 </body>
 

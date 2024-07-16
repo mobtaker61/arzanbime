@@ -206,6 +206,19 @@ class User extends Model
         return $result;
     }
 
+    public function getUsersWithUpcomingBirthdays($startDate, $endDate)
+    {
+        $stmt = $this->db->prepare("SELECT u.id, u.username, p.name, p.surname, p.birth_date, p.phone
+            FROM users u 
+            LEFT JOIN profiles p ON u.id = p.user_id
+            WHERE DATE_FORMAT(p.birth_date, '%m-%d') BETWEEN DATE_FORMAT(?, '%m-%d') AND DATE_FORMAT(?, '%m-%d') ORDER BY DATE_FORMAT(p.birth_date, '%m-%d')");
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $result;
+    }
+
     public function createUser($data)
     {
         $stmt = $this->db->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");

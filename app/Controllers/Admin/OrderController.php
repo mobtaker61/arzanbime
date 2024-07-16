@@ -88,7 +88,7 @@ class OrderController extends Controller
         $profileModel = new Profile();
         $userProfile = $profileModel->getProfileByUserId($_POST['user_id']);
         $descText = $userProfile['name'] . ' ' . $userProfile['surname'] . ' - سفارش ' . $orderId;
-        
+
         // ایجاد تراکنش برای کاربر اپراتور
         $transactionData = [
             'transaction_date' => date('Y-m-d'),
@@ -100,8 +100,8 @@ class OrderController extends Controller
             'debit' => $_POST['payment'],
             'credit' => 0
         ];
-        
-        $this->notify($descText ,['telegram']);
+
+        $this->notify($descText, ['telegram']);
         $transactionModel = new Transaction();
         $transactionModel->createTransaction($transactionData);
 
@@ -122,7 +122,6 @@ class OrderController extends Controller
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Order created successfully.']);
     }
-
 
     public function getPackagesByBroker($brokerId)
     {
@@ -197,4 +196,5 @@ class OrderController extends Controller
         $writer->save('php://output');
         exit;
     }
+
 }

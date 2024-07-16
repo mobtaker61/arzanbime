@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Models\Quotation;
 use App\Models\Followup;
+use App\Models\Order;
 use App\Models\Profile;
 use App\Models\User;
 use App\Models\Tariff;
@@ -82,7 +83,7 @@ class QuotationController extends Controller
             $tariff['first_year_discount'] = intval($tariff['first_year'] * $commissionRate);
             $tariff['two_year_discount'] = intval($tariff['two_year'] * $commissionRate);
             $tariff['first_year_pay'] = intval($tariff['first_year'] - $tariff['first_year_discount']);
-            $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);            
+            $tariff['two_year_pay'] = intval($tariff['two_year'] - $tariff['two_year_discount']);
         }
 
         $userMap = [];
@@ -261,6 +262,25 @@ class QuotationController extends Controller
             'users' => $users
         ];
         $this->View('admin/quotations/manual', $viewData, 'admin');
+    }
+
+    public function createFromOrder()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $quotationData = [
+            'user_id' => $data['user_id'],
+            'birth_date' => $data['birth_date'],
+            'tel' => $data['tel'],
+            'age' => $data['age'],
+            'duration' => $data['duration'],
+            'status' => 'NEW'
+        ];
+
+        $quotationModel = new Quotation();
+        $quotationId = $quotationModel->createQuotation($quotationData);
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'quotationId' => $quotationId]);
     }
 
     public function getOffers($id)

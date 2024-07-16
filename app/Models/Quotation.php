@@ -69,7 +69,6 @@ class Quotation extends Model
         $stmt->close();
         return $quotation;
     }
-    
 
     public function getQuotationCount($filterTel, $filterStatus)
     {
@@ -114,7 +113,23 @@ class Quotation extends Model
         return $uid;
     }
 
-
+    public function getTotalQuotations($startDate, $endDate) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total_quotations FROM quotation WHERE created_at BETWEEN ? AND ?");
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['total_quotations'] ?? 0;
+    }
+    
+    public function getNewQuotationsCount() {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM quotation WHERE status = 'new'");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['count'];
+    }
+    
     private function generateUid()
     {
         return bin2hex(random_bytes(16));

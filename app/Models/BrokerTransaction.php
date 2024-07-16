@@ -135,6 +135,23 @@ class BrokerTransaction extends Model
         return $result;
     }
 
+    public function getTotalCredit($startDate, $endDate) {
+        $stmt = $this->db->prepare("SELECT SUM(credit) as total_credit FROM broker_transactions WHERE transaction_date BETWEEN ? AND ?");
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['total_credit'] ?? 0;
+    }
+
+    public function getBrokersBalance() {
+        $stmt = $this->db->prepare("SELECT SUM(credit - debit) as balance FROM broker_transactions");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['balance'];
+    }    
+
     private function fetchAssoc($stmt)
     {
         $stmt->store_result();

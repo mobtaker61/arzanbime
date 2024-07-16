@@ -156,6 +156,23 @@ class Transaction extends Model
         return $result;
     }
 
+    public function getTotalDebit($startDate, $endDate) {
+        $stmt = $this->db->prepare("SELECT SUM(debit) as total_debit FROM transactions WHERE transaction_date BETWEEN ? AND ?");
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['total_debit'] ?? 0;
+    }
+
+    public function getUsersBalance() {
+        $stmt = $this->db->prepare("SELECT SUM(debit - credit) as balance FROM transactions");
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['balance'];
+    }
+
     private function fetchAssoc($stmt)
     {
         $stmt->store_result();
