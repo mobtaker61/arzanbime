@@ -12,7 +12,8 @@ class PackageDiscount extends Model
             FROM package_discounts pd 
             JOIN package p ON pd.package_id = p.id 
             JOIN company c ON p.company_id = c.id 
-            JOIN user_levels ul ON pd.user_level_id = ul.id");
+            JOIN user_levels ul ON pd.user_level_id = ul.id
+            ORDER BY company_name, user_level_name");
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();

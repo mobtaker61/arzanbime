@@ -160,13 +160,14 @@ class AuthController extends Controller
         $tel = preg_replace('/\s+/', '', $data['tel']); // Remove spaces
 
         $_SESSION['quotation_data'] = [
-            'birth' => $data['birth'],
+            'birth_date' => $data['birth'],
             'age' => $data['age'],
             'duration' => $data['duration'],
             'tel' => $tel,
             'role' => 'user',            
             'user_level_id' => 2,
             'user_id' => null,
+            'status' => 'NEW'
         ];
 
         if ($this->imVerify->send($tel)) {
