@@ -262,7 +262,7 @@ class AuthController extends Controller
             'profile_image' => '',
             'name' => '',
             'surname' => '',
-            'birth_date' => $quotationData['birth'],
+            'birth_date' => $quotationData['birth_date'],
             'email' => null,
             'phone' => $quotationData['tel'],
             'is_verified' => 1
