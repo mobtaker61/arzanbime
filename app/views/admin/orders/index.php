@@ -43,7 +43,7 @@
                             <div class="col-sm-8"> <select class="form-select" id="operator_user_id" name="operator_user_id" required>
                                     <?php foreach ($operators as $operator) : ?>
                                         <option value="<?php echo $operator['id']; ?>" data-user-level-id="<?php echo $operator['user_level_id']; ?>" <?php echo $operator['id'] == $_SESSION['user_id'] ? 'selected' : ''; ?>>
-                                        <?php echo $operator['name']; ?> <?php echo $operator['surname']; ?> (<?php echo $operator['username']; ?>)
+                                            <?php echo $operator['name']; ?> <?php echo $operator['surname']; ?> (<?php echo $operator['username']; ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -125,7 +125,7 @@
                             <label class="col-sm-4 col-form-label" for="payment">پرداختی</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
-                                    <span class="input-group-text numwc" id="user_com_rate">درصد</span>
+                                    <span class="input-group-text" id="user_com_rate">درصد</span>
                                     <input type="number" class="form-control numwc" id="payment" name="payment" required>
                                     <span class="input-group-text" id="basic-addon2">لیر</span>
                                 </div>
@@ -227,14 +227,14 @@
     document.addEventListener("DOMContentLoaded", function() {
         const urlParams = new URLSearchParams(window.location.search);
         const showModal = urlParams.get('showModal');
-        
+
         if (showModal) {
             var myModal = new bootstrap.Modal(document.getElementById('createOrderModal'), {
                 keyboard: false
             });
             myModal.show();
         }
-        
+
         const createOrderModal = document.getElementById('createOrderModal');
         const startDateInput = document.getElementById('start_date');
         const endDateInput = document.getElementById('end_date');
@@ -276,7 +276,8 @@
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById('tariff').value = Math.floor(data.tariff);
-                        document.getElementById('payment').value =Math.floor(data.tariff - (data.tariff * data.commission_rate / 100));
+                        document.getElementById('payment').value = Math.floor(data.tariff - (data.tariff * data.commission_rate / 100));
+                        document.getElementById('user_com_rate').innerText = data.commission_rate + ' درصد';
                         // Apply number formatting to new content
                         applyNumberFormatting();
 
