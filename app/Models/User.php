@@ -116,15 +116,34 @@ class User extends Model
         return isset($_SESSION['user_id']);
     }
 
-    public function getAllUsers()
+    public function getAllUsers($role = null)
     {
-        $stmt = $this->db->prepare("SELECT u.id, u.username, u.user_level_id, p.name, p.surname, p.birth_date
+        // پایه کوئری SQL
+        $sql = "SELECT u.id, u.username, u.user_level_id, p.name, p.surname, p.birth_date
             FROM users u 
-            LEFT JOIN profiles p ON u.id = p.user_id");
+            LEFT JOIN profiles p ON u.id = p.user_id";
+
+        // اضافه کردن شرط نقش در صورت وجود
+        if ($role !== null) {
+            $sql .= " WHERE u.role = ?";
+        }
+
+        $sql .= " ORDER BY 'p.name'";
+
+        // آماده سازی کوئری
+        $stmt = $this->db->prepare($sql);
+
+        // بایند کردن پارامتر نقش در صورت وجود
+        if ($role !== null) {
+            $stmt->bind_param('s', $role);
+        }
+
+        // اجرای کوئری
         $stmt->execute();
         $result = $this->fetchAssoc($stmt);
         $stmt->close();
 
+        // محاسبه سن کاربران
         foreach ($result as &$user) {
             if (!empty($user['birth_date'])) {
                 $birthDate = new \DateTime($user['birth_date']);
@@ -197,11 +216,17 @@ class User extends Model
         return $result;
     }
 
-    public function getOperators()
+    public function getOperators($role = 'user')
     {
-        $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role != 'user'");
+        $stmt = $this->db->prepare("SELECT u.id, u.username, u.user_level_id, p.name, p.surname, p.birth_date
+            FROM users u 
+            LEFT JOIN profiles p ON u.id = p.user_id
+            WHERE role != 'user'
+            ORDER BY 'p.name'");
+
+
         $stmt->execute();
-        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $this->fetchAssoc($stmt);
         $stmt->close();
         return $result;
     }

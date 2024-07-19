@@ -43,7 +43,7 @@
                             <div class="col-sm-8"> <select class="form-select" id="operator_user_id" name="operator_user_id" required>
                                     <?php foreach ($operators as $operator) : ?>
                                         <option value="<?php echo $operator['id']; ?>" data-user-level-id="<?php echo $operator['user_level_id']; ?>" <?php echo $operator['id'] == $_SESSION['user_id'] ? 'selected' : ''; ?>>
-                                            <?php echo $operator['username']; ?> (<?php echo $operator['name']; ?> <?php echo $operator['surname']; ?>)
+                                        <?php echo $operator['name']; ?> <?php echo $operator['surname']; ?> (<?php echo $operator['username']; ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -56,7 +56,7 @@
                                 <div class="d-flex">
                                     <div class="col-sm-8 p-0">
                                         <select class="form-select" id="user_id" name="user_id" required>
-                                            <?php foreach ($operators as $user) : ?>
+                                            <?php foreach ($users as $user) : ?>
                                                 <option value="<?php echo $user['id']; ?>" data-age="<?php echo $user['age']; ?>">
                                                     <?php echo $user['username']; ?> (<?php echo $user['name']; ?> <?php echo $user['surname']; ?>)
                                                 </option>

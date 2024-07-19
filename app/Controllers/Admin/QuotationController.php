@@ -127,9 +127,9 @@ class QuotationController extends Controller
         $quotationId = $quotationModel->createQuotation($data);
 
         $profile = new Profile();
-        $tel = $profile->getProfileByUserId($_POST['user_id']);
+        $tel = $_POST['tel'] ?? $profile->getProfileByUserId($_POST['user_id']);
 
-        $this->imVerify->send($tel['phone'], 'نتیجه استعلام شما در آدرس ' . 'https://arzanbime.com/offers/' . $quotationId);
+        $this->imVerify->send($tel['phone'], 'نتیجه استعلام بیمه شما در آدرس: ' . 'https://arzanbime.com/offers/' . $quotationId);
         $this->notify('استعلام جدید در: ' . PHP_EOL . 'https://arzanbime.com/offers/' . $quotationId, ['telegram']);
 
         header('Content-Type: application/json');

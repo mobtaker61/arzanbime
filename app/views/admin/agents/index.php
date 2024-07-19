@@ -4,6 +4,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>کد</th>
             <th>نام کاربری</th>
             <th>نام</th>
             <th>نام خانوادگی</th>
@@ -18,13 +19,14 @@
     <tbody>
         <?php foreach ($agents as $agent) : ?>
             <tr>
-                <td><?php echo htmlspecialchars($agent['username']); ?></td>
-                <td><?php echo htmlspecialchars($agent['name']); ?></td>
-                <td><?php echo htmlspecialchars($agent['surname']); ?></td>
-                <td><?php echo htmlspecialchars($agent['email']); ?></td>
-                <td><?php echo htmlspecialchars($agent['phone']); ?></td>
-                <td><?php echo htmlspecialchars($agent['role']); ?></td>
-                <td><?php echo htmlspecialchars($agent['user_level']); ?></td>
+                <td><?php echo $agent['id']; ?></td>
+                <td><?php echo $agent['username']; ?></td>
+                <td><?php echo $agent['name']; ?></td>
+                <td><?php echo $agent['surname']; ?></td>
+                <td><?php echo $agent['email']; ?></td>
+                <td><?php echo $agent['phone']; ?></td>
+                <td><?php echo $agent['role']; ?></td>
+                <td><?php echo $agent['user_level']; ?></td>
                 <td><?php echo $agent['is_active'] ? 'فعال' : 'غیرفعال'; ?></td>
                 <td>
                     <button class="btn btn-warning edit-btn" data-id="<?php echo $agent['id']; ?>">ویرایش</button>
@@ -89,15 +91,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="create_surname" class="form-label">نام خانوادگی</label>
-                        <input type="text" class="form-control" id="create_surname" name="surname" required>
+                        <input type="text" class="form-control" id="create_surname" name="surname">
                     </div>
                     <div class="mb-3">
                         <label for="create_birth_date" class="form-label">تاریخ تولد</label>
-                        <input type="date" class="form-control" id="create_birth_date" name="birth_date" required>
+                        <input type="date" class="form-control" id="create_birth_date" name="birth_date">
                     </div>
                     <div class="mb-3">
                         <label for="create_email" class="form-label">ایمیل</label>
-                        <input type="email" class="form-control" id="create_email" name="email" required>
+                        <input type="email" class="form-control" id="create_email" name="email">
                     </div>
                     <div class="mb-3">
                         <label for="create_phone" class="form-label">شماره تلفن</label>
@@ -158,23 +160,23 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_name" class="form-label">نام</label>
-                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                        <input type="text" class="form-control" id="edit_name" name="name" >
                     </div>
                     <div class="mb-3">
                         <label for="edit_surname" class="form-label">نام خانوادگی</label>
-                        <input type="text" class="form-control" id="edit_surname" name="surname" required>
+                        <input type="text" class="form-control" id="edit_surname" name="surname" >
                     </div>
                     <div class="mb-3">
                         <label for="edit_birth_date" class="form-label">تاریخ تولد</label>
-                        <input type="date" class="form-control" id="edit_birth_date" name="birth_date" required>
+                        <input type="date" class="form-control" id="edit_birth_date" name="birth_date" >
                     </div>
                     <div class="mb-3">
                         <label for="edit_email" class="form-label">ایمیل</label>
-                        <input type="email" class="form-control" id="edit_email" name="email" required>
+                        <input type="email" class="form-control" id="edit_email" name="email" >
                     </div>
                     <div class="mb-3">
                         <label for="edit_phone" class="form-label">شماره تلفن</label>
-                        <input type="text" class="form-control" id="edit_phone" name="phone" required>
+                        <input type="text" class="form-control" id="edit_phone" name="phone" >
                     </div>
                     <div class="mb-3">
                         <label for="edit_is_active" class="form-label">فعال</label>
@@ -201,6 +203,7 @@
         document.getElementById("createForm").addEventListener("submit", function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            formData.set('isVerified', 1);
             fetch("/admin/agents/store", {
                     method: "POST",
                     body: formData

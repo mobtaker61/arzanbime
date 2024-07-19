@@ -21,7 +21,6 @@ class OrderController extends Controller
     {
         $orderModel = new Order();
         $userModel = new User();
-        $profileModel = new Profile();
         $packageModel = new Package();
         $brokerModel = new Broker();
 
@@ -38,7 +37,8 @@ class OrderController extends Controller
         $orders = $orderModel->getAllOrders($limit, $offset, $sortField, $sortOrder, $filterDateStart, $filterDateEnd, $filterOperator, $filterBroker);
         $totalOrders = $orderModel->getOrderCount($filterDateStart, $filterDateEnd, $filterOperator, $filterBroker);
 
-        $operators = $userModel->getAllUsers();
+        $operators = $userModel->getAllUsers('agent');
+        $users = $userModel->getAllUsers('user');
         $packages = $packageModel->getAllPackages();
         $brokers = $brokerModel->getAllBrokers();
 
@@ -54,6 +54,7 @@ class OrderController extends Controller
             'filterOperator' => $filterOperator,
             'filterBroker' => $filterBroker,
             'operators' => $operators,
+            'users' => $users,
             'packages' => $packages,
             'brokers' => $brokers,
             'pagetitle' => 'مدیریت سفارشات'

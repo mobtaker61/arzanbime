@@ -19,7 +19,7 @@ class AgentController extends Controller {
         $userModel = new User();
         $userLevelModel = new UserLevel();
         $search = $_GET['search'] ?? '';
-        $limit = $_GET['limit'] ?? 10;
+        $limit = $_GET['limit'] ?? 25;
         $page = $_GET['page'] ?? 1;
         $offset = ($page - 1) * $limit;
 
@@ -53,7 +53,8 @@ class AgentController extends Controller {
             'surname' => $_POST['surname'],
             'birth_date' => $_POST['birth_date'],
             'email' => $_POST['email'],
-            'phone' => $_POST['phone']
+            'phone' => $_POST['phone'],
+            'is_verified' => $_POST['isVerified']
         ];
 
         $userModel = new User();
