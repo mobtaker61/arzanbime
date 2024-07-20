@@ -125,7 +125,7 @@
                             <label class="col-sm-4 col-form-label" for="payment">پرداختی</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
-                                    <span class="input-group-text" ><span class="numwc" id="user_com_rate"></span>  درصد</span>
+                                    <span class="input-group-text" ><span class="numwc" id="user_com_rate"></span> درصد</span>
                                     <input type="number" class="form-control numwc" id="payment" name="payment" required>
                                     <span class="input-group-text" id="basic-addon2">لیر</span>
                                 </div>

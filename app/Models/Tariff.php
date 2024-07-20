@@ -106,7 +106,7 @@ class Tariff extends Model
                 FROM tariff t
                 LEFT JOIN package p ON t.package_id = p.id
                 LEFT JOIN company c ON p.company_id = c.id 
-                WHERE age = ?";
+                WHERE age = ? AND p.is_active = 1";
 
         $stmt = $this->db->prepare($sql);
         if (!$stmt) {
