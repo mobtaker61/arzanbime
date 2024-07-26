@@ -63,8 +63,8 @@ $userLoggedIn = isset($_SESSION['user_id']);
                         <option value="+98" data-flag="ir">🇮🇷 +98</option>
                     </select>
                 </div>
-                <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید<br/>
-                احراز هویت برای هر شماره موبایل فقط یکبار انجام میشود و در دفعات بعدی کدی ارسال نمیشود</p>
+                <p class="col-span-2 text-center">لطفا شماره موبایل صحیح وارد کنید، جهت نمایش نرخهای ویژه میبایست کد تایید ارسالی به شماره موبایل را وارد کنید<br />
+                    احراز هویت برای هر شماره موبایل فقط یکبار انجام میشود و در دفعات بعدی کدی ارسال نمیشود</p>
             <?php endif; ?>
             <button type="submit" class="pri-btn col-span-2 mobile-medium:py-2">استعلام قیمت</button>
         </form>
@@ -259,18 +259,16 @@ $userLoggedIn = isset($_SESSION['user_id']);
                         <div class="w-full h-fit article-item vakil-card grayscale group-hover:grayscale-0 group-hover:after:bg-transparent duration-200 ease-in transition-all after:duration-200 after:ease-in after:transition-all relative after:absolute after:w-full after:h-full after:left-0 after:top-0 after:bg-neutral-900 after:bg-opacity-50">
                             <img width="270" height="200" class=" h-48 tablet-medium:h-40 object-cover w-full border-solid border-b-2 border-vkl-bg-card" src="<?php echo $post['image']; ?>" alt="<?php echo $post['title']; ?>">
                         </div>
+                        <a href="/post/<?php echo $post['id']; ?>">
                         <div class="w-full text-vkl-c-header p-3 relative">
                             <div class="font-bold absolute bottom-0 left-0 w-full text-center h-full z-30">
                                 <p class="w-fit h-fit m-auto rounded-full bg-red-700 text-neutral-50 -translate-y-1/2 py-1 px-3 opacity-0 group-hover:opacity-100 duration-200 ease-in transition-all">
                                     بیمه
                                 </p>
                             </div>
-                            <h2 class="font-bold">
-                                <a href="/post/<?php echo $post['id']; ?>">
-                                    <?php echo $post['title']; ?>
-                                </a>
-                            </h2>
-                        </div>
+                            <h4 class="font-bold"><?php echo $post['title']; ?></h4>
+                                </div>
+                            </a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -337,7 +335,7 @@ $userLoggedIn = isset($_SESSION['user_id']);
             if (telElement) {
                 const tel = removeSpaces(document.getElementById("country-code").value + telElement.value);
                 formData.tel = tel;
-                fetch("/auth/check-tel", {                    
+                fetch("/auth/check-tel", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
