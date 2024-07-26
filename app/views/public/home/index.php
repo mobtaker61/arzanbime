@@ -239,7 +239,7 @@ $userLoggedIn = isset($_SESSION['user_id']);
     </div>
 </section>
 
-<section class=" center-sec py-28 tablet-medium:py-24 mobile-large:py-16">
+<section id="blog" class=" center-sec py-28 tablet-medium:py-24 mobile-large:py-16">
     <div class=" mx-auto text-start">
         <div class="flex justify-between w-full">
             <h2 class="h3-bar mb-3">راهنما</h2>

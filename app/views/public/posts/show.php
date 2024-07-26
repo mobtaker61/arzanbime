@@ -1,5 +1,8 @@
-<?php $pagetitle = $pagetitle; ?>
-<meta name="description" content="<?php echo $post['caption'] ?>">
+<?php
+    $pagetitle = $pagetitle;
+    $description = $post['caption'];
+    $keywords = $post['caption'];
+?>
 
 <section class="flex justify-center items-end h-[22.5rem] tablet-medium:h-96 mobile-large:h-56 bg-bottom bg-hero-back bg-cover bg-no-repeat relative bg-fixed after:content-[''] after:h-full after:w-full after:bg-opacity-50 after:bg-neutral-600 after:absolute after:left-0 after:top-0 after:z-10">
     <?php if (!empty($post['image'])) : ?>
