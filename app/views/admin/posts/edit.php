@@ -1,35 +1,23 @@
 <script>
     tinymce.init({
         selector: '#full_body',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak directionality wordcount',
-        toolbar_mode: 'floating',
+        plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
+        toolbar_mode: 'sliding',
+        toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+        contextmenu: 'link image table',
         language: 'fa',
         theme: 'silver',
-        toolbar: [{
-                name: 'history',
-                items: ['undo', 'redo']
-            },
-            {
-                name: 'styles',
-                items: ['styles']
-            },
-            {
-                name: 'formatting',
-                items: ['bold', 'italic']
-            },
-            {
-                name: 'alignment',
-                items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']
-            },
-            {
-                name: 'indentation',
-                items: ['outdent', 'indent']
-            },
-            {
-                name: 'directionality',
-                items: ['rtl', 'ltr']
-            }
-        ],
+        autosave_ask_before_unload: true,
+        autosave_interval: '30s',
+        autosave_prefix: '{path}{query}-{id}-',
+        autosave_restore_when_empty: false,
+        autosave_retention: '2m',
+        image_advtab: true,
+        height: 600,
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_class: 'mceNonEditable',
+        contextmenu: 'link image table',
         images_upload_url: '/upload.php', // Replace with your image upload handler URL
         images_upload_credentials: true
     });
