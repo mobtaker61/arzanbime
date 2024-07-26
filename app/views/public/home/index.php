@@ -8,7 +8,7 @@ $userLoggedIn = isset($_SESSION['user_id']);
 <section class="pady center-sec flex justify-between items-center gap-6 mobile-large:gap-3 mobile-large:flex-col mobile-large:items-start mb-6">
     <div id="features">
         <h2 class="h3-bar">فقط در 10 دقیقه</h2>
-        <img src="/public/assets/banner-1.png" alt="خرید بیمه اقامت فقط در 10 دقیقه">
+        <img src="/public/assets/arzan-bime.webp" alt="خرید بیمه اقامت فقط در 10 دقیقه">
         <div class="slider-container hidden">
             <div class="slider">
                 <div class="slide">
