@@ -164,7 +164,7 @@ class PostController extends Controller
             die("Sorry, your file is too large.");
         }
 
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+        if ($imageFileType != "webp" && $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
             die("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
         }
 
