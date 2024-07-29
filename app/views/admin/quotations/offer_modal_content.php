@@ -3,7 +3,7 @@
         <span class="btn btn-outline-primary mb-2"><strong></strong> <?php echo $quotation['name'] . ' ' . $quotation['surname']; ?></span>
         <span class="btn btn-outline-primary mb-2"><strong>تاریخ تولد: </strong> <?php echo $quotation['birth_date']; ?></span>
         <span class="btn btn-outline-primary mb-2"><strong>سن: </strong> <?php echo $quotation['age']; ?></span>
-        <span class="btn btn-outline-primary mb-2"><strong>تاریخ استعلام: </strong> <?php echo '1'; ?></span>
+        <span class="btn btn-outline-primary mb-2"><strong>تاریخ استعلام: </strong><span class="dur_date"><?php echo $quotation['created_at']; ?></span></span>
     </div>
 
     <?php if (!empty($tariffs)) : ?>

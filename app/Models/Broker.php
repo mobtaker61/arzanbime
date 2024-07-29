@@ -40,6 +40,16 @@ class Broker extends Model
         return !empty($result) ? $result[0] : null;
     }
 
+    public function getBrokerBalance($broker_id)
+    {
+        $stmt = $this->db->prepare("SELECT SUM(credit - debit) as balance FROM broker_transactions WHERE broker_id = ?");
+        $stmt->bind_param('i', $broker_id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['balance'];
+    }
+
     public function createBroker($data)
     {
         $stmt = $this->db->prepare("INSERT INTO brokers (logo, title, manager, address, phone, website, email) VALUES (?, ?, ?, ?, ?, ?, ?)");

@@ -8,14 +8,17 @@ use App\Models\Profile;
 use Core\Controller;
 use App\Models\UserLevel;
 
-class AgentController extends Controller {
-    public function __construct() {
+class AgentController extends Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         Middleware::auth();
         Middleware::admin();
     }
 
-    public function index() {
+    public function index()
+    {
         $userModel = new User();
         $userLevelModel = new UserLevel();
         $search = $_GET['search'] ?? '';
@@ -26,6 +29,11 @@ class AgentController extends Controller {
         $agents = $userModel->getUsersByRole('agent', $search, $limit, $offset);
         $totalAgents = $userModel->getUserCountByRole('agent', $search);
         $userLevels = $userLevelModel->getAllUserLevels();
+
+        // اضافه کردن بالانس به اطلاعات یوزرها
+        foreach ($agents as &$user) {
+            $user['balance'] = $userModel->getUserBalance($user['id']);
+        }
 
         $this->view('admin/agents/index', [
             'agents' => $agents,
@@ -38,7 +46,8 @@ class AgentController extends Controller {
         ], 'admin');
     }
 
-    public function store() {
+    public function store()
+    {
         $userData = [
             'username' => $_POST['username'],
             'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
@@ -59,7 +68,7 @@ class AgentController extends Controller {
 
         $userModel = new User();
         $profileModel = new Profile();
-        
+
         $userId = $userModel->register($userData);
         $profileData['user_id'] = $userId;
         $profileModel->createProfile($profileData);
@@ -68,7 +77,8 @@ class AgentController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Agent created successfully.']);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $userModel = new User();
         $profileModel = new Profile();
         $userLevelModel = new UserLevel();
@@ -83,7 +93,8 @@ class AgentController extends Controller {
         echo json_encode(['user' => $user, 'userLevels' => $userLevels]);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $userData = [
             'username' => $_POST['username'],
             'role' => $_POST['role'],
@@ -115,7 +126,8 @@ class AgentController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Agent updated successfully.']);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $userModel = new User();
         $profileModel = new Profile();
 

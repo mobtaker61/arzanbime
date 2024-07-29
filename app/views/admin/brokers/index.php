@@ -6,7 +6,7 @@
         <tr>
             <th>لوگو</th>
             <th>عنوان</th>
-            <th>مسئول</th>
+            <th>بالانس</th>
             <th>آدرس</th>
             <th>تلفن</th>
             <th>وبسایت</th>
@@ -18,10 +18,10 @@
         <?php foreach ($brokers as $broker) : ?>
             <tr>
                 <td><img src="<?php echo htmlspecialchars('/'. $broker['logo']); ?>" alt="Logo" class="img-thumbnail" width="50"></td>
-                <td><?php echo htmlspecialchars($broker['title']); ?></td>
-                <td><?php echo htmlspecialchars($broker['manager']); ?></td>
-                <td><?php echo htmlspecialchars($broker['address']); ?></td>
-                <td><?php echo htmlspecialchars($broker['phone']); ?></td>
+                <td><?php echo $broker['title']; ?></td>
+                <td class="numwc"><?php echo $broker['balance']; ?></td>
+                <td><?php echo $broker['address']; ?></td>
+                <td><?php echo $broker['phone']; ?></td>
                 <td><a href="<?php echo htmlspecialchars($broker['website']); ?>"><?php echo htmlspecialchars($broker['website']); ?></a></td>
                 <td><?php echo htmlspecialchars($broker['email']); ?></td>
                 <td><button class="btn btn-warning edit-btn" data-id="<?php echo $broker['id']; ?>">ویرایش</button><button class="btn btn-danger delete-btn" data-id="<?php echo $broker['id']; ?>">حذف</button></td>

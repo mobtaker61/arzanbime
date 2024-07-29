@@ -207,6 +207,17 @@ class User extends Model
         return $count;
     }
 
+    
+    public function getUserBalance($user_id)
+    {
+        $stmt = $this->db->prepare("SELECT SUM(credit - debit) as balance FROM transactions WHERE user_id = ?");
+        $stmt->bind_param('i', $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['balance'];
+    }
+
     public function getAdminUsers()
     {
         $stmt = $this->db->prepare("SELECT id, username FROM users WHERE role = 'admin'");

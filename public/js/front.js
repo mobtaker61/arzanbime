@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
   elements.forEach((element) => {
     const number = parseInt(element.textContent.replace(/,/g, ""), 10);
     if (!isNaN(number)) {
+      element.style.direction = "ltr";
       element.textContent = formatNumberWithCommas(number);
     }
   });
@@ -183,10 +184,11 @@ function uploadImage($file) {
   if (
     $imageFileType != "jpg" &&
     $imageFileType != "png" &&
+    $imageFileType != "webp" &&
     $imageFileType != "jpeg" &&
     $imageFileType != "gif"
   ) {
-    throw new Exception("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+    throw new Exception("Sorry, only JPG, JPEG, PNG, WEBP & GIF files are allowed.");
   }
 
   // Move uploaded file to target directory

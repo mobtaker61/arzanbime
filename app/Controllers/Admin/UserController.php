@@ -6,6 +6,7 @@ use Core\View;
 use Core\Middleware;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Transaction;
 use Core\Controller;
 use App\Models\UserLevel;
 
@@ -31,6 +32,11 @@ class UserController extends Controller
         $totalUsers = $userModel->getUserCountByRole('user', $search);
         $userLevels = $userLevelModel->getAllUserLevels();
 
+        // اضافه کردن بالانس به اطلاعات یوزرها
+        foreach ($users as &$user) {
+            $user['balance'] = $userModel->getUserBalance($user['id']);
+        }
+
         $this->view('admin/users/index', [
             'users' => $users,
             'totalUsers' => $totalUsers,
@@ -44,9 +50,10 @@ class UserController extends Controller
 
     public function store()
     {
+        $pass = $_POST['password'] ?? $_POST['username'];
         $userData = [
             'username' => $_POST['username'],
-            'password' => password_hash($_POST['password'], PASSWORD_BCRYPT),
+            'password' => password_hash($pass, PASSWORD_BCRYPT),
             'role' => $_POST['role'] ?? 'user',
             'user_level_id' => $_POST['user_level_id'] ?? 2,
             'is_active' => isset($_POST['is_active']) ? 1 : 0
@@ -141,5 +148,50 @@ class UserController extends Controller
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'User deleted successfully.']);
+    }
+
+    public function getUserTransactions($userId, $limit = 200, $page = 1)
+    {
+        $offset = ($page - 1) * $limit;
+        $transactionModel = new Transaction();
+        $transactions = $transactionModel->getTransactionsByUserId($userId, $limit, $offset);
+        $totalTransactions = $transactionModel->getTotalTransactions($userId);
+        $sumDebitCredit = $transactionModel->getDebitCreditSum($userId);
+        $balance = $sumDebitCredit['total_credit'] - $sumDebitCredit['total_debit'];
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'transactions' => $transactions,
+            'totalTransactions' => $totalTransactions,
+            'sumDebitCredit' => $sumDebitCredit,
+            'balance' => $balance
+        ]);
+    }
+
+    public function getFilteredTransactions($userId)
+    {
+        $transactionModel = new Transaction();
+        $userBalance = $transactionModel->getUsersBalance($userId);
+
+        $allTransactions = $transactionModel->getTransactionsByUserId($userId);
+        $filteredTransactions = [];
+        $totalDebit = 0;
+
+        foreach ($allTransactions as $transaction) {
+            if ($transaction['debit'] <> 0) {
+                $filteredTransactions[] = $transaction;
+                $totalDebit += $transaction['debit'];
+            }
+            if ($totalDebit >= abs($userBalance)) {
+                break;
+            }
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'transactions' => $filteredTransactions,
+        ]);
     }
 }

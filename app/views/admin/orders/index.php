@@ -181,17 +181,17 @@
         <div class="modal-content">
             <form id="add-new-user-form">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addNewUserModalLabel">Add New User</h5>
+                    <h5 class="modal-title" id="addNewUserModalLabel">کاربر جدید</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Username/Pass/TC No</label>
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" hidden>
                         <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password">
                     </div>
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email">
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone</label>

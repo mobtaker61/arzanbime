@@ -154,7 +154,9 @@ $router->add('/admin/transactions', 'App\Controllers\Admin\TransactionController
 $router->add('/admin/transactions/create', 'App\Controllers\Admin\TransactionController@create');
 $router->add('/admin/transactions/store', 'App\Controllers\Admin\TransactionController@store','POST');
 $router->add('/admin/transactions/edit/{id}', 'App\Controllers\Admin\TransactionController@edit');
-$router->add('/admin/transactions/update/{id}', 'App\Controllers\Admin\TransactionController@update','DELETE');
+$router->add('/admin/transactions/update/{id}', 'App\Controllers\Admin\TransactionController@update','POST');
+$router->add('/admin/users/getUserTransactions/{id}', 'App\Controllers\Admin\UserController@getUserTransactions');
+$router->add('/admin/users/getFilteredTransactions/{id}', 'App\Controllers\Admin\UserController@getFilteredTransactions');
 
 $router->add('/admin/broker_transactions', 'App\Controllers\Admin\BrokerTransactionController@index');
 $router->add('/admin/broker_transactions/store', 'App\Controllers\Admin\BrokerTransactionController@store','POST');
@@ -166,6 +168,8 @@ $router->add('/admin/transaction-types/store', 'App\Controllers\Admin\Transactio
 $router->add('/admin/transaction-types/update/{id:\d+}', 'App\Controllers\Admin\TransactionTypeController@update', 'POST');
 $router->add('/admin/transaction-types/delete/{id:\d+}', 'App\Controllers\Admin\TransactionTypeController@delete', 'DELETE');
 
+$router->add('/admin/fast/transactions', 'App\Controllers\Admin\AdminController@storeUserTransaction','POST');
+$router->add('/admin/fast/broker-transactions', 'App\Controllers\Admin\AdminController@storeBrokerTransaction','POST');
 
 //************** AGENT **********************/
 // Agent routes (requires agent authentication)
@@ -180,6 +184,4 @@ $router->add('/rss/{postType}', 'App\Controllers\RssController@byPostType', 'GET
 $router->add('/admin/getChartData', 'App\Controllers\Admin\AdminController@getChartData');
 $router->add('/admin/getUsers', 'App\Controllers\Admin\AdminController@getUsers');
 $router->add('/admin/getBrokers', 'App\Controllers\Admin\AdminController@getBrokers');
-$router->add('/admin/fast/transactions', 'App\Controllers\Admin\AdminController@storeUserTransaction','POST');
-$router->add('/admin/fast/broker-transactions', 'App\Controllers\Admin\AdminController@storeBrokerTransaction','POST');
 $router->add('/admin/sendSms', 'App\Controllers\Admin\AdminController@sendSMS', 'POST');

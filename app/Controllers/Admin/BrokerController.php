@@ -2,19 +2,21 @@
 
 namespace App\Controllers\Admin;
 
-use Core\View;
 use Core\Middleware;
 use App\Models\Broker;
 use Core\Controller;
 
-class BrokerController extends Controller {
-    public function __construct() {
+class BrokerController extends Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         Middleware::auth();
         Middleware::admin();
     }
 
-    public function index() {
+    public function index()
+    {
         $brokerModel = new Broker();
         $search = $_GET['search'] ?? '';
         $limit = $_GET['limit'] ?? 10;
@@ -23,6 +25,10 @@ class BrokerController extends Controller {
 
         $brokers = $brokerModel->getAllBrokers($limit, $offset, $search);
         $totalBrokers = $brokerModel->getBrokerCount($search);
+        // اضافه کردن بالانس به اطلاعات بروکرها
+        foreach ($brokers as &$broker) {
+            $broker['balance'] = $brokerModel->getBrokerBalance($broker['id']);
+        }
 
         $this->view('admin/brokers/index', [
             'brokers' => $brokers,
@@ -34,7 +40,8 @@ class BrokerController extends Controller {
         ], 'admin');
     }
 
-    public function store() {
+    public function store()
+    {
         $data = [
             'title' => $_POST['title'],
             'manager' => $_POST['manager'],
@@ -57,7 +64,8 @@ class BrokerController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Broker created successfully.']);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $brokerModel = new Broker();
         $broker = $brokerModel->getBrokerById($id);
 
@@ -65,7 +73,8 @@ class BrokerController extends Controller {
         echo json_encode($broker);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $data = [
             'title' => $_POST['title'],
             'manager' => $_POST['manager'],
@@ -91,7 +100,8 @@ class BrokerController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Broker updated successfully.']);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $brokerModel = new Broker();
         $brokerModel->deleteBroker($id);
 
@@ -99,7 +109,8 @@ class BrokerController extends Controller {
         echo json_encode(['success' => true, 'message' => 'Broker deleted successfully.']);
     }
 
-    private function uploadLogo($file) {
+    private function uploadLogo($file)
+    {
         $uploadDir = 'public/uploads/logos/';
         $fileName = basename($file['name']);
         $targetFilePath = $uploadDir . $fileName;

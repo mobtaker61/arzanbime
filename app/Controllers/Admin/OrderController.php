@@ -37,7 +37,7 @@ class OrderController extends Controller
         $orders = $orderModel->getAllOrders($limit, $offset, $sortField, $sortOrder, $filterDateStart, $filterDateEnd, $filterOperator, $filterBroker);
         $totalOrders = $orderModel->getOrderCount($filterDateStart, $filterDateEnd, $filterOperator, $filterBroker);
 
-        $operators = $userModel->getAllUsers('agent');
+        $operators = $userModel->getAllUsers();
         $users = $userModel->getAllUsers('user');
         $packages = $packageModel->getAllPackages();
         $brokers = $brokerModel->getAllBrokers();
@@ -109,12 +109,12 @@ class OrderController extends Controller
         // ایجاد تراکنش برای بروکر
         $brokerTransactionData = [
             'transaction_date' => date('Y-m-d'),
-            'transaction_type_id' => 2, // نوع تراکنش باید مشخص شود
+            'transaction_type_id' => 1, // نوع تراکنش باید مشخص شود
             'broker_id' => $_POST['broker_id'],
             'order_id' => $orderId,
             'description' => $descText,
-            'debit' => 0,
-            'credit' => $_POST['payment']
+            'debit' => $_POST['payment'],
+            'credit' => 0
         ];
 
         $brokerTransactionModel = new BrokerTransaction();

@@ -108,6 +108,62 @@ class Transaction extends Model
         return $result['count'];
     }
 
+    public function getTransactionsByUserId($userId, $limit = 10, $offset = 0)
+    {
+        $sql = "SELECT t.*, tt.name as type_name FROM transactions t
+                LEFT JOIN transaction_types tt ON t.transaction_type_id = tt.id
+                WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('iii', $userId, $limit, $offset);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $result;
+    }
+
+    public function getTotalTransactions($userId)
+    {
+        $sql = "SELECT COUNT(*) as total FROM transactions WHERE user_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result['total'];
+    }
+
+    public function getDebitCreditSum($userId)
+    {
+        $sql = "SELECT SUM(debit) as total_debit, SUM(credit) as total_credit FROM transactions WHERE user_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        return $result;
+    }
+
+    public function getFilteredTransactions($userId, $balance)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC");
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $transactions = [];
+        $totalDebit = 0;
+
+        while ($row = $result->fetch_assoc()) {
+            $transactions[] = $row;
+            $totalDebit += $row['debit'];
+            if ($totalDebit >= abs($balance)) {
+                break;
+            }
+        }
+
+        $stmt->close();
+        return $transactions;
+    }
+
     public function createTransaction($data)
     {
         $stmt = $this->db->prepare("INSERT INTO transactions (transaction_date, transaction_type_id, order_id, user_id, description, debit, credit) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -156,7 +212,8 @@ class Transaction extends Model
         return $result;
     }
 
-    public function getTotalDebit($startDate, $endDate) {
+    public function getTotalDebit($startDate, $endDate)
+    {
         $stmt = $this->db->prepare("SELECT SUM(debit) as total_debit FROM transactions WHERE transaction_date BETWEEN ? AND ?");
         $stmt->bind_param('ss', $startDate, $endDate);
         $stmt->execute();
@@ -165,13 +222,38 @@ class Transaction extends Model
         return $result['total_debit'] ?? 0;
     }
 
-    public function getUsersBalance() {
-        $stmt = $this->db->prepare("SELECT SUM(debit - credit) as balance FROM transactions");
+    public function getUsersBalance($user_id = null)
+    {
+        // پایه SQL
+        $sql = "SELECT SUM(debit - credit) as balance FROM transactions";
+
+        // آرایه برای پارامترها
+        $params = [];
+        $types = '';
+
+        // اضافه کردن شرط در صورت وجود user_id
+        if ($user_id !== null) {
+            $sql .= " WHERE user_id = ?";
+            $types .= 'i';
+            $params[] = $user_id;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        if ($stmt === false) {
+            throw new Exception('Failed to prepare statement: ' . $this->db->error);
+        }
+
+        // بایند کردن پارامترها
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         $stmt->close();
         return $result['balance'];
     }
+
 
     private function fetchAssoc($stmt)
     {

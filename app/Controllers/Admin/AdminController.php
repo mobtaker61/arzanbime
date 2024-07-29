@@ -119,8 +119,8 @@ class AdminController extends Controller
             'transaction_type_id' => 2, // Payment type ID
             'broker_id' => $_POST['select_id'],
             'description' => 'پرداخت',
-            'debit' => $_POST['amount'],
-            'credit' => 0
+            'credit' => $_POST['amount'],
+            'debit' => 0
         ];
 
         $brokerTransactionModel = new BrokerTransaction();

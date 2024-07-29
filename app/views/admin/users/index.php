@@ -4,13 +4,12 @@
 <table class="table">
     <thead>
         <tr>
+            <th>کد</th>
             <th>نام کاربری</th>
-            <th>نام</th>
-            <th>نام خانوادگی</th>
-            <th>ایمیل</th>
-            <th>شماره تلفن</th>
-            <th>نقش</th>
             <th>سطح کاربر</th>
+            <th>نام نام خانوادگی</th>
+            <th>شماره تلفن</th>
+            <th>بالانس</th>
             <th>وضعیت</th>
             <th>عملیات</th>
         </tr>
@@ -18,17 +17,17 @@
     <tbody>
         <?php foreach ($users as $user) : ?>
             <tr>
+                <td><?php echo $user['id']; ?></td>
                 <td><?php echo $user['username']; ?></td>
-                <td><?php echo $user['name']; ?></td>
-                <td><?php echo $user['surname']; ?></td>
-                <td><?php echo $user['email']; ?></td>
-                <td><?php echo $user['phone']; ?></td>
-                <td><?php echo $user['role']; ?></td>
                 <td><?php echo $user['user_level_id']; ?></td>
+                <td><?php echo $user['name'] . ' ' . $user['surname']; ?></td>
+                <td><?php echo $user['phone']; ?></td>
+                <td><span class="numwc badge <?php echo $user['balance'] <= 0?'text-bg-danger':'text-bg-success'; ?>"><?php echo $user['balance']; ?></span></td>
                 <td><?php echo $user['is_active'] ? 'فعال' : 'غیرفعال'; ?></td>
                 <td>
                     <button class="btn btn-warning edit-btn" data-id="<?php echo $user['id']; ?>">ویرایش</button>
                     <button class="btn btn-danger delete-btn" data-id="<?php echo $user['id']; ?>">حذف</button>
+                    <button class="btn btn-info transactions-btn" data-id="<?php echo $user['id']; ?>" data-balance="<?php echo $user['balance']; ?>">تراکنش‌ها</button>                
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -44,6 +43,9 @@
     </ul>
 </nav>
 </div>
+
+<!-- Transaction List Modal -->
+<?php include 'transactionsList.php'; ?>
 
 <!-- Create Modal -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
@@ -188,95 +190,96 @@
             </form>
         </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Open create modal
-            document.querySelector(".create-btn").addEventListener("click", function() {
-                $('#createModal').modal('show');
-            });
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Open create modal
+        document.querySelector(".create-btn").addEventListener("click", function() {
+            $('#createModal').modal('show');
+        });
 
-            // AJAX for create form
-            document.getElementById("createForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                fetch("/admin/users/store", {
-                        method: "POST",
-                        body: formData
-                    }).then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert("خطا در ذخیره سازی");
-                        }
-                    }).catch(error => console.error("Error:", error));
-            });
-
-            // Open edit modal
-            document.querySelectorAll(".edit-btn").forEach(button => {
-                button.addEventListener("click", function() {
-                    const id = this.getAttribute("data-id");
-                    fetch(`/admin/users/edit/${id}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById("edit_id").value = data.user.user_id;
-                            document.getElementById("edit_username").value = data.user.username;
-                            document.getElementById("edit_role").value = data.user.role;
-                            document.getElementById("edit_user_level_id").value = data.user.user_level_id;
-                            document.getElementById("edit_profile_image").value = data.user.profile_image;
-                            document.getElementById("edit_name").value = data.user.name;
-                            document.getElementById("edit_surname").value = data.user.surname;
-                            document.getElementById("edit_birth_date").value = data.user.birth_date;
-                            document.getElementById("edit_email").value = data.user.email;
-                            document.getElementById("edit_phone").value = data.user.phone;
-                            document.getElementById("edit_is_active").checked = data.user.is_active;
-                            $('#editModal').modal('show');
-                        }).catch(error => console.error("Error:", error));
-                });
-            });
-
-            // AJAX for edit form
-            document.getElementById("editForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const id = document.getElementById("edit_id").value;
-                fetch(`/admin/users/update/${id}`, {
-                        method: "POST",
-                        body: formData
-                    }).then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert("خطا در به‌روزرسانی");
-                        }
-                    }).catch(error => console.error("Error:", error));
-            });
-
-            // Delete user
-            document.querySelectorAll(".delete-btn").forEach(button => {
-                button.addEventListener("click", function() {
-                    if (confirm("آیا مطمئن هستید؟")) {
-                        const id = this.getAttribute("data-id");
-                        fetch(`/admin/users/delete/${id}`, {
-                                method: "DELETE"
-                            }).then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    location.reload();
-                                } else {
-                                    alert("خطا در حذف");
-                                }
-                            }).catch(error => console.error("Error:", error));
+        // AJAX for create form
+        document.getElementById("createForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch("/admin/users/store", {
+                    method: "POST",
+                    body: formData
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("خطا در ذخیره سازی");
                     }
-                });
-            });
+                }).catch(error => console.error("Error:", error));
+        });
 
-            // Search users
-            document.querySelector(".search-btn").addEventListener("click", function() {
-                const search = document.getElementById("search").value;
-                window.location.href = `?search=${search}`;
+        // Open edit modal
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                const id = this.getAttribute("data-id");
+                fetch(`/admin/users/edit/${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("edit_id").value = data.user.user_id;
+                        document.getElementById("edit_username").value = data.user.username;
+                        document.getElementById("edit_role").value = data.user.role;
+                        document.getElementById("edit_user_level_id").value = data.user.user_level_id;
+                        document.getElementById("edit_profile_image").value = data.user.profile_image;
+                        document.getElementById("edit_name").value = data.user.name;
+                        document.getElementById("edit_surname").value = data.user.surname;
+                        document.getElementById("edit_birth_date").value = data.user.birth_date;
+                        document.getElementById("edit_email").value = data.user.email;
+                        document.getElementById("edit_phone").value = data.user.phone;
+                        document.getElementById("edit_is_active").checked = data.user.is_active;
+                        $('#editModal').modal('show');
+                    }).catch(error => console.error("Error:", error));
             });
         });
-    </script>
+
+        // AJAX for edit form
+        document.getElementById("editForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const id = document.getElementById("edit_id").value;
+            fetch(`/admin/users/update/${id}`, {
+                    method: "POST",
+                    body: formData
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("خطا در به‌روزرسانی");
+                    }
+                }).catch(error => console.error("Error:", error));
+        });
+
+        // Delete user
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                if (confirm("آیا مطمئن هستید؟")) {
+                    const id = this.getAttribute("data-id");
+                    fetch(`/admin/users/delete/${id}`, {
+                            method: "DELETE"
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert("خطا در حذف");
+                            }
+                        }).catch(error => console.error("Error:", error));
+                }
+            });
+        });
+
+        // Search users
+        document.querySelector(".search-btn").addEventListener("click", function() {
+            const search = document.getElementById("search").value;
+            window.location.href = `?search=${search}`;
+        });
+    });
+</script>

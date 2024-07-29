@@ -134,7 +134,7 @@ class BrokerTransaction extends Model
         $stmt->close();
         return $result;
     }
-
+   
     public function getTotalCredit($startDate, $endDate) {
         $stmt = $this->db->prepare("SELECT SUM(credit) as total_credit FROM broker_transactions WHERE transaction_date BETWEEN ? AND ?");
         $stmt->bind_param('ss', $startDate, $endDate);
@@ -144,13 +144,36 @@ class BrokerTransaction extends Model
         return $result['total_credit'] ?? 0;
     }
 
-    public function getBrokersBalance() {
-        $stmt = $this->db->prepare("SELECT SUM(credit - debit) as balance FROM broker_transactions");
+    public function getBrokersBalance($user_id = null) {
+        // پایه SQL
+        $sql = "SELECT SUM(credit - debit) as balance FROM broker_transactions";
+        
+        // آرایه برای پارامترها
+        $params = [];
+        $types = '';
+        
+        // اضافه کردن شرط در صورت وجود user_id
+        if ($user_id !== null) {
+            $sql .= " WHERE broker_id = ?";
+            $types .= 'i';
+            $params[] = $user_id;
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        if ($stmt === false) {
+            throw new Exception('Failed to prepare statement: ' . $this->db->error);
+        }
+        
+        // بایند کردن پارامترها
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+    
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         $stmt->close();
         return $result['balance'];
-    }    
+    }   
 
     private function fetchAssoc($stmt)
     {

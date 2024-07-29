@@ -6,12 +6,10 @@
         <tr>
             <th>کد</th>
             <th>نام کاربری</th>
-            <th>نام</th>
-            <th>نام خانوادگی</th>
-            <th>ایمیل</th>
-            <th>شماره تلفن</th>
-            <th>نقش</th>
             <th>سطح کاربر</th>
+            <th>نام نام خانوادگی</th>
+            <th>شماره تلفن</th>
+            <th>بالانس</th>
             <th>وضعیت</th>
             <th>عملیات</th>
         </tr>
@@ -21,12 +19,10 @@
             <tr>
                 <td><?php echo $agent['id']; ?></td>
                 <td><?php echo $agent['username']; ?></td>
-                <td><?php echo $agent['name']; ?></td>
-                <td><?php echo $agent['surname']; ?></td>
-                <td><?php echo $agent['email']; ?></td>
-                <td><?php echo $agent['phone']; ?></td>
-                <td><?php echo $agent['role']; ?></td>
                 <td><?php echo $agent['user_level']; ?></td>
+                <td><?php echo $agent['name'] .' '. $agent['surname']; ?></td>
+                <td><?php echo $agent['phone']; ?></td>
+                <td><?php echo $agent['balance']; ?></td>
                 <td><?php echo $agent['is_active'] ? 'فعال' : 'غیرفعال'; ?></td>
                 <td>
                     <button class="btn btn-warning edit-btn" data-id="<?php echo $agent['id']; ?>">ویرایش</button>

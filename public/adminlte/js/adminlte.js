@@ -725,6 +725,7 @@ function formatNumberWithCommas(number) {
     elements.forEach((element) => {
       const number = parseInt(element.textContent.replace(/,/g, ""), 10);
       if (!isNaN(number)) {
+        element.style.direction = "ltr";
         element.textContent = formatNumberWithCommas(number);
       }
     });
