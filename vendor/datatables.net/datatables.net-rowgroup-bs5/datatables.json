@@ -1,0 +1,18 @@
+{
+    "js": [
+        "js/rowGroup.bootstrap5.js",
+        "js/rowGroup.bootstrap5.min.js",
+        "js/rowGroup.bootstrap5.min.mjs",
+        "js/rowGroup.bootstrap5.mjs"
+    ],
+    "css": [
+        "css/rowGroup.bootstrap5.css",
+        "css/rowGroup.bootstrap5.min.css"
+    ],
+    "types": [
+        "types/rowGroup.bootstrap5.d.ts"
+    ],
+    "src-repo": "http://github.com/DataTables/RowGroup",
+    "last-tag": "1.4.1",
+    "last-sync": "c1d568b64ec98d2986ff3df442a277217232a091"
+}
