@@ -160,7 +160,7 @@ class PostController extends Controller
             die("Sorry, file already exists.");
         }
 
-        if ($file["size"] > 500000) {
+        if ($file["size"] > 5000000) {
             die("Sorry, your file is too large.");
         }
 
