@@ -43,7 +43,7 @@
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-phone text-xl"></i></span>
-                        <a href="tel:+905511737383">05511737383</a>
+                        <a href="tel:+905511737383">+905511737383</a>
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-whatsapp-logo text-xl"></i></span>
