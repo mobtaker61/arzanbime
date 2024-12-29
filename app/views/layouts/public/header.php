@@ -52,9 +52,9 @@ $userRole = $_SESSION['user_role'] ?? null; // Assuming you have stored the user
         <?php if ($userRole) : ?>
             <a href="<?php echo '/'. $userRole; ?>" class="pri-btn bg-green mr-4 py-1 rounded-lg tablet-small:hidden">پنل کاربری</a>
         <?php endif; ?>
-        <button class="pri-btn mr-auto py-1 rounded-lg tablet-small:hidden">
+        <a href="https://wa.me/message/EVF4IJ5MSNHEO1" class="pri-btn mr-auto py-1 rounded-lg tablet-small:hidden">
             مشاوره رایگان
-        </button>
+        </a>
         <label id="burger-btn" class="hidden tablet-small:block tablet-small:relative tablet-small:z-50 tablet-small:-translate-x-2">
             <div class="w-9 h-10 cursor-pointer flex flex-col items-center justify-center">
                 <input class="hidden peer" type="checkbox" />

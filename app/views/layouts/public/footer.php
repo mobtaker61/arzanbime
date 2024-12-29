@@ -43,15 +43,15 @@
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-phone text-xl"></i></span>
-                        <a href="tel:+905441810804">05441810804</a>
+                        <a href="tel:+905511737383">05511737383</a>
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-whatsapp-logo text-xl"></i></span>
-                        <a href="https://wa.me/message/EU6QW3GORLX6D1">05441810804</a>
+                        <a href="https://wa.me/message/EVF4IJ5MSNHEO1">05511737383</a>
                     </li>
                     <li class="flex justify-start items-center gap-2">
                         <span><i class="ph text-red-700 ph-envelope-simple text-xl"></i></span>
-                        <a href="mailto:email@gmail.com">info[@]arzanbime.com</a>
+                        <a href="mailto:info@arzanbime.com">info[@]arzanbime.com</a>
                     </li>
                 </ul>
             </div>
