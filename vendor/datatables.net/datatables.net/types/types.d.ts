@@ -2759,13 +2759,13 @@ export interface DataTablesStatic {
      *
      * @param type The library needed
      */
-    use(type: 'lib' | 'win' | 'datetime' | 'luxon' | 'moment');
+    use(type: 'lib' | 'win' | 'datetime' | 'luxon' | 'moment'): any;
 
     /**
      * Set the libraries that DataTables uses, or the global objects, with automatic
      * detection of what the library is. Used for module loading environments.
      */
-    use(library: any);
+    use(library: any): void;
 
     /**
      * Set the libraries that DataTables uses, or the global objects, explicity staing
@@ -2774,7 +2774,7 @@ export interface DataTablesStatic {
      * @param type Indicate the library that is being loaded.
      * @param library The library (e.g. Moment or Luxon)
      */
-    use(type: 'lib' | 'win' | 'datetime' | 'luxon' | 'moment', library: any);
+    use(type: 'lib' | 'win' | 'datetime' | 'luxon' | 'moment', library: any): void;
 
     /**
      * Utils
@@ -3064,7 +3064,7 @@ interface FunctionColumnData {
     (row: any, type: 'display' | 'sort' | 'filter' | 'type', s: undefined, meta: CellMetaSettings): any;
 }
 
-interface ObjectColumnData {
+export interface ObjectColumnData {
     _: string | number | FunctionColumnData;
     filter?: string | number | FunctionColumnData;
     display?: string | number | FunctionColumnData;
@@ -3072,7 +3072,7 @@ interface ObjectColumnData {
     sort?: string | number | FunctionColumnData;
 }
 
-interface ObjectColumnRender {
+export interface ObjectColumnRender {
     _?: string | number | FunctionColumnRender;
     filter?: string | number | FunctionColumnRender;
     display?: string | number | FunctionColumnRender;

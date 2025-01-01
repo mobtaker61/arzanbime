@@ -16,7 +16,8 @@
         "datatables.net/datatables.net-rowreorder-bs5": "^1.5",
         "datatables.net/datatables.net-scroller-bs5": "^2.4",
         "datatables.net/datatables.net-searchbuilder-bs5": "^1.7",
-        "datatables.net/datatables.net-searchpanes-bs5": "^2.3"
+        "datatables.net/datatables.net-searchpanes-bs5": "^2.3",
+        "symfony/deprecation-contracts": "^3.5"
     },
     "config": {
         "allow-plugins": {

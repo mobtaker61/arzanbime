@@ -14,6 +14,6 @@
         "types/types.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/FixedColumns",
-    "last-tag": "5.0.0",
-    "last-sync": "06098152dc60a79d37aea528cf0914a15578ef9b"
+    "last-tag": "5.0.3",
+    "last-sync": "bcef2a38849d54dfece2e3990a6f86163b4b17c1"
 }

@@ -5,6 +5,7 @@ namespace PhpOffice\PhpSpreadsheet\Reader;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+use PhpOffice\PhpSpreadsheet\Comment;
 use PhpOffice\PhpSpreadsheet\DefinedName;
 use PhpOffice\PhpSpreadsheet\Reader\Security\XmlScanner;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx\AutoFilter;
@@ -25,7 +26,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx\Theme;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx\WorkbookView;
 use PhpOffice\PhpSpreadsheet\ReferenceHelper;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
-use PhpOffice\PhpSpreadsheet\Settings;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Shared\Drawing;
 use PhpOffice\PhpSpreadsheet\Shared\File;
@@ -120,7 +120,7 @@ class Xlsx extends BaseReader
         $rels = @simplexml_load_string(
             $this->getSecurityScannerOrThrow()->scan($contents),
             'SimpleXMLElement',
-            Settings::getLibXmlLoaderOptions(),
+            0,
             $ns
         );
 
@@ -135,7 +135,7 @@ class Xlsx extends BaseReader
         $rels = simplexml_load_string(
             $this->getSecurityScannerOrThrow()->scan($contents),
             'SimpleXMLElement',
-            Settings::getLibXmlLoaderOptions(),
+            0,
             ($ns === '' ? $ns : '')
         );
 
@@ -243,11 +243,13 @@ class Xlsx extends BaseReader
 
                         $xml = new XMLReader();
                         $xml->xml(
-                            $this->getSecurityScannerOrThrow()->scan(
-                                $this->getFromZipArchive($this->zip, $fileWorksheetPath)
-                            ),
-                            null,
-                            Settings::getLibXmlLoaderOptions()
+                            $this->getSecurityScannerOrThrow()
+                                ->scan(
+                                    $this->getFromZipArchive(
+                                        $this->zip,
+                                        $fileWorksheetPath
+                                    )
+                                )
                         );
                         $xml->setParserProperty(2, true);
 
@@ -700,6 +702,8 @@ class Xlsx extends BaseReader
                                     $sharedStrings[] = StringHelper::controlCharacterOOXML2PHP((string) $val->t);
                                 } elseif (isset($val->r)) {
                                     $sharedStrings[] = $this->parseRichText($val);
+                                } else {
+                                    $sharedStrings[] = '';
                                 }
                             }
                         }
@@ -709,12 +713,14 @@ class Xlsx extends BaseReader
                     $xmlWorkbookNS = $this->loadZip($relTarget, $mainNS);
 
                     // Set base date
+                    $excel->setExcelCalendar(Date::CALENDAR_WINDOWS_1900);
                     if ($xmlWorkbookNS->workbookPr) {
                         Date::setExcelCalendar(Date::CALENDAR_WINDOWS_1900);
                         $attrs1904 = self::getAttributes($xmlWorkbookNS->workbookPr);
                         if (isset($attrs1904['date1904'])) {
                             if (self::boolean((string) $attrs1904['date1904'])) {
                                 Date::setExcelCalendar(Date::CALENDAR_MAC_1904);
+                                $excel->setExcelCalendar(Date::CALENDAR_MAC_1904);
                             }
                         }
                     }
@@ -796,10 +802,10 @@ class Xlsx extends BaseReader
                                 }
 
                                 $sheetViewOptions = new SheetViewOptions($docSheet, $xmlSheetNS);
-                                $sheetViewOptions->load($this->getReadDataOnly(), $this->styleReader);
+                                $sheetViewOptions->load($this->readDataOnly, $this->styleReader);
 
                                 (new ColumnAndRowAttributes($docSheet, $xmlSheetNS))
-                                    ->load($this->getReadFilter(), $this->getReadDataOnly());
+                                    ->load($this->getReadFilter(), $this->readDataOnly, $this->ignoreRowsWithNoCells);
                             }
 
                             $holdSelectedCells = $docSheet->getSelectedCells();
@@ -926,16 +932,16 @@ class Xlsx extends BaseReader
 
                                             // Style information?
                                             if (!$this->readDataOnly) {
-                                                $holdSelected = $docSheet->getSelectedCells();
                                                 $cAttrS = (int) ($cAttr['s'] ?? 0);
                                                 // no style index means 0, it seems
                                                 $cAttrS = isset($styles[$cAttrS]) ? $cAttrS : 0;
                                                 $cell->setXfIndex($cAttrS);
                                                 // issue 3495
                                                 if ($cellDataType === DataType::TYPE_FORMULA && $styles[$cAttrS]->quotePrefix === true) {
+                                                    $holdSelected = $docSheet->getSelectedCells();
                                                     $cell->getStyle()->setQuotePrefix(false);
+                                                    $docSheet->setSelectedCells($holdSelected);
                                                 }
-                                                $docSheet->setSelectedCells($holdSelected);
                                             }
                                         }
                                         ++$rowIndex;
@@ -1137,6 +1143,14 @@ class Xlsx extends BaseReader
                                             $fillImageTitle = '';
 
                                             $clientData = $shape->xpath('.//x:ClientData');
+                                            $textboxDirection = '';
+                                            $textboxPath = $shape->xpath('.//v:textbox');
+                                            $textbox = (string) ($textboxPath[0]['style'] ?? '');
+                                            if (preg_match('/rtl/i', $textbox) === 1) {
+                                                $textboxDirection = Comment::TEXTBOX_DIRECTION_RTL;
+                                            } elseif (preg_match('/ltr/i', $textbox) === 1) {
+                                                $textboxDirection = Comment::TEXTBOX_DIRECTION_LTR;
+                                            }
                                             if (is_array($clientData) && !empty($clientData)) {
                                                 $clientData = $clientData[0];
 
@@ -1152,7 +1166,7 @@ class Xlsx extends BaseReader
                                                     }
                                                     $temp = $clientData->xpath('.//x:TextHAlign');
                                                     if (!empty($temp)) {
-                                                        $textHAlign = $temp[0];
+                                                        $textHAlign = strtolower($temp[0]);
                                                     }
                                                 }
                                             }
@@ -1160,6 +1174,9 @@ class Xlsx extends BaseReader
                                             $colx = (string) $column;
                                             if (is_numeric($rowx) && is_numeric($colx) && $textHAlign !== null) {
                                                 $docSheet->getComment([1 + (int) $colx, 1 + (int) $rowx], false)->setAlignment((string) $textHAlign);
+                                            }
+                                            if (is_numeric($rowx) && is_numeric($colx) && $textboxDirection !== '') {
+                                                $docSheet->getComment([1 + (int) $colx, 1 + (int) $rowx], false)->setTextboxDirection($textboxDirection);
                                             }
 
                                             $fillImageRelNode = $shape->xpath('.//v:fill/@o:relid');
@@ -1294,7 +1311,7 @@ class Xlsx extends BaseReader
                                                         $hfImages[$shapeId]->setName((string) $imageData['title']);
                                                     }
 
-                                                    $hfImages[$shapeId]->setPath('zip://' . File::realpath($filename) . '#' . $drawings[(string) $imageData['relid']], false);
+                                                    $hfImages[$shapeId]->setPath('zip://' . File::realpath($filename) . '#' . $drawings[(string) $imageData['relid']], false, $zip);
                                                     $hfImages[$shapeId]->setResizeProportional(false);
                                                     $hfImages[$shapeId]->setWidth($style['width']);
                                                     $hfImages[$shapeId]->setHeight($style['height']);
@@ -1406,7 +1423,8 @@ class Xlsx extends BaseReader
                                                         $objDrawing->setPath(
                                                             'zip://' . File::realpath($filename) . '#'
                                                             . $images[$embedImageKey],
-                                                            false
+                                                            false,
+                                                            $zip
                                                         );
                                                     } else {
                                                         $linkImageKey = (string) self::getArrayItem(
@@ -1415,7 +1433,10 @@ class Xlsx extends BaseReader
                                                         );
                                                         if (isset($images[$linkImageKey])) {
                                                             $url = str_replace('xl/drawings/', '', $images[$linkImageKey]);
-                                                            $objDrawing->setPath($url);
+                                                            $objDrawing->setPath($url, false);
+                                                        }
+                                                        if ($objDrawing->getPath() === '') {
+                                                            continue;
                                                         }
                                                     }
                                                     $objDrawing->setCoordinates(Coordinate::stringFromColumnIndex(((int) $oneCellAnchor->from->col) + 1) . ($oneCellAnchor->from->row + 1));
@@ -1495,7 +1516,8 @@ class Xlsx extends BaseReader
                                                         $objDrawing->setPath(
                                                             'zip://' . File::realpath($filename) . '#'
                                                             . $images[$embedImageKey],
-                                                            false
+                                                            false,
+                                                            $zip
                                                         );
                                                     } else {
                                                         $linkImageKey = (string) self::getArrayItem(
@@ -1504,7 +1526,10 @@ class Xlsx extends BaseReader
                                                         );
                                                         if (isset($images[$linkImageKey])) {
                                                             $url = str_replace('xl/drawings/', '', $images[$linkImageKey]);
-                                                            $objDrawing->setPath($url);
+                                                            $objDrawing->setPath($url, false);
+                                                        }
+                                                        if ($objDrawing->getPath() === '') {
+                                                            continue;
                                                         }
                                                     }
                                                     $objDrawing->setCoordinates(Coordinate::stringFromColumnIndex(((int) $twoCellAnchor->from->col) + 1) . ($twoCellAnchor->from->row + 1));
@@ -1942,9 +1967,8 @@ class Xlsx extends BaseReader
         if ($dataRels) {
             // exists and not empty if the ribbon have some pictures (other than internal MSO)
             $UIRels = simplexml_load_string(
-                $this->getSecurityScannerOrThrow()->scan($dataRels),
-                'SimpleXMLElement',
-                Settings::getLibXmlLoaderOptions()
+                $this->getSecurityScannerOrThrow()
+                    ->scan($dataRels)
             );
             if (false !== $UIRels) {
                 // we need to save id and target to avoid parsing customUI.xml and "guess" if it's a pseudo callback who load the image

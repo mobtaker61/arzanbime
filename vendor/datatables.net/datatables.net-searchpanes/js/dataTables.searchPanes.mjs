@@ -1,4 +1,4 @@
-/*! SearchPanes 2.3.1
+/*! SearchPanes 2.3.2
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -491,7 +491,7 @@ let $ = jQuery;
             //  change the ordering to whatever it isn't currently
             this.dom.nameButton.off('click.dtsp').on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
-                _this.s.dtPane.order([0, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                _this.s.dtPane.order([[0, currentOrder === 'asc' ? 'desc' : 'asc']]).draw();
                 // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
@@ -499,7 +499,7 @@ let $ = jQuery;
             //  change the ordering to whatever it isn't currently
             this.dom.countButton.off('click.dtsp').on('click.dtsp', function () {
                 var currentOrder = _this.s.dtPane.order()[0][1];
-                _this.s.dtPane.order([1, currentOrder === 'asc' ? 'desc' : 'asc']).draw();
+                _this.s.dtPane.order([[1, currentOrder === 'asc' ? 'desc' : 'asc']]).draw();
                 // This state save is required so that the ordering of the panes is maintained
                 _this.s.dt.state.save();
             });
@@ -722,8 +722,8 @@ let $ = jQuery;
             // eslint-disable-next-line no-extra-parens
             var haveScroller = dataTable$2.Scroller;
             var langOpts = this.s.dt.settings()[0].oLanguage;
-            langOpts.url = undefined;
-            langOpts.sUrl = undefined;
+            langOpts.url = null;
+            langOpts.sUrl = null;
             return {
                 columnDefs: [
                     {
@@ -828,7 +828,6 @@ let $ = jQuery;
                 }
                 this.s.rowData.filterMap.set(rowIdx, filter);
                 if (!bins[filter]) {
-                    bins[filter] = 1;
                     this._addOption(filter, fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.display), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.sort), fastData(rowIdx, this.s.index, this.s.colOpts.orthogonal.type), arrayFilter, bins);
                     this.s.rowData.totalOptions++;
                 }
@@ -969,6 +968,7 @@ let $ = jQuery;
             }
             // Otherwise we must just be adding an option
             else {
+                bins[filter] = 1;
                 arrayFilter.push({
                     display: display,
                     filter: filter,
@@ -2960,7 +2960,7 @@ let $ = jQuery;
                 this.dom.clearAll.removeClass(this.classes.disabledButton).removeAttr('disabled');
             }
         };
-        SearchPanes.version = '2.3.1';
+        SearchPanes.version = '2.3.2';
         SearchPanes.classes = {
             clear: 'dtsp-clear',
             clearAll: 'dtsp-clearAll',
@@ -3337,7 +3337,7 @@ let $ = jQuery;
         return SearchPanesST;
     }(SearchPanes));
 
-    /*! SearchPanes 2.3.1
+    /*! SearchPanes 2.3.2
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery$4($);
@@ -3467,6 +3467,10 @@ let $ = jQuery;
         var opts = options
             ? options
             : api.init().searchPanes || dataTable.defaults.searchPanes;
+        // Don't create a SearchPane for a SearchPane (can happen if a default is set)
+        if (api.table().container().closest('.dtsp-searchPanes')) {
+            return null;
+        }
         var searchPanes = opts && (opts.cascadePanes || opts.viewTotal) ?
             new SearchPanesST(api, opts, fromPre) :
             new SearchPanes(api, opts, fromPre);

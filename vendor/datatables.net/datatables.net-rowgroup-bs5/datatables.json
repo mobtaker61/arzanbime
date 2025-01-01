@@ -13,6 +13,6 @@
         "types/rowGroup.bootstrap5.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/RowGroup",
-    "last-tag": "1.4.1",
-    "last-sync": "c1d568b64ec98d2986ff3df442a277217232a091"
+    "last-tag": "1.5.0",
+    "last-sync": "adf4ee1456695301ae836428a39451d61477932f"
 }

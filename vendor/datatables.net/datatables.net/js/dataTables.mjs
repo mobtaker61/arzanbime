@@ -1,4 +1,4 @@
-/*! DataTables 2.1.2
+/*! DataTables 2.1.8
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -201,6 +201,7 @@ var DataTable = function ( selector, options )
 			"caption",
 			"layout",
 			"orderDescReverse",
+			"typeDetect",
 			[ "iCookieDuration", "iStateDuration" ], // backwards compat
 			[ "oSearch", "oPreviousSearch" ],
 			[ "aoSearchCols", "aoPreSearchCols" ],
@@ -424,7 +425,7 @@ var DataTable = function ( selector, options )
 			} );
 		}
 		else {
-			_fnCallbackFire( oSettings, null, 'i18n', [oSettings]);
+			_fnCallbackFire( oSettings, null, 'i18n', [oSettings], true);
 			_fnInitialise( oSettings );
 		}
 	} );
@@ -1000,7 +1001,8 @@ $.extend( DataTable.ext.classes, {
 		active: 'current',
 		button: 'dt-paging-button',
 		container: 'dt-paging',
-		disabled: 'disabled'
+		disabled: 'disabled',
+		nav: ''
 	}
 } );
 
@@ -1163,7 +1165,7 @@ var _pluck_order = function ( a, order, prop, prop2 )
 	// is essential here
 	if ( prop2 !== undefined ) {
 		for ( ; i<ien ; i++ ) {
-			if ( a[ order[i] ][ prop ] ) {
+			if ( a[ order[i] ] && a[ order[i] ][ prop ] ) {
 				out.push( a[ order[i] ][ prop ][ prop2 ] );
 			}
 		}
@@ -1217,7 +1219,7 @@ var _removeEmpty = function ( a )
 
 // Replaceable function in api.util
 var _stripHtml = function (input) {
-	if (! input) {
+	if (! input || typeof input !== 'string') {
 		return input;
 	}
 
@@ -1263,8 +1265,11 @@ var _normalize = function (str, both) {
 	}
 
 	// It is faster to just run `normalize` than it is to check if
-	// we need to with a regex!
-	var res = str.normalize("NFD");
+	// we need to with a regex! (Check as it isn't available in old
+	// Safari)
+	var res = str.normalize
+		? str.normalize("NFD")
+		: str;
 
 	// Equally, here we check if a regex is needed or not
 	return res.length !== str.length
@@ -2199,7 +2204,7 @@ function _fnGetColumns( oSettings, sParam )
  */
 function _typeResult (typeDetect, res) {
 	return res === true
-		? typeDetect.name
+		? typeDetect._name
 		: res;
 }
 
@@ -2216,12 +2221,6 @@ function _fnColumnTypes ( settings )
 	var i, ien, j, jen, k, ken;
 	var col, detectedType, cache;
 
-	// If SSP then we don't have the full data set, so any type detection would be
-	// unreliable and error prone
-	if (_fnDataSource( settings ) === 'ssp') {
-		return;
-	}
-
 	// For each column, spin over the data type detection functions, seeing if one matches
 	for ( i=0, ien=columns.length ; i<ien ; i++ ) {
 		col = columns[i];
@@ -2231,6 +2230,12 @@ function _fnColumnTypes ( settings )
 			col.sType = col._sManualType;
 		}
 		else if ( ! col.sType ) {
+			// With SSP type detection can be unreliable and error prone, so we provide a way
+			// to turn it off.
+			if (! settings.typeDetect) {
+				return;
+			}
+
 			for ( j=0, jen=types.length ; j<jen ; j++ ) {
 				var typeDetect = types[j];
 
@@ -2982,8 +2987,8 @@ function _fnGetRowElements( settings, row, colIdx, d )
  * @returns 
  */
 function _fnGetRowDisplay (settings, rowIdx) {
-	let rowModal = settings.aoData[rowIdx];
-	let columns = settings.aoColumns;
+	var rowModal = settings.aoData[rowIdx];
+	var columns = settings.aoColumns;
 
 	if (! rowModal.displayData) {
 		// Need to render and cache
@@ -3067,6 +3072,9 @@ function _fnCreateTr ( oSettings, iRow, nTrIn, anTds )
 			) {
 				_fnWriteCell(nTd, display[i]);
 			}
+
+			// column class
+			_addClass(nTd, oCol.sClass);
 
 			// Visibility - add or remove as required
 			if ( oCol.bVisible && create )
@@ -3185,9 +3193,6 @@ function _fnBuildHead( settings, side )
 	else {
 		settings.aoFooter = detected;
 	}
-
-	// ARIA role for the rows
-	$(target).children('tr').attr('role', 'row');
 
 	// Every cell needs to be passed through the renderer
 	$(target).children('tr').children('th, td')
@@ -3399,7 +3404,6 @@ function _fnDraw( oSettings, ajaxComplete )
 				var td = aoData.anCells[i];
 
 				_addClass(td, _ext.type.className[col.sType]); // auto class
-				_addClass(td, col.sClass); // column class
 				_addClass(td, oSettings.oClasses.tbody.cell); // all cells
 			}
 
@@ -4280,6 +4284,7 @@ function _fnAjaxUpdateDraw ( settings, json )
 	}
 	settings.aiDisplay = settings.aiDisplayMaster.slice();
 
+	_fnColumnTypes(settings);
 	_fnDraw( settings, true );
 	_fnInitComplete( settings );
 	_fnProcessingDisplay( settings, false );
@@ -4678,7 +4683,7 @@ function _fnFilterData ( settings )
  */
 function _fnInitialise ( settings )
 {
-	var i, iAjaxStart=settings.iInitDisplayStart;
+	var i;
 	var init = settings.oInit;
 	var deferLoading = settings.deferLoading;
 	var dataSrc = _fnDataSource( settings );
@@ -4698,6 +4703,9 @@ function _fnInitialise ( settings )
 		// Then draw the header / footer
 		_fnDrawHead( settings, settings.aoHeader );
 		_fnDrawHead( settings, settings.aoFooter );
+
+		// Cache the paging start point, as the first redraw will reset it
+		var iAjaxStart = settings.iInitDisplayStart
 
 		// Local data load
 		// Check if there is data passing into the constructor
@@ -4913,6 +4921,11 @@ function _processingHtml ( settings )
  */
 function _fnProcessingDisplay ( settings, show )
 {
+	// Ignore cases when we are still redrawing
+	if (settings.bDrawing && show === false) {
+		return;
+	}
+
 	_fnCallbackFire( settings, null, 'processing', [settings, show] );
 }
 
@@ -5165,21 +5178,37 @@ function _fnScrollDraw ( settings )
 	// is because of Responsive which might remove `col` elements, knocking the alignment
 	// of the indexes out.
 	if (settings.aiDisplay.length) {
-		// Get the column sizes from the first row in the table
-		var colSizes = table.children('tbody').eq(0).children('tr').eq(0).children('th, td').map(function (vis) {
-			return {
-				idx: _fnVisibleToColumnIndex(settings, vis),
-				width: $(this).outerWidth()
+		// Get the column sizes from the first row in the table. This should really be a
+		// [].find, but it wasn't supported in Chrome until Sept 2015, and DT has 10 year
+		// browser support
+		var firstTr = null;
+
+		for (i=settings._iDisplayStart ; i<settings.aiDisplay.length ; i++) {
+			var idx = settings.aiDisplay[i];
+			var tr = settings.aoData[idx].nTr;
+
+			if (tr) {
+				firstTr = tr;
+				break;
 			}
-		});
+		}
 
-		// Check against what the colgroup > col is set to and correct if needed
-		for (var i=0 ; i<colSizes.length ; i++) {
-			var colEl = settings.aoColumns[ colSizes[i].idx ].colEl[0];
-			var colWidth = colEl.style.width.replace('px', '');
+		if (firstTr) {
+			var colSizes = $(firstTr).children('th, td').map(function (vis) {
+				return {
+					idx: _fnVisibleToColumnIndex(settings, vis),
+					width: $(this).outerWidth()
+				}
+			});
 
-			if (colWidth !== colSizes[i].width) {
-				colEl.style.width = colSizes[i].width + 'px';
+			// Check against what the colgroup > col is set to and correct if needed
+			for (var i=0 ; i<colSizes.length ; i++) {
+				var colEl = settings.aoColumns[ colSizes[i].idx ].colEl[0];
+				var colWidth = colEl.style.width.replace('px', '');
+
+				if (colWidth !== colSizes[i].width) {
+					colEl.style.width = colSizes[i].width + 'px';
+				}
 			}
 		}
 	}
@@ -6169,8 +6198,7 @@ function _fnImplementState ( settings, s, callback) {
 		}
 	}
 
-	// Restore key features - todo - for 1.11 this needs to be done by
-	// subscribed events
+	// Restore key features
 	if ( s.start !== undefined ) {
 		if(api === null) {
 			settings._iDisplayStart    = s.start;
@@ -6708,6 +6736,7 @@ _Api = function ( context, data )
 		return new _Api( context, data );
 	}
 
+	var i;
 	var settings = [];
 	var ctxSettings = function ( o ) {
 		var a = _toSettings( o );
@@ -6717,7 +6746,7 @@ _Api = function ( context, data )
 	};
 
 	if ( Array.isArray( context ) ) {
-		for ( var i=0, ien=context.length ; i<ien ; i++ ) {
+		for ( i=0 ; i<context.length ; i++ ) {
 			ctxSettings( context[i] );
 		}
 	}
@@ -6732,7 +6761,16 @@ _Api = function ( context, data )
 
 	// Initial data
 	if ( data ) {
-		this.push.apply(this, data);
+		// Chrome can throw a max stack error if apply is called with
+		// too large an array, but apply is faster.
+		if (data.length < 10000) {
+			this.push.apply(this, data);
+		}
+		else {
+			for (i=0 ; i<data.length ; i++) {
+				this.push(data[i]);
+			}
+		}
 	}
 
 	// selector
@@ -7615,7 +7653,7 @@ var _selector_opts = function ( opts )
 // Reduce the API instance to the first item found
 var _selector_first = function ( old )
 {
-	let inst = new _Api(old.context[0]);
+	var inst = new _Api(old.context[0]);
 
 	// Use a push rather than passing to the constructor, since it will
 	// merge arrays down automatically, which isn't what is wanted here
@@ -8422,8 +8460,10 @@ var __column_selector = function ( settings, selector, opts )
 			switch( match[2] ) {
 				case 'visIdx':
 				case 'visible':
-					if (match[1]) {
+					// Selector is a column index
+					if (match[1] && match[1].match(/^\d+$/)) {
 						var idx = parseInt( match[1], 10 );
+
 						// Visible index given, convert to column index
 						if ( idx < 0 ) {
 							// Counting from the right
@@ -8436,9 +8476,19 @@ var __column_selector = function ( settings, selector, opts )
 						return [ _fnVisibleToColumnIndex( settings, idx ) ];
 					}
 					
-					// `:visible` on its own
-					return columns.map( function (col, i) {
-						return col.bVisible ? i : null;
+					return columns.map( function (col, idx) {
+						// Not visible, can't match
+						if (! col.bVisible) {
+							return null;
+						}
+
+						// Selector
+						if (match[1]) {
+							return $(nodes[idx]).filter(match[1]).length > 0 ? idx : null;
+						}
+
+						// `:visible` on its own
+						return idx;
 					} );
 
 				case 'name':
@@ -9598,7 +9648,7 @@ _api_register( 'ready()', function ( fn ) {
 			fn.call(this);
 		}
 		else {
-			this.on('init', function () {
+			this.on('init.dt.DT', function () {
 				fn.call(this);
 			});
 		}
@@ -9751,7 +9801,7 @@ _api_register( 'i18n()', function ( token, def, plural ) {
  *  @type string
  *  @default Version number
  */
-DataTable.version = "2.1.2";
+DataTable.version = "2.1.8";
 
 /**
  * Private data store, containing all of the settings objects that are
@@ -11851,7 +11901,10 @@ DataTable.models.oSettings = {
 	colgroup: null,
 
 	/** Delay loading of data */
-	deferLoading: null
+	deferLoading: null,
+
+	/** Allow auto type detection */
+	typeDetect: true
 };
 
 /**
@@ -12073,7 +12126,7 @@ function __mlHelper (localeString) {
 
 		// Add type detection and sorting specific to this date format - we need to be able to identify
 		// date type columns as such, rather than as numbers in extensions. Hence the need for this.
-		if (! DataTable.ext.type.order[typeName]) {
+		if (! DataTable.ext.type.order[typeName + '-pre']) {
 			DataTable.type(typeName, {
 				detect: function (d) {
 					// The renderer will give the value to type detect as the type!
@@ -12312,7 +12365,7 @@ DataTable.type = function (name, prop, val) {
 		return {
 			className: _extTypes.className[name],
 			detect: _extTypes.detect.find(function (fn) {
-				return fn.name === name;
+				return fn._name === name;
 			}),
 			order: {
 				pre: _extTypes.order[name + '-pre'],
@@ -12330,10 +12383,10 @@ DataTable.type = function (name, prop, val) {
 	var setDetect = function (detect) {
 		// `detect` can be a function or an object - we set a name
 		// property for either - that is used for the detection
-		Object.defineProperty(detect, "name", {value: name});
+		Object.defineProperty(detect, "_name", {value: name});
 
 		var idx = _extTypes.detect.findIndex(function (item) {
-			return item.name === name;
+			return item._name === name;
 		});
 
 		if (idx === -1) {
@@ -12396,13 +12449,13 @@ DataTable.type = function (name, prop, val) {
 // Get a list of types
 DataTable.types = function () {
 	return _extTypes.detect.map(function (fn) {
-		return fn.name;
+		return fn._name;
 	});
 };
 
 var __diacriticSort = function (a, b) {
-	a = a.toString().toLowerCase();
-	b = b.toString().toLowerCase();
+	a = a !== null && a !== undefined ? a.toString().toLowerCase() : '';
+	b = b !== null && b !== undefined ? b.toString().toLowerCase() : '';
 
 	// Checked for `navigator.languages` support in `oneOf` so this code can't execute in old
 	// Safari and thus can disable this check
@@ -12425,7 +12478,7 @@ DataTable.type('string', {
 		pre: function ( a ) {
 			// This is a little complex, but faster than always calling toString,
 			// http://jsperf.com/tostring-v-check
-			return _empty(a) ?
+			return _empty(a) && typeof a !== 'boolean' ?
 				'' :
 				typeof a === 'string' ?
 					a.toLowerCase() :
@@ -12678,6 +12731,12 @@ $.extend( true, DataTable.ext.renderer, {
 					return;               // table, not a nested one
 				}
 
+				var sorting = ctx.sortDetails;
+
+				if (! sorting) {
+					return;
+				}
+
 				var i;
 				var orderClasses = classes.order;
 				var columns = ctx.api.columns( cell );
@@ -12686,7 +12745,6 @@ $.extend( true, DataTable.ext.renderer, {
 				var ariaType = '';
 				var indexes = columns.indexes();
 				var sortDirs = columns.orderable(true).flatten();
-				var sorting = ctx.sortDetails;
 				var orderedColumns = _pluck(sorting, 'col');
 
 				cell
@@ -13054,7 +13112,11 @@ DataTable.feature.register( 'paging', function ( settings, opts ) {
 
 	var host = $('<div/>')
 		.addClass(settings.oClasses.paging.container + (opts.type ? ' paging_' + opts.type : ''))
-		.append('<nav>');
+		.append(
+			$('<nav>')
+				.attr('aria-label', 'pagination')
+				.addClass(settings.oClasses.paging.nav)
+		);
 	var draw = function () {
 		_pagingDraw(settings, host.children(), opts);
 	};
@@ -13107,15 +13169,17 @@ function _pagingDraw(settings, host, opts) {
 		all        = len === -1,
 		page = all ? 0 : Math.ceil( start / len ),
 		pages = all ? 1 : Math.ceil( visRecords / len ),
-		buttons = plugin(opts)
+		buttons = [],
+		buttonEls = [],
+		buttonsNested = plugin(opts)
 			.map(function (val) {
 				return val === 'numbers'
 					? _pagingNumbers(page, pages, opts.buttons, opts.boundaryNumbers)
 					: val;
-			})
-			.flat();
+			});
 
-	var buttonEls = [];
+	// .flat() would be better, but not supported in old Safari
+	buttons = buttons.concat.apply(buttons, buttonsNested);
 
 	for (var i=0 ; i<buttons.length ; i++) {
 		var button = buttons[i];
@@ -13394,14 +13458,14 @@ DataTable.feature.register( 'pageLength', function ( settings, opts ) {
 
 	// Save text node content for macro updating
 	var textNodes = [];
-	div.find('label')[0].childNodes.forEach(function (el) {
+	Array.from(div.find('label')[0].childNodes).forEach(function (el) {
 		if (el.nodeType === Node.TEXT_NODE) {
 			textNodes.push({
 				el: el,
 				text: el.textContent
 			});
 		}
-	})
+	});
 
 	// Update the label text in case it has an entries value
 	var updateEntries = function (len) {

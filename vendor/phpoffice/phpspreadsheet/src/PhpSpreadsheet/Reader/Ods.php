@@ -6,6 +6,7 @@ use DOMAttr;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Helper\Dimension as HelperDimension;
@@ -16,7 +17,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Ods\PageSettings;
 use PhpOffice\PhpSpreadsheet\Reader\Ods\Properties as DocumentProperties;
 use PhpOffice\PhpSpreadsheet\Reader\Security\XmlScanner;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
-use PhpOffice\PhpSpreadsheet\Settings;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Shared\File;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -57,9 +57,12 @@ class Ods extends BaseReader
                     $mimeType = $zip->getFromName($stat['name']);
                 } elseif ($zip->statName('META-INF/manifest.xml')) {
                     $xml = simplexml_load_string(
-                        $this->getSecurityScannerOrThrow()->scan($zip->getFromName('META-INF/manifest.xml')),
-                        'SimpleXMLElement',
-                        Settings::getLibXmlLoaderOptions()
+                        $this->getSecurityScannerOrThrow()
+                            ->scan(
+                                $zip->getFromName(
+                                    'META-INF/manifest.xml'
+                                )
+                            )
                     );
                     if ($xml !== false) {
                         $namespacesContent = $xml->getNamespaces(true);
@@ -97,9 +100,8 @@ class Ods extends BaseReader
 
         $xml = new XMLReader();
         $xml->xml(
-            $this->getSecurityScannerOrThrow()->scanFile('zip://' . realpath($filename) . '#' . self::INITIAL_FILE),
-            null,
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scanFile('zip://' . realpath($filename) . '#' . self::INITIAL_FILE)
         );
         $xml->setParserProperty(2, true);
 
@@ -144,9 +146,8 @@ class Ods extends BaseReader
 
         $xml = new XMLReader();
         $xml->xml(
-            $this->getSecurityScannerOrThrow()->scanFile('zip://' . realpath($filename) . '#' . self::INITIAL_FILE),
-            null,
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scanFile('zip://' . realpath($filename) . '#' . self::INITIAL_FILE)
         );
         $xml->setParserProperty(2, true);
 
@@ -252,9 +253,8 @@ class Ods extends BaseReader
         // Meta
 
         $xml = @simplexml_load_string(
-            $this->getSecurityScannerOrThrow()->scan($zip->getFromName('meta.xml')),
-            'SimpleXMLElement',
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scan($zip->getFromName('meta.xml'))
         );
         if ($xml === false) {
             throw new Exception('Unable to read data from {$pFilename}');
@@ -268,8 +268,8 @@ class Ods extends BaseReader
 
         $dom = new DOMDocument('1.01', 'UTF-8');
         $dom->loadXML(
-            $this->getSecurityScannerOrThrow()->scan($zip->getFromName('styles.xml')),
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scan($zip->getFromName('styles.xml'))
         );
 
         $pageSettings = new PageSettings($dom);
@@ -278,8 +278,8 @@ class Ods extends BaseReader
 
         $dom = new DOMDocument('1.01', 'UTF-8');
         $dom->loadXML(
-            $this->getSecurityScannerOrThrow()->scan($zip->getFromName(self::INITIAL_FILE)),
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scan($zip->getFromName(self::INITIAL_FILE))
         );
 
         $officeNs = (string) $dom->lookupNamespaceUri('office');
@@ -403,8 +403,11 @@ class Ods extends BaseReader
                             }
 
                             $columnID = 'A';
-                            /** @var DOMElement $cellData */
+                            /** @var DOMElement|DOMText $cellData */
                             foreach ($childNode->childNodes as $cellData) {
+                                if ($cellData instanceof DOMText) {
+                                    continue; // should just be whitespace
+                                }
                                 if ($this->getReadFilter() !== null) {
                                     if (!$this->getReadFilter()->readCell($columnID, $rowID, $worksheetName)) {
                                         if ($cellData->hasAttributeNS($tableNs, 'number-columns-repeated')) {
@@ -436,14 +439,25 @@ class Ods extends BaseReader
 
                                 if ($annotation->length > 0 && $annotation->item(0) !== null) {
                                     $textNode = $annotation->item(0)->getElementsByTagNameNS($textNs, 'p');
+                                    $textNodeLength = $textNode->length;
+                                    $newLineOwed = false;
+                                    for ($textNodeIndex = 0; $textNodeIndex < $textNodeLength; ++$textNodeIndex) {
+                                        $textNodeItem = $textNode->item($textNodeIndex);
+                                        if ($textNodeItem !== null) {
+                                            $text = $this->scanElementForText($textNodeItem);
+                                            if ($newLineOwed) {
+                                                $spreadsheet->getActiveSheet()
+                                                    ->getComment($columnID . $rowID)
+                                                    ->getText()
+                                                    ->createText("\n");
+                                            }
+                                            $newLineOwed = true;
 
-                                    if ($textNode->length > 0 && $textNode->item(0) !== null) {
-                                        $text = $this->scanElementForText($textNode->item(0));
-
-                                        $spreadsheet->getActiveSheet()
-                                            ->getComment($columnID . $rowID)
-                                            ->setText($this->parseRichText($text));
-//                                                                    ->setAuthor( $author )
+                                            $spreadsheet->getActiveSheet()
+                                                ->getComment($columnID . $rowID)
+                                                ->getText()
+                                                ->createText($this->parseRichText($text));
+                                        }
                                     }
                                 }
 
@@ -492,7 +506,7 @@ class Ods extends BaseReader
                                             break;
                                         case 'boolean':
                                             $type = DataType::TYPE_BOOL;
-                                            $dataValue = ($allCellDataText == 'TRUE') ? true : false;
+                                            $dataValue = ($cellData->getAttributeNS($officeNs, 'boolean-value') === 'true') ? true : false;
 
                                             break;
                                         case 'percentage':
@@ -655,8 +669,8 @@ class Ods extends BaseReader
     {
         $dom = new DOMDocument('1.01', 'UTF-8');
         $dom->loadXML(
-            $this->getSecurityScannerOrThrow()->scan($zip->getFromName('settings.xml')),
-            Settings::getLibXmlLoaderOptions()
+            $this->getSecurityScannerOrThrow()
+                ->scan($zip->getFromName('settings.xml'))
         );
         //$xlinkNs = $dom->lookupNamespaceUri('xlink');
         $configNs = (string) $dom->lookupNamespaceUri('config');
@@ -731,6 +745,8 @@ class Ods extends BaseReader
             /** @var DOMNode $child */
             if ($child->nodeType == XML_TEXT_NODE) {
                 $str .= $child->nodeValue;
+            } elseif ($child->nodeType == XML_ELEMENT_NODE && $child->nodeName == 'text:line-break') {
+                $str .= "\n";
             } elseif ($child->nodeType == XML_ELEMENT_NODE && $child->nodeName == 'text:s') {
                 // It's a space
 
