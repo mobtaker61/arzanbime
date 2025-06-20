@@ -195,8 +195,8 @@ class PostController extends Controller
             throw new \Exception("Sorry, file already exists.");
         }
 
-        if ($file["size"] > 5000000) {
-            throw new \Exception("Sorry, your file is too large.");
+        if ($file["size"] > 10000000) {
+            throw new \Exception("Sorry, your file is too large. Maximum size is 10MB.");
         }
 
         if ($imageFileType != "webp" && $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {

@@ -40,9 +40,9 @@ $response = array();
 // Check if image file is a actual image or fake image
 $check = getimagesize($_FILES["file"]["tmp_name"]);
 if ($check !== false) {
-    // Check file size
-    if ($_FILES["file"]["size"] > 5000000) {
-        $response['error'] = "Sorry, your file is too large.";
+    // Check file size (increased to 10MB)
+    if ($_FILES["file"]["size"] > 10000000) {
+        $response['error'] = "Sorry, your file is too large. Maximum size is 10MB.";
     } else {
         // Allow certain file formats
         if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"

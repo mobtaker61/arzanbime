@@ -41,13 +41,33 @@
             formData = new FormData();
             formData.append('file', blobInfo.blob(), blobInfo.filename());
             xhr.send(formData);
+        },
+        // Ensure proper HTML output
+        entity_encoding: 'raw',
+        encoding: 'html',
+        // Allow all HTML tags
+        extended_valid_elements: '*[*]',
+        // Remove invalid elements
+        invalid_elements: '',
+        // Set content CSS for proper styling
+        content_css: '/public/css/custom.css',
+        // Ensure proper direction for Persian text
+        directionality: 'rtl',
+        // Set up proper formatting
+        formats: {
+            alignleft: {selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-left'},
+            aligncenter: {selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-center'},
+            alignright: {selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table', classes: 'text-right'},
+            bold: {inline: 'strong'},
+            italic: {inline: 'em'},
+            underline: {inline: 'u'}
         }
     });
 
     function validateForm() {
         var editorContent = tinymce.get("full_body").getContent();
-        if (editorContent === "") {
-            alert("The Full Body field is required.");
+        if (editorContent === "" || editorContent === "<p></p>") {
+            alert("متن کامل الزامی است.");
             return false;
         }
         return true;

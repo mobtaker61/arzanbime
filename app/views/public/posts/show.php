@@ -22,7 +22,9 @@ $keywords = $post['caption'];
                 <?= $post['title'] ?>
             </h1>
             <p class="hidden"><?= $post['caption'] ?></p>
-            <?= htmlspecialchars_decode($post['full_body']) ?>
+            <div class="post-content">
+                <?= htmlspecialchars_decode($post['full_body']) ?>
+            </div>
         </div>
     </div>
     <div>
@@ -32,6 +34,7 @@ $keywords = $post['caption'];
         <?php include 'app/views/partials/sidebar.php'; ?>
     </div>
 </section>
+<!-- برچسب ها و نظرات -->
 <section class="center-sec mt-24 mb-28 tablet-medium:mb-24 tablet-medium:mt-16 mobile-large:mt-12 mobile-large:mb-16">
     <div class="flex items-center justify-between pb-3 border-solid border-neutral-400 border-b-2">
         <div class="flex justify-between items-center [&_a:last-child]:ml-0">
@@ -49,7 +52,7 @@ $keywords = $post['caption'];
         </div>
     </div>
 
-    <div>
+    <div> <!-- نظرات -->
         <h2 class="mt-9 mb-6 h3-bar">نظرات</h2>
         <div>
             <div class="flex items-center justify-between bg-neutral-200 rounded-md">
@@ -89,7 +92,7 @@ $keywords = $post['caption'];
                 ستون و سطرآنچنان که لازم است،
             </p>
         </div>
-
+        <!-- فرم دیدگاه -->
         <div class="mt-12 mb-28 tablet-medium:mt-10 tablet-medium:mb-24 mobile-large:mt-6 mobile-large:mb-16">
             <h2 class="mt-9 mb-6 h3-bar">دیدگاهتان را بنویسید</h2>
             <form action="">
