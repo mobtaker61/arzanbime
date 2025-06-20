@@ -177,6 +177,12 @@ class PostController extends Controller
         }
 
         $targetDir = "public/uploads/";
+        
+        // Create directory if it doesn't exist
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+        
         $targetFile = $targetDir . basename($file["name"]);
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
