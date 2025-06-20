@@ -9,15 +9,21 @@
         <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="/agent/dashboard" class="nav-link">
+                    <a href="/agent" class="nav-link">
                         <i class="nav-icon bi"></i>
-                        <p>داشبورد</p>
+                        <p>داشبورد نماینده</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="/agent/quotations" class="nav-link">
                         <i class="nav-icon bi bi-ui-checks"></i>
                         <p>استعلامات</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/agent/orders" class="nav-link">
+                        <i class="nav-icon bi bi-circle"></i>
+                        <p>سفارشات</p>
                     </a>
                 </li>
                 <!-- Add more links as needed -->

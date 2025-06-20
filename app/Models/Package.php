@@ -146,6 +146,31 @@ class Package extends Model
         return $result;
     }
 
+    public function getAllActive()
+    {
+        $sql = "SELECT p.*, c.name as company_name, c.icon as company_icon 
+                FROM package p 
+                JOIN company c ON p.company_id = c.id 
+                WHERE p.is_active = 1 
+                ORDER BY p.tip ASC";
+
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $packages = [];
+        while ($row = $result->fetch_assoc()) {
+            $packages[] = $row;
+        }
+        
+        $stmt->close();
+        return $packages;
+    }
+
     private function fetchAssoc($stmt)
     {
         $stmt->store_result();

@@ -5,8 +5,17 @@ use App\Models\PackageDiscount;
 use App\Models\Package;
 use App\Models\UserLevel;
 use Core\Controller;
+use Core\Middleware;
+use Core\View;
 
 class PackageDiscountController extends Controller {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index() {
         $packageDiscountModel = new PackageDiscount();
         $packageDiscounts = $packageDiscountModel->getAllPackageDiscounts();
@@ -14,7 +23,7 @@ class PackageDiscountController extends Controller {
         $packages = $packageModel->getAllPackages();
         $userLevelModel = new UserLevel();
         $userLevels = $userLevelModel->getAllUserLevels();
-        $this->view('admin/package_discounts/index', [
+        View::render('admin/package-discounts/index', [
             'packageDiscounts' => $packageDiscounts,
             'packages' => $packages,
             'userLevels' => $userLevels,
@@ -39,9 +48,16 @@ class PackageDiscountController extends Controller {
     public function edit($id) {
         $packageDiscountModel = new PackageDiscount();
         $packageDiscount = $packageDiscountModel->getPackageDiscountById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($packageDiscount);
+        
+        if (!$packageDiscount) {
+            $this->redirect('/admin/package-discounts');
+            return;
+        }
+        
+        View::render('admin/package-discounts/edit', [
+            'packageDiscount' => $packageDiscount,
+            'pagetitle' => 'ویرایش تخفیف بسته'
+        ], 'admin');
     }
 
     public function update($id) {
@@ -64,5 +80,12 @@ class PackageDiscountController extends Controller {
 
         header('Content-Type: application/json');
         echo json_encode(['success' => $result]);
+    }
+
+    public function create()
+    {
+        View::render('admin/package-discounts/create', [
+            'pagetitle' => 'افزودن تخفیف بسته جدید'
+        ], 'admin');
     }
 }

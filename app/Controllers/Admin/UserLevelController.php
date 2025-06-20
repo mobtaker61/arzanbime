@@ -4,16 +4,49 @@ namespace App\Controllers\Admin;
 
 use App\Models\UserLevel;
 use Core\Controller;
+use Core\Middleware;
+use Core\View;
 
 class UserLevelController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index()
     {
         $userLevelModel = new UserLevel();
         $userLevels = $userLevelModel->getAllUserLevels();
-        $this->view('admin/user_levels/index', [
+        
+        View::render('admin/user_levels/index', [
             'userLevels' => $userLevels,
-            'pagetitle' => 'مدیریت سطوح کاربران'
+            'pagetitle' => 'مدیریت سطوح کاربری'
+        ], 'admin');
+    }
+
+    public function create()
+    {
+        View::render('admin/user_levels/create', [
+            'pagetitle' => 'افزودن سطح کاربری جدید'
+        ], 'admin');
+    }
+
+    public function edit($id)
+    {
+        $userLevelModel = new UserLevel();
+        $userLevel = $userLevelModel->getUserLevelById($id);
+        
+        if (!$userLevel) {
+            $this->redirect('/admin/user_levels');
+            return;
+        }
+        
+        View::render('admin/user_levels/edit', [
+            'userLevel' => $userLevel,
+            'pagetitle' => 'ویرایش سطح کاربری'
         ], 'admin');
     }
 
@@ -31,15 +64,6 @@ class UserLevelController extends Controller
 
         header('Content-Type: application/json');
         echo json_encode(['success' => $result]);
-    }
-
-    public function edit($id)
-    {
-        $userLevelModel = new UserLevel();
-        $userLevel = $userLevelModel->getUserLevelById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($userLevel);
     }
 
     public function update($id)

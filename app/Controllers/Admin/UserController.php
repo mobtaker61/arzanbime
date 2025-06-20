@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Models\Transaction;
 use Core\Controller;
 use App\Models\UserLevel;
+use App\Models\UserRole;
 
 class UserController extends Controller
 {
@@ -37,7 +38,7 @@ class UserController extends Controller
             $user['balance'] = $userModel->getUserBalance($user['id']);
         }
 
-        $this->view('admin/users/index', [
+        View::render('admin/users/index', [
             'users' => $users,
             'totalUsers' => $totalUsers,
             'limit' => $limit,
@@ -45,6 +46,17 @@ class UserController extends Controller
             'search' => $search,
             'userLevels' => $userLevels,
             'pagetitle' => 'مدیریت کاربران'
+        ], 'admin');
+    }
+
+    public function create()
+    {
+        $userRoleModel = new UserRole();
+        $roles = $userRoleModel->getAllRoles();
+        
+        View::render('admin/users/create', [
+            'roles' => $roles,
+            'pagetitle' => 'افزودن کاربر جدید'
         ], 'admin');
     }
 
@@ -92,17 +104,21 @@ class UserController extends Controller
     public function edit($id)
     {
         $userModel = new User();
-        $profileModel = new Profile();
-        $userLevelModel = new UserLevel();
-
         $user = $userModel->getUserById($id);
-        $profile = $profileModel->getProfileByUserId($id);
-        $userLevels = $userLevelModel->getAllUserLevels();
-
-        $user = array_merge($user, $profile);
-
-        header('Content-Type: application/json');
-        echo json_encode(['user' => $user, 'userLevels' => $userLevels]);
+        
+        $userRoleModel = new UserRole();
+        $roles = $userRoleModel->getAllRoles();
+        
+        if (!$user) {
+            $this->redirect('/admin/users');
+            return;
+        }
+        
+        View::render('admin/users/edit', [
+            'user' => $user,
+            'roles' => $roles,
+            'pagetitle' => 'ویرایش کاربر'
+        ], 'admin');
     }
 
     public function update($id)

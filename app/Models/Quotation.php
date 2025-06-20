@@ -7,6 +7,13 @@ use Exception;
 
 class Quotation extends Model
 {
+    protected $db;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function getAllQuotations($limit = 10, $offset = 1, $sortField = 'id', $sortOrder = 'DESC', $filterTel = null, $filterStatus = null)
     {
         $sql = "SELECT q.*, u.user_level_id, p.name, p.surname, p.profile_image 
@@ -94,6 +101,7 @@ class Quotation extends Model
         }
 
         $stmt->execute();
+        $count = 0;
         $stmt->bind_result($count);
         $stmt->fetch();
         $stmt->close();
@@ -102,15 +110,40 @@ class Quotation extends Model
 
     public function createQuotation($data)
     {
-        $uid = $this->generateUid();
-        $stmt = $this->db->prepare("INSERT INTO quotation (user_id, birth_date, age, duration, tel, status, uid) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        if (!$stmt) {
-            throw new Exception($this->db->error);
+        // Start transaction
+        $this->db->begin_transaction();
+
+        try {
+            $stmt = $this->db->prepare("INSERT INTO quotation (tel, birth_date, age, duration, status) VALUES (?, ?, ?, ?, ?)");
+            if (!$stmt) {
+                throw new Exception($this->db->error());
+            }
+
+            $stmt->bind_param('ssiis',
+                $data['tel'],
+                $data['birth_date'],
+                $data['age'],
+                $data['duration'],
+                $data['status']
+            );
+
+            $stmt->execute();
+            $quotationId = $stmt->insert_id;
+            $stmt->close();
+
+            if ($quotationId) {
+                // Commit transaction
+                $this->db->commit();
+                return $quotationId;
+            }
+
+            throw new Exception("Failed to create quotation");
+
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->db->rollback();
+            throw $e;
         }
-        $stmt->bind_param('issiiss', $data['user_id'], $data['birth_date'], $data['age'], $data['duration'], $data['tel'],$data['status'], $uid);
-        $stmt->execute();
-        $stmt->close();
-        return $uid;
     }
 
     public function getTotalQuotations($startDate, $endDate) {
@@ -135,11 +168,25 @@ class Quotation extends Model
         return bin2hex(random_bytes(16));
     }
 
-    public function updateQuotation($id, $tel, $birth_date, $age, $duration, $status)
+    public function updateQuotation($id, $data)
     {
         $stmt = $this->db->prepare("UPDATE quotation SET tel = ?, birth_date = ?, age = ?, duration = ?, status = ? WHERE id = ?");
-        $stmt->bind_param('ssissi', $tel, $birth_date, $age, $duration, $status, $id);
-        return $stmt->execute();
+        if (!$stmt) {
+            throw new Exception($this->db->error());
+        }
+
+        $stmt->bind_param('ssiisi',
+            $data['tel'],
+            $data['birth_date'],
+            $data['age'],
+            $data['duration'],
+            $data['status'],
+            $id
+        );
+
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
 
     public function deleteQuotation($id)
@@ -168,5 +215,103 @@ class Quotation extends Model
             $results[] = $row;
         }
         return $results;
+    }
+
+    /**
+     * Get the count of quotations for a specific agent
+     *
+     * @param int $agentId The agent's user ID
+     * @return int The count of quotations
+     */
+    public function getQuotationsCountByAgent(int $agentId): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM quotation WHERE user_id = ?");
+        $stmt->bind_param('i', $agentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int) $row['count'];
+    }
+
+    /**
+     * Get recent quotations for a specific agent
+     *
+     * @param int $agentId The agent's user ID
+     * @param int $limit Number of quotations to return
+     * @return array Array of recent quotations
+     */
+    public function getRecentQuotationsByAgent(int $agentId, int $limit = 5): array
+    {
+        $sql = "SELECT q.*, 
+                       p.name, 
+                       p.surname,
+                       p.birth_date,
+                       TIMESTAMPDIFF(YEAR, p.birth_date, CURDATE()) as age
+                FROM quotation q
+                LEFT JOIN profiles p ON q.user_id = p.user_id
+                WHERE q.user_id = ?
+                ORDER BY q.created_at DESC
+                LIMIT ?";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('ii', $agentId, $limit);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        
+        return $result;
+    }
+
+    public function getQuotationsByAgent($agent_id)
+    {
+        $sql = "SELECT q.*, c.name as client_name, c.family as client_family, c.id_no as client_id_no,
+                       p.tip as package_name, p.discount_rate
+                FROM quotation q
+                JOIN clients c ON q.client_id = c.id
+                JOIN package p ON q.package_id = p.id
+                WHERE q.agent_id = ?
+                ORDER BY q.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($this->db->error());
+        }
+
+        $stmt->bind_param('i', $agent_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $quotations = [];
+        while ($row = $result->fetch_assoc()) {
+            $quotations[] = $row;
+        }
+        
+        $stmt->close();
+        return $quotations;
+    }
+
+    public function getQuotationById($id)
+    {
+        $sql = "SELECT q.*, c.name as client_name, c.family as client_family, c.id_no as client_id_no,
+                       p.tip as package_name, p.discount_rate
+                FROM quotation q
+                JOIN clients c ON q.client_id = c.id
+                JOIN package p ON q.package_id = p.id
+                WHERE q.id = ?";
+
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($this->db->error());
+        }
+
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $quotation = $result->fetch_assoc();
+        $stmt->close();
+
+        return $quotation;
     }
 }

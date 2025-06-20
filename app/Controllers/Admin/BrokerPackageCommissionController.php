@@ -7,6 +7,7 @@ use App\Models\Broker;
 use App\Models\Package;
 use App\Models\BrokerPackageCommission;
 use Core\Controller;
+use Core\View;
 
 class BrokerPackageCommissionController extends Controller {
     public function __construct() {
@@ -17,28 +18,58 @@ class BrokerPackageCommissionController extends Controller {
 
     public function index() {
         $commissionModel = new BrokerPackageCommission();
+        $commissions = $commissionModel->getAllCommissions(10, 0);
+        
         $brokerModel = new Broker();
-        $packageModel = new Package();
-
-        $search = $_GET['search'] ?? '';
-        $limit = $_GET['limit'] ?? 10;
-        $page = $_GET['page'] ?? 1;
-        $offset = ($page - 1) * $limit;
-
-        $commissions = $commissionModel->getAllCommissions($limit, $offset, $search);
-        $totalCommissions = $commissionModel->getCommissionCount($search);
         $brokers = $brokerModel->getAllBrokers();
+        
+        $packageModel = new Package();
         $packages = $packageModel->getAllPackages();
-
-        $this->view('admin/commissions/index', [
+        
+        View::render('admin/broker-package-commissions/index', [
             'commissions' => $commissions,
-            'totalCommissions' => $totalCommissions,
-            'limit' => $limit,
-            'page' => $page,
-            'search' => $search,
             'brokers' => $brokers,
             'packages' => $packages,
-            'pagetitle' => 'مدیریت کمیسیون‌ها'
+            'pagetitle' => 'مدیریت کمیسیون‌های بسته کارگزاران'
+        ], 'admin');
+    }
+
+    public function create()
+    {
+        $brokerModel = new Broker();
+        $brokers = $brokerModel->getAllBrokers();
+        
+        $packageModel = new Package();
+        $packages = $packageModel->getAllPackages();
+        
+        View::render('admin/broker-package-commissions/create', [
+            'brokers' => $brokers,
+            'packages' => $packages,
+            'pagetitle' => 'افزودن کمیسیون بسته جدید'
+        ], 'admin');
+    }
+
+    public function edit($id)
+    {
+        $commissionModel = new BrokerPackageCommission();
+        $commission = $commissionModel->getCommissionById($id);
+        
+        if (!$commission) {
+            $this->redirect('/admin/broker-package-commissions');
+            return;
+        }
+        
+        $brokerModel = new Broker();
+        $brokers = $brokerModel->getAllBrokers();
+        
+        $packageModel = new Package();
+        $packages = $packageModel->getAllPackages();
+        
+        View::render('admin/broker-package-commissions/edit', [
+            'commission' => $commission,
+            'brokers' => $brokers,
+            'packages' => $packages,
+            'pagetitle' => 'ویرایش کمیسیون بسته'
         ], 'admin');
     }
 
@@ -54,14 +85,6 @@ class BrokerPackageCommissionController extends Controller {
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Commission created successfully.']);
-    }
-
-    public function edit($id) {
-        $commissionModel = new BrokerPackageCommission();
-        $commission = $commissionModel->getCommissionById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($commission);
     }
 
     public function update($id) {

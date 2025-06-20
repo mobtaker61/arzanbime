@@ -5,9 +5,18 @@ namespace App\Controllers\Admin;
 use App\Models\Post;
 use App\Models\PostType;
 use Core\Controller;
+use Core\Middleware;
+use Core\View;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index()
     {
         $postModel = new Post();
@@ -29,7 +38,7 @@ class PostController extends Controller
                 'page' => $page,
             ]);
         } else {
-            $this->view('admin/posts/index', [
+            View::render('admin/posts/index', [
                 'postTypes' => $postTypes,
                 'posts' => $posts,
                 'totalPosts' => $totalPosts,
@@ -44,7 +53,7 @@ class PostController extends Controller
     {
         $postTypeModel = new PostType();
         $postTypes = $postTypeModel->getAllPostTypes();
-        $this->view('admin/posts/create', [
+        View::render('admin/posts/create', [
             'postTypes' => $postTypes,
             'pagetitle' => 'محتوای جدید'
         ], 'admin');
@@ -52,33 +61,43 @@ class PostController extends Controller
 
     public function store()
     {
-        $data = [
-            'post_type' => $_POST['post_type'],
-            'title' => $_POST['title'],
-            'caption' => $_POST['caption'],
-            'full_body' => $_POST['full_body'],
-            'image' => '',
-            'is_active' => isset($_POST['is_active']) ? 1 : 0,
-        ];
+        try {
+            $data = [
+                'post_type' => $_POST['post_type'],
+                'title' => $_POST['title'],
+                'caption' => $_POST['caption'],
+                'full_body' => $_POST['full_body'],
+                'image' => '',
+                'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            ];
 
-        if ($_FILES['image']['name']) {
-            $data['image'] = $this->uploadImage($_FILES['image']);
+            if (isset($_FILES['image']) && $_FILES['image']['name']) {
+                $data['image'] = $this->uploadImage($_FILES['image']);
+            }
+
+            $postModel = new Post();
+            $postModel->createPost($data);
+            header('Location: /admin/posts');
+        } catch (\Exception $e) {
+            // Redirect back with error message
+            header('Location: /admin/posts/create?error=' . urlencode($e->getMessage()));
         }
-
-        $postModel = new Post();
-        $postModel->createPost($data);
-        header('Location: /admin/posts');
     }
 
     public function edit($id)
     {
         $postModel = new Post();
         $post = $postModel->getPostById($id);
-
+        
+        if (!$post) {
+            $this->redirect('/admin/posts');
+            return;
+        }
+        
         $postTypeModel = new PostType();
         $postTypes = $postTypeModel->getAllPostTypes();
 
-        $this->view('admin/posts/edit', [
+        View::render('admin/posts/edit', [
             'post' => $post, 'postTypes' => $postTypes,
             'pagetitle' => 'ویرایش محتوا'
         ], 'admin');
@@ -86,26 +105,31 @@ class PostController extends Controller
 
     public function update($id)
     {
-        $data = [
-            'post_type' => $_POST['post_type'],
-            'title' => $_POST['title'],
-            'caption' => $_POST['caption'],
-            'full_body' => $_POST['full_body'],
-            'image' => '',
-            'is_active' => isset($_POST['is_active']) ? 1 : 0,
-        ];
+        try {
+            $data = [
+                'post_type' => $_POST['post_type'],
+                'title' => $_POST['title'],
+                'caption' => $_POST['caption'],
+                'full_body' => $_POST['full_body'],
+                'image' => '',
+                'is_active' => isset($_POST['is_active']) ? 1 : 0,
+            ];
 
-        if (!empty($_FILES['image']['name'])) {
-            $data['image'] = $this->uploadImage($_FILES['image']);
-        } else {
+            if (isset($_FILES['image']) && !empty($_FILES['image']['name'])) {
+                $data['image'] = $this->uploadImage($_FILES['image']);
+            } else {
+                $postModel = new Post();
+                $post = $postModel->getPostById($id);
+                $data['image'] = $post['image'];
+            }
+
             $postModel = new Post();
-            $post = $postModel->getPostById($id);
-            $data['image'] = $post['image'];
+            $postModel->updatePost($id, $data);
+            header('Location: /admin/posts');
+        } catch (\Exception $e) {
+            // Redirect back with error message
+            header('Location: /admin/posts/edit/' . $id . '?error=' . urlencode($e->getMessage()));
         }
-
-        $postModel = new Post();
-        $postModel->updatePost($id, $data);
-        header('Location: /admin/posts');
     }
 
     public function delete($id)
@@ -147,31 +171,36 @@ class PostController extends Controller
 
     private function uploadImage($file)
     {
+        // Check if file was uploaded successfully
+        if (!isset($file["tmp_name"]) || empty($file["tmp_name"]) || !is_uploaded_file($file["tmp_name"])) {
+            throw new \Exception("No valid file uploaded.");
+        }
+
         $targetDir = "public/uploads/";
         $targetFile = $targetDir . basename($file["name"]);
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
         $check = getimagesize($file["tmp_name"]);
         if ($check === false) {
-            die("File is not an image.");
+            throw new \Exception("File is not an image.");
         }
 
         if (file_exists($targetFile)) {
-            die("Sorry, file already exists.");
+            throw new \Exception("Sorry, file already exists.");
         }
 
         if ($file["size"] > 5000000) {
-            die("Sorry, your file is too large.");
+            throw new \Exception("Sorry, your file is too large.");
         }
 
         if ($imageFileType != "webp" && $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-            die("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+            throw new \Exception("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
         }
 
         if (move_uploaded_file($file["tmp_name"], $targetFile)) {
             return "/" . $targetFile;
         } else {
-            die("Sorry, there was an error uploading your file.");
+            throw new \Exception("Sorry, there was an error uploading your file.");
         }
     }
 

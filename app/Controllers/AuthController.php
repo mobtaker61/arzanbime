@@ -5,14 +5,17 @@ namespace App\Controllers;
 use App\Models\Profile;
 use App\Models\Quotation;
 use App\Models\User;
+use App\Models\UserLevel;
 use Core\Controller;
 use Core\Security;
 use Core\View;
 use Core\IMVerify;
+use Exception;
 
 class AuthController extends Controller
 {
     private $imVerify;
+    
     public function __construct()
     {
         parent::__construct();
@@ -21,52 +24,230 @@ class AuthController extends Controller
 
     public function showLoginForm()
     {
-        View::render('public/auth/login', ['pagetitle' => 'Login'], 'public');
+        // Generate a CSRF token for the form
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['csrf_token'] = Security::generateCSRFToken();
+        
+        View::render('public/auth/login', [
+            'pagetitle' => 'Login',
+            'csrf_token' => $_SESSION['csrf_token']
+        ], 'public');
     }
 
     public function login()
     {
-        if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
-            die('CSRF token validation failed');
+        // Start session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
         }
 
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+        // Debugging information
+        $debugInfo = [];
+        $debugInfo[] = "Session Status: " . session_status();
+        $debugInfo[] = "Session ID: " . session_id();
+        $debugInfo[] = "Request Method: " . $_SERVER['REQUEST_METHOD'];
+        
+        // Check if form was submitted
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // If not a POST request, redirect to login form
+            header('Location: /login');
+            exit();
+        }
+        
+        // Verify CSRF token
+        if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || 
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            $error = "CSRF token validation failed. Please try again.";
+            $debugInfo[] = "CSRF Validation Failed";
+            $debugInfo[] = "POST Token: " . ($_POST['csrf_token'] ?? 'Not set');
+            $debugInfo[] = "Session Token: " . ($_SESSION['csrf_token'] ?? 'Not set');
+            
+            // Generate new token for next attempt
+            $_SESSION['csrf_token'] = Security::generateCSRFToken();
+            
+            View::render('public/auth/login', [
+                'error' => $error,
+                'debugInfo' => $debugInfo,
+                'pagetitle' => 'ورود کاربر',
+                'csrf_token' => $_SESSION['csrf_token']
+            ], 'public');
+            return;
+        }
+
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+        
+        $debugInfo[] = "Login attempt for username: " . $username;
+
+        // Validate input
+        if (empty($username) || empty($password)) {
+            $error = "نام کاربری و رمز عبور الزامی است";
+            $debugInfo[] = "Empty username or password";
+            
+            $_SESSION['csrf_token'] = Security::generateCSRFToken();
+            
+            View::render('public/auth/login', [
+                'error' => $error,
+                'debugInfo' => $debugInfo,
+                'pagetitle' => 'ورود کاربر',
+                'csrf_token' => $_SESSION['csrf_token']
+            ], 'public');
+            return;
+        }
 
         $user = new User();
-        if ($user->login($username, $password)) {
-            $this->notify($username . ' is logged.', ['telegram']);
-            header('Location: /' . $_SESSION['user_role']);
-            exit(); // Ensure no further code is executed after the redirection
+        $loginResult = $user->login($username, $password);
+        $debugInfo = array_merge($debugInfo, $user->getDebugInfo());
+        
+        if ($loginResult === true) {
+            $debugInfo[] = "Login successful";
+            $debugInfo[] = "Session user_id: " . ($_SESSION['user_id'] ?? 'Not set');
+            $debugInfo[] = "Session user_role: " . ($_SESSION['user_role'] ?? 'Not set');
+            
+            // Get the role from session
+            $role = $_SESSION['user_role'] ?? User::ROLE_USER;
+            $redirectUrl = '/' . $role;
+            
+            $debugInfo[] = "Redirecting to: " . $redirectUrl;
+            
+            // Log successful login
+            error_log("User {$username} logged in successfully. Role: {$role}");
+            
+            // Force direct navigation with JavaScript
+            echo "
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Redirecting...</title>
+                <meta http-equiv='refresh' content='2;url={$redirectUrl}'>
+            </head>
+            <body>
+                <h3>Login successful! Redirecting to dashboard...</h3>
+                <p>If you are not redirected automatically, <a href='{$redirectUrl}'>click here</a>.</p>
+                <script>
+                    console.log('Login successful, redirecting to: {$redirectUrl}');
+                    setTimeout(function() {
+                        window.location.href = '{$redirectUrl}';
+                    }, 2000);
+                </script>
+                <div style='display:none;'>Debug info: " . implode('<br>', $debugInfo) . "</div>
+            </body>
+            </html>";
+            exit();
         } else {
-            View::render('public/auth/login', ['error' => 'نام کاربری یا رمز عبور اشتباه است', 'pagetitle' => 'ورود کاربر'], 'public');
+            $error = "نام کاربری یا رمز عبور اشتباه است";
+            $debugInfo[] = "Login failed";
+            
+            // Generate new token for next attempt
+            $_SESSION['csrf_token'] = Security::generateCSRFToken();
+            
+            View::render('public/auth/login', [
+                'error' => $error,
+                'debugInfo' => $debugInfo,
+                'pagetitle' => 'ورود کاربر',
+                'csrf_token' => $_SESSION['csrf_token']
+            ], 'public');
         }
     }
 
     public function showRegisterForm()
     {
-        View::render('public/auth/register', ['pagetitle' => 'Register'], 'public');
+        // Generate a CSRF token for the form
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['csrf_token'] = Security::generateCSRFToken();
+        
+        // Get user levels for the dropdown
+        $userLevelModel = new UserLevel();
+        $userLevels = $userLevelModel->getAllUserLevels();
+        
+        View::render('public/auth/register', [
+            'pagetitle' => 'Register',
+            'csrf_token' => $_SESSION['csrf_token'],
+            'userLevels' => $userLevels
+        ], 'public');
     }
 
     public function register()
     {
         if (!Security::verifyCSRFToken($_POST['csrf_token'])) {
-            die('CSRF token validation failed');
-        }
-
-        $data = $this->getUserDataFromRequest();
-
-        $user = new User();
-        if ($user->isUsernameOrTelExists($data['username'], $data['tel'], $data['email'])) {
-            View::render('public/auth/register', ['error' => 'نام کاربری، ایمیل یا تلفن قبلا ثبت شده است', 'pagetitle' => 'ثبت نام کاربر'], 'public');
+            // Generate new token for next attempt
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['csrf_token'] = Security::generateCSRFToken();
+            
+            View::render('public/auth/register', [
+                'error' => 'CSRF token validation failed. Please try again.',
+                'pagetitle' => 'ثبت نام کاربر',
+                'csrf_token' => $_SESSION['csrf_token']
+            ], 'public');
             return;
         }
 
-        $userId = $user->register($data);
-        $this->createUserProfile($userId, $data);
+        try {
+            $userData = $this->getUserDataFromRequest();
 
-        header('Location: /login');
-        exit();
+            // Validate required fields
+            $requiredFields = ['username', 'password', 'name', 'surname', 'tel', 'email'];
+            foreach ($requiredFields as $field) {
+                if (empty($userData[$field])) {
+                    throw new Exception("Field {$field} is required");
+                }
+            }
+
+            // Password validation
+            if (strlen($userData['password']) < 8) {
+                throw new Exception("Password must be at least 8 characters long");
+            }
+
+            // Hash password
+            $userData['password'] = password_hash($userData['password'], PASSWORD_DEFAULT);
+            
+            // Set default values
+            $userData['user_level_id'] = $userData['user_level_id'] ?? 1;
+            $userData['is_active'] = 1;
+            $userData['role'] = $userData['role'] ?? User::ROLE_USER;
+
+            $user = new User();
+            
+            // Check if username, email, or phone already exists
+            if ($user->isUsernameOrTelExists($userData['username'], $userData['tel'], $userData['email'])) {
+                throw new Exception("نام کاربری، ایمیل یا تلفن قبلا ثبت شده است");
+            }
+
+            // Register the user
+            $userId = $user->register($userData);
+            if (!$userId) {
+                throw new Exception("Failed to create user account");
+            }
+
+            // Create user profile
+            $this->createUserProfile($userId, $userData);
+
+            // Redirect to login page
+            header('Location: /login');
+            exit();
+        } catch (Exception $e) {
+            // In case of error, regenerate CSRF token and show error message
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION['csrf_token'] = Security::generateCSRFToken();
+            
+            $userLevelModel = new UserLevel();
+            $userLevels = $userLevelModel->getAllUserLevels();
+            
+            View::render('public/auth/register', [
+                'error' => $e->getMessage(),
+                'pagetitle' => 'ثبت نام کاربر',
+                'csrf_token' => $_SESSION['csrf_token'],
+                'userLevels' => $userLevels
+            ], 'public');
+        }
     }
 
     public function logout()
@@ -77,21 +258,35 @@ class AuthController extends Controller
         exit();
     }
 
-    private function getUserDataFromRequest()
+    /**
+     * Extract user data from the request
+     * 
+     * @return array User data
+     */
+    private function getUserDataFromRequest(): array
     {
         return [
-            'username' => $_POST['username'],
-            'password' => $_POST['password'],
-            'name' => $_POST['name'],
-            'surname' => $_POST['surname'],
-            'tel' => $_POST['tel'],
-            'email' => $_POST['email'],
-            'birth_date' => $_POST['birth'],
-            'role' => $_POST['role'] ?? 'user'
+            'username' => trim($_POST['username'] ?? ''),
+            'password' => $_POST['password'] ?? '',
+            'name' => trim($_POST['name'] ?? ''),
+            'surname' => trim($_POST['surname'] ?? ''),
+            'tel' => trim($_POST['tel'] ?? ''),
+            'email' => trim($_POST['email'] ?? ''),
+            'birth_date' => $_POST['birth'] ?? null,
+            'role' => $_POST['role'] ?? User::ROLE_USER,
+            'user_level_id' => (int)($_POST['user_level_id'] ?? 1),
+            'fcm_token' => $_POST['fcm_token'] ?? '' // Add FCM token from form or set empty default
         ];
     }
 
-    private function createUserProfile($userId, $data)
+    /**
+     * Create a profile for a user
+     * 
+     * @param int $userId User ID
+     * @param array $data User data
+     * @return bool Success status
+     */
+    private function createUserProfile(int $userId, array $data): bool
     {
         $profileData = [
             'user_id' => $userId,
@@ -105,7 +300,7 @@ class AuthController extends Controller
         ];
 
         $profile = new Profile();
-        $profile->createProfile($profileData);
+        return $profile->createProfile($profileData);
     }
 
     public function showResetPasswordForm()

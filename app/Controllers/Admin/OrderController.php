@@ -12,11 +12,19 @@ use App\Models\Tariff;
 use App\Models\Transaction;
 use Core\Controller;
 use Core\View;
+use Core\Middleware;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index()
     {
         $orderModel = new Order();
@@ -63,7 +71,7 @@ class OrderController extends Controller
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             View::render('admin/orders/order_table', $viewData, false);
         } else {
-            $this->view('admin/orders/index', $viewData, 'admin');
+            View::render('admin/orders/index', $viewData, 'admin');
         }
     }
 
@@ -198,4 +206,14 @@ class OrderController extends Controller
         exit;
     }
 
+    public function show($id)
+    {
+        $orderModel = new Order();
+        $order = $orderModel->getOrderById($id);
+        
+        View::render('admin/orders/show', [
+            'order' => $order,
+            'pagetitle' => 'جزئیات سفارش'
+        ], 'admin');
+    }
 }

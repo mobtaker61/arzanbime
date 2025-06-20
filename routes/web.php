@@ -174,6 +174,27 @@ $router->add('/admin/fast/broker-transactions', 'App\Controllers\Admin\AdminCont
 //************** AGENT **********************/
 // Agent routes (requires agent authentication)
 $router->add('/agent', 'App\Controllers\Agent\AgentController@dashboard', 'GET');
+$router->add('/agent/orders', 'App\Controllers\Agent\OrderController@index', 'GET');
+$router->add('/agent/orders/export', 'App\Controllers\Agent\OrderController@export', 'GET');
+$router->add('/agent/orders/edit/{id}', 'App\Controllers\Agent\OrderController@edit', 'GET');
+$router->add('/agent/orders/update/{id}', 'App\Controllers\Agent\OrderController@update', 'POST');
+$router->add('/agent/orders/store', 'App\Controllers\Agent\OrderController@store', 'POST');
+$router->add('/agent/orders/destroy/{id}', 'App\Controllers\Agent\OrderController@destroy', 'DELETE');
+$router->add('/agent/orders/create', 'App\Controllers\Agent\OrderController@create', 'GET');
+$router->add('/agent/clients/store', 'App\Controllers\Agent\ClientController@store', 'POST');
+
+$router->add('/agent/users', 'App\Controllers\Agent\UserController@index', 'GET');
+$router->add('/agent/users/store', 'App\Controllers\Agent\UserController@store', 'POST');
+$router->add('/agent/users/edit/{id}', 'App\Controllers\Agent\UserController@edit', 'GET');
+$router->add('/agent/users/update/{id}', 'App\Controllers\Agent\UserController@update', 'POST');
+$router->add('/agent/users/delete/{id}', 'App\Controllers\Agent\UserController@delete', 'DELETE');
+$router->add('/agent/users/getFilteredUsers/{id}', 'App\Controllers\Agent\UserController@getFilteredUsers');
+
+// Agent Quotation Routes
+$router->add('/agent/quotations', 'App\Controllers\Agent\QuotationController@index', 'GET');
+$router->add('/agent/quotations/create', 'App\Controllers\Agent\QuotationController@create', 'GET');
+$router->add('/agent/quotations/store', 'App\Controllers\Agent\QuotationController@store', 'POST');
+$router->add('/agent/quotations/show/{id}', 'App\Controllers\Agent\QuotationController@show', 'GET');
 
 //************** EXTRA **********************/
 // Sitemap & RSS feed routes

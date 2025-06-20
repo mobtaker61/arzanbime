@@ -3,10 +3,18 @@
 namespace App\Models;
 
 use Core\Model;
+use Core\Database;
 use Exception;
 
 class Broker extends Model
 {
+    protected $db;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function getAllBrokers($limit = 10, $offset = 0, $search = '')
     {
         $search = '%' . $search . '%';
@@ -24,10 +32,10 @@ class Broker extends Model
         $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM brokers WHERE title LIKE ? OR manager LIKE ? OR address LIKE ? OR phone LIKE ? OR website LIKE ? OR email LIKE ?");
         $stmt->bind_param('ssssss', $search, $search, $search, $search, $search, $search);
         $stmt->execute();
-        $stmt->bind_result($count);
-        $stmt->fetch();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
         $stmt->close();
-        return $count;
+        return $row['count'];
     }
 
     public function getBrokerById($id)
@@ -81,6 +89,26 @@ class Broker extends Model
         $result = $stmt->execute();
         $stmt->close();
         return $result;
+    }
+
+    public function getAllActive()
+    {
+        $sql = "SELECT * FROM brokers ORDER BY title ASC";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error preparing statement: " . $this->db->error);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $brokers = [];
+        while ($row = $result->fetch_assoc()) {
+            $brokers[] = $row;
+        }
+        
+        $stmt->close();
+        return $brokers;
     }
 
     private function fetchAssoc($stmt)

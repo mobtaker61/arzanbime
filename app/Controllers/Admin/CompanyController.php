@@ -4,13 +4,26 @@ namespace App\Controllers\Admin;
 
 use App\Models\Company;
 use Core\Controller;
+use Core\Middleware;
+use Core\View;
 use Exception;
 
 class CompanyController extends Controller {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index() {
         $companyModel = new Company();
-        $companies = $companyModel->getAllCompanies(false);
-        $this->view('admin/companies/index', ['companies' => $companies,'pagetitle' => 'شرکتها'], 'admin');
+        $companies = $companyModel->getAllCompanies();
+        
+        View::render('admin/companies/index', [
+            'companies' => $companies,
+            'pagetitle' => 'مدیریت شرکت‌ها'
+        ], 'admin');
     }
 
     public function getCompanyDetails($companyId) {
@@ -22,7 +35,9 @@ class CompanyController extends Controller {
     }
 
     public function create() {
-        $this->view('admin/companies/create', ['pagetitle' => 'شرکت جدید'], 'admin');
+        View::render('admin/companies/create', [
+            'pagetitle' => 'افزودن شرکت جدید'
+        ], 'admin');
     }
 
     public function store() {
@@ -71,8 +86,11 @@ class CompanyController extends Controller {
     public function edit($id) {
         $companyModel = new Company();
         $company = $companyModel->getCompanyById($id);
-        $company['tariffs_images'] = json_decode($company['tariffs_images'], true); // Decode JSON to array
-        $this->view('admin/companies/edit', ['company' => $company,'pagetitle' => 'اصلاح شرکت'], 'admin');
+        
+        View::render('admin/companies/edit', [
+            'company' => $company,
+            'pagetitle' => 'ویرایش شرکت'
+        ], 'admin');
     }
 
     public function update($id) {

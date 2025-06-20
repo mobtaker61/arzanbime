@@ -8,10 +8,18 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Broker;
 use Core\Controller;
+use Core\Middleware;
 use Core\View;
 
 class TransactionController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index()
     {
         $transactionModel = new Transaction();
@@ -136,5 +144,16 @@ class TransactionController extends Controller
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Transaction deleted successfully.']);
+    }
+
+    public function create()
+    {
+        $transactionTypeModel = new TransactionType();
+        $transactionTypes = $transactionTypeModel->getAllTransactionTypes();
+        
+        View::render('admin/transactions/create', [
+            'transactionTypes' => $transactionTypes,
+            'pagetitle' => 'افزودن تراکنش جدید'
+        ], 'admin');
     }
 }

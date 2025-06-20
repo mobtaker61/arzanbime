@@ -254,6 +254,26 @@ class Transaction extends Model
         return $result['balance'];
     }
 
+    public function getLatestTransactionsByAgent(int $agentId, int $limit = 10): array
+    {
+        $sql = "SELECT t.*, tt.name as type_name
+                FROM transactions t
+                LEFT JOIN transaction_types tt ON t.transaction_type_id = tt.id
+                WHERE t.user_id = ?
+                ORDER BY t.transaction_date DESC, t.id DESC
+                LIMIT ?";
+
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("SQL prepare failed: " . $this->db->error);
+        }
+
+        $stmt->bind_param('ii', $agentId, $limit);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result;
+    }
 
     private function fetchAssoc($stmt)
     {

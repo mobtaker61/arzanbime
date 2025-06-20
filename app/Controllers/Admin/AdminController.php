@@ -11,6 +11,7 @@ use App\Models\User;
 use Core\Controller;
 use Core\IMVerify;
 use Core\Middleware;
+use Core\View;
 
 class AdminController extends Controller
 {
@@ -48,8 +49,7 @@ class AdminController extends Controller
         $endDate = date('Y-m-d', strtotime("+60 days"));
         $ordersExpiringSoon = $orderModel->getAllOrders(100, 0, 'end_date', 'ASC', $startDate, $endDate);        
 
-        // Prepare view data
-        $viewData = [
+        View::render('admin/dashboard', [
             'user' => $_SESSION['user_data'],
             'newOrdersCount' => $newOrdersCount,
             'newQuotationsCount' => $newQuotationsCount,
@@ -60,9 +60,7 @@ class AdminController extends Controller
             'usersWithUpcomingBirthdays' => $usersWithUpcomingBirthdays,
             'ordersExpiringSoon' => $ordersExpiringSoon,
             'pagetitle' => 'داشبورد ادمین'
-        ];
-
-        $this->view('admin/dashboard', $viewData, 'admin');
+        ], 'admin');
     }
 
     public function getChartData()

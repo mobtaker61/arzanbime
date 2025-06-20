@@ -16,6 +16,19 @@ class TransactionType extends Model
         return $result;
     }
 
+    public function getTransactionTypeById($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM transaction_types WHERE id = ?");
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        return $result[0] ?? null;
+    }
+
     public function createTransactionType($data)
     {
         $stmt = $this->db->prepare("INSERT INTO transaction_types (name, description) VALUES (?, ?)");

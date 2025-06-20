@@ -5,6 +5,7 @@ class View {
     public static function render($view, $data = [], $layout = 'public') {
         extract($data);
         $content = self::getContent($view, $data);
+        $viewPath = "app/views/$view.php";
 
         if ($layout === 'public') {
             require "app/views/layouts/public/master.php";

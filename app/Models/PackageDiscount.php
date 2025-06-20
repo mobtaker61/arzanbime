@@ -57,6 +57,31 @@ class PackageDiscount extends Model
         return $result;
     }
 
+    /**
+     * Get package discounts for a specific user level
+     *
+     * @param int $userLevelId The user level ID
+     * @return array Array of package discounts with package and company info
+     */
+    public function getPackageDiscountsByUserLevel(int $userLevelId): array
+    {
+        $stmt = $this->db->prepare("SELECT pd.*, 
+                                          p.tip as package_name, 
+                                          c.name as company_name,
+                                          c.icon as company_icon
+                                   FROM package_discounts pd
+                                   JOIN package p ON pd.package_id = p.id
+                                   JOIN company c ON p.company_id = c.id
+                                   WHERE pd.user_level_id = ?
+                                   ORDER BY c.name, p.tip");
+        $stmt->bind_param('i', $userLevelId);
+        $stmt->execute();
+        $result = $this->fetchAssoc($stmt);
+        $stmt->close();
+        
+        return $result;
+    }
+
     private function fetchAssoc($stmt)
     {
         $stmt->store_result();

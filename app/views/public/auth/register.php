@@ -6,6 +6,7 @@
 
         <form class="grid gap-3 mobile-large:gap-3 placeholder:text-vkl-c-normal" action="/register" method="post">
             <input type="hidden" name="csrf_token" value="<?php use Core\Security; echo Security::generateCSRFToken(); ?>">
+            <input type="hidden" name="fcm_token" id="fcm_token" value="">
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="name" class="block">نام</label>
@@ -45,3 +46,31 @@
         <?php endif; ?>
     </div>
 </section>
+
+<script>
+// Check if Firebase is initialized on the page
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the form
+    const form = document.querySelector('form');
+    
+    // Try to get FCM token if Firebase is available
+    if (typeof firebase !== 'undefined' && firebase.messaging) {
+        try {
+            const messaging = firebase.messaging();
+            messaging.getToken().then(function(currentToken) {
+                if (currentToken) {
+                    // Set the token in the hidden field
+                    document.getElementById('fcm_token').value = currentToken;
+                    console.log('FCM token set successfully');
+                }
+            }).catch(function(err) {
+                console.log('An error occurred while retrieving token: ', err);
+            });
+        } catch (e) {
+            console.log('Firebase messaging not available: ', e);
+        }
+    } else {
+        console.log('Firebase not available');
+    }
+});
+</script>

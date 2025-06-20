@@ -7,51 +7,74 @@ use App\Models\TransactionType;
 use App\Models\Broker;
 use App\Models\Order;
 use Core\Controller;
+use Core\Middleware;
 use Core\View;
 
 class BrokerTransactionController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index()
     {
         $brokerTransactionModel = new BrokerTransaction();
-        $transactionTypeModel = new TransactionType();
+        $transactions = $brokerTransactionModel->getAllBrokerTransactions();
+        
         $brokerModel = new Broker();
-
-        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
-        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-        $offset = ($page - 1) * $limit;
-        $sortField = isset($_GET['sortField']) ? $_GET['sortField'] : 'id';
-        $sortOrder = isset($_GET['sortOrder']) ? $_GET['sortOrder'] : 'DESC';
-        $filterDateStart = isset($_GET['date_start']) ? $_GET['date_start'] : null;
-        $filterDateEnd = isset($_GET['date_end']) ? $_GET['date_end'] : null;
-        $filterBrokerId = isset($_GET['broker_id']) ? $_GET['broker_id'] : null;
-
-        $transactions = $brokerTransactionModel->getAllBrokerTransactions($limit, $offset, $sortField, $sortOrder, $filterDateStart, $filterDateEnd, $filterBrokerId);
-        $totalTransactions = $brokerTransactionModel->getBrokerTransactionCount($filterDateStart, $filterDateEnd, $filterBrokerId);
-
-        $transactionTypes = $transactionTypeModel->getAllTransactionTypes();
         $brokers = $brokerModel->getAllBrokers();
-
-        $viewData = [
+        
+        $transactionTypeModel = new TransactionType();
+        $transactionTypes = $transactionTypeModel->getAllTransactionTypes();
+        
+        View::render('admin/broker-transactions/index', [
             'transactions' => $transactions,
-            'totalTransactions' => $totalTransactions,
-            'limit' => $limit,
-            'page' => $page,
-            'sortField' => $sortField,
-            'sortOrder' => $sortOrder,
-            'filterDateStart' => $filterDateStart,
-            'filterDateEnd' => $filterDateEnd,
-            'filterBrokerId' => $filterBrokerId,
-            'transactionTypes' => $transactionTypes,
             'brokers' => $brokers,
-            'pagetitle' => 'مدیریت تراکنش‌های بروکر'
-        ];
+            'transactionTypes' => $transactionTypes,
+            'pagetitle' => 'مدیریت تراکنش‌های کارگزاران'
+        ], 'admin');
+    }
 
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            View::render('admin/broker_transactions/broker_transaction_table', $viewData, false);
-        } else {
-            $this->view('admin/broker_transactions/index', $viewData, 'admin');
+    public function create()
+    {
+        $brokerModel = new Broker();
+        $brokers = $brokerModel->getAllBrokers();
+        
+        $transactionTypeModel = new TransactionType();
+        $transactionTypes = $transactionTypeModel->getAllTransactionTypes();
+        
+        View::render('admin/broker-transactions/create', [
+            'brokers' => $brokers,
+            'transactionTypes' => $transactionTypes,
+            'pagetitle' => 'افزودن تراکنش کارگزار جدید'
+        ], 'admin');
+    }
+
+    public function edit($id)
+    {
+        $brokerTransactionModel = new BrokerTransaction();
+        $transaction = $brokerTransactionModel->getBrokerTransactionById($id);
+        
+        if (!$transaction) {
+            $this->redirect('/admin/broker-transactions');
+            return;
         }
+        
+        $brokerModel = new Broker();
+        $brokers = $brokerModel->getAllBrokers();
+        
+        $transactionTypeModel = new TransactionType();
+        $transactionTypes = $transactionTypeModel->getAllTransactionTypes();
+        
+        View::render('admin/broker-transactions/edit', [
+            'transaction' => $transaction,
+            'brokers' => $brokers,
+            'transactionTypes' => $transactionTypes,
+            'pagetitle' => 'ویرایش تراکنش کارگزار'
+        ], 'admin');
     }
 
     public function store()
@@ -90,14 +113,5 @@ class BrokerTransactionController extends Controller
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'تراکنش بروکر با موفقیت ویرایش شد.']);
-    }
-
-    public function edit($id)
-    {
-        $brokerTransactionModel = new BrokerTransaction();
-        $transaction = $brokerTransactionModel->getBrokerTransactionById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($transaction);
     }
 }

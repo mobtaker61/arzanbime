@@ -11,6 +11,7 @@ use App\Models\Tariff;
 use Core\Controller;
 use Core\IMVerify;
 use Core\View;
+use Core\Middleware;
 
 class QuotationController extends Controller
 {
@@ -19,6 +20,8 @@ class QuotationController extends Controller
     {
         parent::__construct();
         $this->imVerify = new IMVerify();
+        Middleware::auth();
+        Middleware::admin();
     }
     public function index()
     {
@@ -55,7 +58,7 @@ class QuotationController extends Controller
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             View::render('admin/quotations/quotation_table', $viewData, false);
         } else {
-            $this->view('admin/quotations/index', $viewData, 'admin');
+            View::render('admin/quotations/index', $viewData, 'admin');
         }
     }
 

@@ -6,8 +6,17 @@ use App\Models\Package;
 use App\Models\Company;
 use App\Models\Tariff;
 use Core\Controller;
+use Core\Middleware;
+use Core\View;
 
 class PackageController extends Controller {
+    public function __construct()
+    {
+        parent::__construct();
+        Middleware::auth();
+        Middleware::admin();
+    }
+
     public function index() {
         $packageModel = new Package();
         $companyModel = new Company();
@@ -131,7 +140,11 @@ class PackageController extends Controller {
     public function create() {
         $companyModel = new Company();
         $companies = $companyModel->getAllCompanies();
-        $this->view('admin/packages/create', ['companies' => $companies,'pagetitle' => 'پکیج جدید'], 'admin');
+        
+        View::render('admin/packages/create', [
+            'companies' => $companies,
+            'pagetitle' => 'افزودن پکیج جدید'
+        ], 'admin');
     }
 
     public function store() {
@@ -153,9 +166,15 @@ class PackageController extends Controller {
     public function edit($id) {
         $packageModel = new Package();
         $package = $packageModel->getPackageById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($package);
+        
+        $companyModel = new Company();
+        $companies = $companyModel->getAllCompanies();
+        
+        View::render('admin/packages/edit', [
+            'package' => $package,
+            'companies' => $companies,
+            'pagetitle' => 'ویرایش پکیج'
+        ], 'admin');
     }
 
     public function update($id) {

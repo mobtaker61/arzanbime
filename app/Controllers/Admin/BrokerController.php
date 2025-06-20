@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use Core\Middleware;
 use App\Models\Broker;
 use Core\Controller;
+use Core\View;
 
 class BrokerController extends Controller
 {
@@ -18,25 +19,29 @@ class BrokerController extends Controller
     public function index()
     {
         $brokerModel = new Broker();
-        $search = $_GET['search'] ?? '';
-        $limit = $_GET['limit'] ?? 10;
-        $page = $_GET['page'] ?? 1;
-        $offset = ($page - 1) * $limit;
-
-        $brokers = $brokerModel->getAllBrokers($limit, $offset, $search);
-        $totalBrokers = $brokerModel->getBrokerCount($search);
-        // اضافه کردن بالانس به اطلاعات بروکرها
-        foreach ($brokers as &$broker) {
-            $broker['balance'] = $brokerModel->getBrokerBalance($broker['id']);
-        }
-
-        $this->view('admin/brokers/index', [
+        $brokers = $brokerModel->getAllBrokers();
+        
+        View::render('admin/brokers/index', [
             'brokers' => $brokers,
-            'totalBrokers' => $totalBrokers,
-            'limit' => $limit,
-            'page' => $page,
-            'search' => $search,
             'pagetitle' => 'مدیریت بروکرها'
+        ], 'admin');
+    }
+
+    public function create()
+    {
+        View::render('admin/brokers/create', [
+            'pagetitle' => 'افزودن بروکر جدید'
+        ], 'admin');
+    }
+
+    public function edit($id)
+    {
+        $brokerModel = new Broker();
+        $broker = $brokerModel->getBrokerById($id);
+        
+        View::render('admin/brokers/edit', [
+            'broker' => $broker,
+            'pagetitle' => 'ویرایش بروکر'
         ], 'admin');
     }
 
@@ -62,15 +67,6 @@ class BrokerController extends Controller
 
         header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Broker created successfully.']);
-    }
-
-    public function edit($id)
-    {
-        $brokerModel = new Broker();
-        $broker = $brokerModel->getBrokerById($id);
-
-        header('Content-Type: application/json');
-        echo json_encode($broker);
     }
 
     public function update($id)
