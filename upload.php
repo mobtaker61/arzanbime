@@ -1,10 +1,36 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // upload.php
 $targetDir = "public/uploads/";
 
 // Create directory if it doesn't exist
 if (!is_dir($targetDir)) {
-    mkdir($targetDir, 0755, true);
+    if (!mkdir($targetDir, 0755, true)) {
+        $response = ['error' => 'Failed to create upload directory'];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
+}
+
+// Check if directory is writable
+if (!is_writable($targetDir)) {
+    $response = ['error' => 'Upload directory is not writable'];
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
+}
+
+// Check if file was uploaded
+if (!isset($_FILES["file"]) || $_FILES["file"]["error"] !== UPLOAD_ERR_OK) {
+    $error = isset($_FILES["file"]) ? $_FILES["file"]["error"] : 'No file uploaded';
+    $response = ['error' => 'Upload error: ' . $error];
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
 }
 
 $targetFile = $targetDir . basename($_FILES["file"]["name"]);
@@ -26,7 +52,7 @@ if ($check !== false) {
             if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFile)) {
                 $response['location'] = "/" . $targetFile;
             } else {
-                $response['error'] = "Sorry, there was an error uploading your file.";
+                $response['error'] = "Sorry, there was an error uploading your file. Error: " . error_get_last()['message'];
             }
         }
     }
