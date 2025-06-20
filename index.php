@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-س// Debug pre-session info
+// Debug pre-session info
 error_log("PRE-SESSION: Request URI: " . $_SERVER['REQUEST_URI']);
 
 // Session configuration - MUST be before session_start()
