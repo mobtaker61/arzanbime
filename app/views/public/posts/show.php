@@ -23,7 +23,7 @@ $keywords = $post['caption'];
             </h1>
             <p class="hidden"><?= $post['caption'] ?></p>
             <div class="post-content">
-                <?= htmlspecialchars_decode($post['full_body']) ?>
+                <?= $post['full_body'] ?>
             </div>
         </div>
     </div>

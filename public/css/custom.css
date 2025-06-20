@@ -295,6 +295,9 @@ font-size: 1em;
     line-height: 1.8;
     font-size: 1rem;
     color: #333;
+    font-family: IRANSansX !important;
+    direction: rtl;
+    text-align: justify;
 }
 
 .post-content h1,
@@ -304,94 +307,119 @@ font-size: 1em;
 .post-content h5,
 .post-content h6 {
     font-family: IRANSansX !important;
-    margin: 1.5rem 0 1rem 0;
+    margin: 2rem 0 1rem 0;
     font-weight: bold;
     color: #2c3e50;
+    line-height: 1.4;
 }
 
 .post-content h1 {
     font-size: 2rem;
     border-bottom: 2px solid #e74c3c;
     padding-bottom: 0.5rem;
+    margin-top: 3rem;
 }
 
 .post-content h2 {
     font-size: 1.75rem;
     border-bottom: 1px solid #ecf0f1;
     padding-bottom: 0.3rem;
+    margin-top: 2.5rem;
 }
 
 .post-content h3 {
     font-size: 1.5rem;
+    margin-top: 2rem;
+    color: #e74c3c;
 }
 
 .post-content h4 {
     font-size: 1.25rem;
+    margin-top: 1.5rem;
 }
 
 .post-content h5 {
     font-size: 1.1rem;
+    margin-top: 1.5rem;
 }
 
 .post-content h6 {
     font-size: 1rem;
+    margin-top: 1.5rem;
 }
 
 .post-content p {
     margin: 1rem 0;
     text-align: justify;
     line-height: 1.8;
+    color: #555;
 }
 
 .post-content ul,
 .post-content ol {
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     padding-right: 2rem;
+    padding-left: 1rem;
 }
 
 .post-content li {
-    margin: 0.5rem 0;
+    margin: 0.75rem 0;
     line-height: 1.6;
+    color: #555;
+}
+
+.post-content li p {
+    margin: 0.5rem 0;
 }
 
 .post-content blockquote {
     border-right: 4px solid #e74c3c;
     background-color: #f8f9fa;
-    padding: 1rem;
-    margin: 1.5rem 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
     font-style: italic;
-    border-radius: 0 5px 5px 0;
+    border-radius: 0 8px 8px 0;
+    color: #666;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .post-content table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
     background-color: #fff;
-    border-radius: 5px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid #dee2e6;
 }
 
 .post-content table th,
 .post-content table td {
-    padding: 0.75rem;
+    padding: 1rem;
     text-align: right;
     border-bottom: 1px solid #dee2e6;
+    vertical-align: top;
 }
 
 .post-content table th {
     background-color: #f8f9fa;
     font-weight: bold;
     color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.post-content table tr:hover {
+    background-color: #f8f9fa;
 }
 
 .post-content img {
     max-width: 100%;
     height: auto;
-    border-radius: 5px;
-    margin: 1rem 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: block;
 }
 
 .post-content a {
@@ -399,11 +427,13 @@ font-size: 1em;
     text-decoration: none;
     border-bottom: 1px dotted #e74c3c;
     transition: all 0.3s ease;
+    padding: 0 2px;
 }
 
 .post-content a:hover {
     color: #c0392b;
     border-bottom-color: #c0392b;
+    background-color: #fff5f5;
 }
 
 .post-content strong {
@@ -445,18 +475,27 @@ font-size: 1em;
     font-size: 1.25rem;
 }
 
+/* Remove data attributes styling */
+.post-content [data-start],
+.post-content [data-end] {
+    /* Remove any styling from data attributes */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .post-content h1 {
         font-size: 1.75rem;
+        margin-top: 2rem;
     }
     
     .post-content h2 {
         font-size: 1.5rem;
+        margin-top: 1.5rem;
     }
     
     .post-content h3 {
         font-size: 1.25rem;
+        margin-top: 1.5rem;
     }
     
     .post-content {
@@ -466,5 +505,20 @@ font-size: 1em;
     .post-content ul,
     .post-content ol {
         padding-right: 1.5rem;
+        padding-left: 0.5rem;
+    }
+    
+    .post-content blockquote {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .post-content table {
+        font-size: 0.9rem;
+    }
+    
+    .post-content table th,
+    .post-content table td {
+        padding: 0.75rem 0.5rem;
     }
 }
