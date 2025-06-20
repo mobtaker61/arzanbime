@@ -2,7 +2,7 @@
 // SEO Meta Tags
 $pagetitle = $post['title'] . ' - ' . $post['postType'] . ' | ارزان بیمه';
 $description = !empty($post['caption']) ? $post['caption'] : substr(strip_tags($post['full_body']), 0, 160);
-$keywords = $post['title'] . ', ' . $post['postType'] . ', بیمه, ترکیه, اقامت';
+$keywords = $post['title'] . ', ' . $post['postType'] . ', بیمه, ترکیه, اقامت, ارزان, sigorta';
 
 // Generate keywords from content
 $content_words = strip_tags($post['full_body']);
