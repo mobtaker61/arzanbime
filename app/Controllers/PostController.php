@@ -67,6 +67,7 @@ class PostController extends Controller
     {
         $postModel = new Post();
         $post = $postModel->getPostById($id);
+        
         // Fetch latest posts for sidebar
         $latestGuides = $postModel->getPostsByType(1, 5);
         $latestNotices = $postModel->getPostsByType(2, 5);
@@ -78,13 +79,42 @@ class PostController extends Controller
             return;
         }
 
-        view::render('public/posts/show', [
+        // Calculate reading time
+        $word_count = str_word_count(strip_tags($post['full_body']));
+        $reading_time = ceil($word_count / 200);
+
+        // Generate keywords from content
+        $content_words = strip_tags($post['full_body']);
+        $words = explode(' ', $content_words);
+        $common_words = ['در', 'به', 'از', 'که', 'این', 'با', 'برای', 'یا', 'و', 'را', 'است', 'شود', 'می', 'های', 'های', 'آن', 'آنها', 'خود', 'خودش', 'خودشان'];
+        $keywords_array = array_diff($words, $common_words);
+        $keywords_array = array_slice($keywords_array, 0, 10);
+        $keywords = $post['title'] . ', ' . $post['postType'] . ', بیمه, ترکیه, اقامت, ' . implode(', ', $keywords_array);
+
+        // Generate SEO variables
+        $seo_vars = [
+            'pagetitle' => $post['title'] . ' - ' . $post['postType'] . ' | ارزان بیمه',
+            'description' => !empty($post['caption']) ? $post['caption'] : substr(strip_tags($post['full_body']), 0, 160),
+            'keywords' => $keywords,
+            'og_title' => $post['title'],
+            'og_description' => !empty($post['caption']) ? $post['caption'] : substr(strip_tags($post['full_body']), 0, 160),
+            'og_image' => !empty($post['image']) ? 'https://' . $_SERVER['HTTP_HOST'] . $post['image'] : 'https://' . $_SERVER['HTTP_HOST'] . '/public/assets/default-image.webp',
+            'og_url' => 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+            'twitter_card' => 'summary_large_image',
+            'twitter_site' => '@arzanbime',
+            'twitter_creator' => '@arzanbime',
+            'reading_time' => $reading_time,
+            'word_count' => $word_count,
+            'published_date' => $post['created_at'] ?? date('Y-m-d'),
+            'modified_date' => $post['updated_at'] ?? $post['created_at'] ?? date('Y-m-d')
+        ];
+
+        view::render('public/posts/show', array_merge([
             'post' => $post,
             'latestGuides' => $latestGuides,
             'latestNotices' => $latestNotices,
-            'latestFaqs' => $latestFaqs,
-            'pagetitle' => $post['title']
-        ]);
+            'latestFaqs' => $latestFaqs
+        ], $seo_vars));
     }
 
     public function getByPostType($type)
